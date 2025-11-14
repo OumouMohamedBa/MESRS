@@ -1,0 +1,53 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Visualiser le PDF'" [withSidebar]="true"></app-header>
+
+<div class="lg:ml-80 pt-28 px-0 pb-0 bg-gray-50 min-h-screen">
+  <!-- 🎛️ Barre de contrôle -->
+  <div class="px-4 py-3 bg-white border-b border-gray-200 flex items-center justify-between shadow-sm">
+    <div class="flex items-center gap-4">
+      <a routerLink="/textes/{{id}}" 
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition text-sm shadow-sm">
+        <i class="fa-solid fa-arrow-left"></i>
+        Retour aux détails
+      </a>
+      <span class="text-sm text-gray-600" *ngIf="texte">
+        <i class="fa-solid fa-file-pdf mr-2 text-green-600"></i>{{ texte.titre }}
+      </span>
+    </div>
+    <div class="flex items-center gap-2">
+      <a *ngIf="texte?.fichierUrl" [href]="texte!.fichierUrl" [download]="getFileName()"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-green-600 text-green-700 hover:bg-green-50 transition text-sm shadow-sm">
+        <i class="fa-solid fa-download"></i> Télécharger
+      </a>
+      <button (click)="toggleFullscreen()" 
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm shadow-sm">
+        <i class="fa-solid" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
+        {{ isFullscreen ? 'Réduire' : 'Plein écran' }}
+      </button>
+      <a routerLink="/textes" 
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition text-sm shadow-sm">
+        <i class="fa-solid fa-list"></i> Liste
+      </a>
+    </div>
+  </div>
+
+  <!-- 📄 Contenu PDF -->
+  <div class="bg-white">
+    <ng-container *ngIf="texte?.fichierUrl; else nofile">
+      <iframe 
+        [src]="getSafeUrl(texte!.fichierUrl!)" 
+        class="w-full border-0"
+        style="height: calc(100vh - 12rem);"
+        allowfullscreen>
+      </iframe>
+    </ng-container>
+    <ng-template #nofile>
+      <div class="flex items-center justify-center" style="height: calc(100vh - 12rem);">
+        <div class="text-center text-gray-500">
+          <i class="fa-solid fa-file-pdf text-6xl mb-4 text-gray-400"></i>
+          <p class="text-lg">Aucun fichier PDF disponible.</p>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

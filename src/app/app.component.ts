@@ -1,12 +1,21 @@
+// src/app/app.component.ts
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NgIf } from '@angular/common';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, NgIf],
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
-  title = 'mesrs-front';
+  langue: 'fr' | 'ar' = 'fr';
+
+  constructor(public router: Router) {}
+
+  toggleLangue() {
+    this.langue = this.langue === 'fr' ? 'ar' : 'fr';
+    // Ici tu peux ajouter la logique i18n/internationalization
+  }
 }
