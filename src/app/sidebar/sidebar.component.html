@@ -1,17 +1,20 @@
 <aside
-  class="h-screen w-72 bg-white border border-gray-100 rounded-2xl shadow-lg fixed left-4 top-4 z-40 flex flex-col overflow-hidden transition-all duration-300">
+  class="h-screen w-72 bg-white border border-gray-100 rounded-2xl shadow-lg 
+         fixed left-4 top-4 z-40 flex flex-col overflow-hidden transition-all duration-300">
 
-  <!-- 🏷️ Logo intégré harmonieusement -->
-  <div class="flex flex-col items-center justify-center pt-10 pb-6 bg-white/80 backdrop-blur-md">
+  <!-- 🔹 Zone du logo : FIXE -->
+  <div class="flex flex-col items-center justify-center pt-10 pb-6 bg-white/80 backdrop-blur-md shrink-0">
     <img
       src="assets/images/logo-removebg-preview.png"
       alt="Logo"
-      class="w-30 h-28 mb-2 drop-shadow-md object-contain " />
-  
+      class="w-28 h-28 mb-2 drop-shadow-md object-contain"
+    />
+  </div>
 
-  <!-- 📜 Menu scrollable -->
+  <!-- 🔹 Menu : SCROLLABLE -->
   <nav
-    class="flex-1 px-2 pb-4 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+    class="flex-1 px-2 pb-4 overflow-y-auto space-y-1 
+           scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
     
     <a routerLink="/dashboard" routerLinkActive="active-link" class="menu-item">
       <lucide-icon name="home" class="w-5 h-5"></lucide-icon>
@@ -62,7 +65,12 @@
       <lucide-icon name="clipboard-list" class="w-5 h-5"></lucide-icon>
       <span>Inspection</span>
     </a>
+
+    <a *ngIf="isIG" routerLink="/users" routerLinkActive="active-link" class="menu-item">
+      <lucide-icon name="users" class="w-5 h-5"></lucide-icon>
+      <span>Utilisateurs</span>
+    </a>
+
   </nav>
-  </div>
 
 </aside>

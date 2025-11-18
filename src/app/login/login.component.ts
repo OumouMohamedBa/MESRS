@@ -12,8 +12,14 @@ import { AuthService } from '../services/auth.service';
 export class LoginComponent {
   form!: FormGroup;
   langue: 'fr' | 'ar' = 'fr';
+  submitting = false;
 
-  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute, private auth: AuthService) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private auth: AuthService
+  ) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
@@ -25,15 +31,15 @@ export class LoginComponent {
     }
   }
 
-  submitting = false;
-
   submit() {
     if (this.form.invalid) return;
+
     this.submitting = true;
     const { username, password } = this.form.value as { username: string; password: string };
-    // Simple in-memory auth
+
     const ok = this.auth.login(username, password);
     this.submitting = false;
+
     if (ok) {
       this.router.navigateByUrl('/dashboard');
     }
