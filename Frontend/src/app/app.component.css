@@ -1,4 +1,0 @@
-/* Forme triangulaire qui découpe la partie droite */
-.clip-triangle {
-  clip-path: polygon(100% 0, 80% 100%, 100% 100%);
-}
