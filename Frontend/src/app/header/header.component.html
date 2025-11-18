@@ -1,0 +1,143 @@
+<header
+  class="fixed top-4 right-4 left-4 lg:left-[288px] z-50
+         bg-white/90 backdrop-blur-md border border-gray-200/80 shadow-xl
+         rounded-2xl transition-all duration-300"
+>
+  <div class="mx-auto px-4 sm:px-5 h-16 flex items-center justify-between gap-4">
+
+    <!-- 🟢 (Optionnel) Bouton menu pour mobile -->
+    <button
+      class="lg:hidden p-2 rounded-xl border border-gray-200/70 bg-white shadow-sm hover:shadow-md"
+      (click)="toggleSidebar.emit()"
+      aria-label="Ouvrir le menu"
+    >
+      <i class="fa-solid fa-bars text-gray-700 text-lg"></i>
+    </button>
+
+    <!-- 🟢 Titre + icône -->
+    <div class="flex items-center gap-3 min-w-[180px] sm:min-w-[240px] overflow-hidden">
+      <div
+        class="flex items-center justify-center w-10 h-10 rounded-xl
+               bg-gradient-to-br from-emerald-50 to-emerald-100
+               shadow-inner border border-emerald-100"
+      >
+        <i class="fa-solid fa-layer-group text-emerald-700 text-lg"></i>
+      </div>
+      <div class="flex flex-col">
+        <h1 class="text-sm sm:text-base md:text-lg font-semibold text-gray-900 tracking-tight truncate">
+          {{ title }}
+        </h1>
+        <span class="hidden sm:inline text-xs text-gray-400">
+          Inspection interne – MESRS
+        </span>
+      </div>
+    </div>
+
+    <!-- 🧩 Actions -->
+    <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+
+      <!-- 🌍 Langue (menu au clic) -->
+      <div class="relative lang-menu">
+        <button
+          class="inline-flex items-center gap-2 text-xs sm:text-sm px-3 py-2 rounded-full
+                 border border-gray-200 bg-white shadow-sm
+                 hover:shadow-md hover:bg-gray-50 transition-all duration-200"
+          (click)="toggleLangMenu($event)"
+        >
+          <i class="fa-solid fa-globe text-emerald-700 text-sm"></i>
+          <span class="font-medium">{{ langue | uppercase }}</span>
+          <i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
+        </button>
+
+        <div
+          *ngIf="isLangOpen"
+          class="absolute right-0 mt-2 w-28 bg-white
+                 border border-gray-200 rounded-xl shadow-lg py-1 z-10"
+        >
+          <button
+            class="w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            (click)="onSelectLang('fr')"
+          >
+            Français
+          </button>
+          <button
+            class="w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            (click)="onSelectLang('ar')"
+          >
+            العربية
+          </button>
+          <button
+            class="w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            (click)="onSelectLang('en')"
+          >
+            English
+          </button>
+        </div>
+      </div>
+
+      <!-- 🔔 Notifications -->
+      <button
+        class="relative p-2.5 rounded-xl hover:bg-gray-100 border border-gray-200/70
+               shadow-sm hover:shadow-md transition"
+        (click)="onOpenNotifications()"
+      >
+        <i class="fa-regular fa-bell text-gray-700 text-base sm:text-lg"></i>
+        <span
+          class="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px]
+                 leading-3 px-1.5 rounded-full shadow-sm"
+        >
+          3
+        </span>
+      </button>
+
+      <!-- 🌙 Mode sombre -->
+      <button
+        class="p-2.5 rounded-xl hover:bg-gray-100 border border-gray-200/70
+               shadow-sm hover:shadow-md transition"
+        (click)="onToggleDark()"
+      >
+        <i class="fa-regular fa-moon text-gray-700 text-base sm:text-lg"></i>
+      </button>
+
+      <!-- 👤 Profil (menu au clic) -->
+      <div class="relative profile-menu">
+        <button
+          class="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-gray-200
+                 bg-white shadow-sm hover:shadow-md transition-all duration-200"
+          (click)="toggleProfileMenu($event)"
+        >
+          <span
+            class="inline-flex h-8 w-8 items-center justify-center rounded-full
+                   bg-emerald-700 text-white text-xs font-semibold"
+          >
+            IN
+          </span>
+          <span class="hidden sm:block text-xs sm:text-sm font-medium text-gray-800">
+            Inspecteur
+          </span>
+          <i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
+        </button>
+
+        <div
+          *ngIf="isProfileOpen"
+          class="absolute right-0 mt-2 w-44 bg-white border border-gray-200
+                 rounded-xl shadow-lg py-1 z-10"
+        >
+          <a
+            routerLink="/profile"
+            class="block px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            (click)="closeMenus()"
+          >
+            Profil
+          </a>
+          <button
+            class="w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            (click)="onLogout()"
+          >
+            Déconnexion
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

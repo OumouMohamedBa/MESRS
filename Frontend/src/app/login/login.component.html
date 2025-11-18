@@ -1,0 +1,124 @@
+<!-- Page de connexion moderne avec animation -->
+<div
+  class="fixed inset-0 z-50 bg-gradient-to-br from-emerald-50 via-white to-emerald-100 
+         backdrop-blur-sm flex items-center justify-center px-4 sm:px-6"
+  [attr.dir]="langue === 'ar' ? 'rtl' : 'ltr'"
+>
+  <div
+    class="w-full max-w-md bg-white/95 rounded-3xl shadow-2xl border border-emerald-50
+           p-6 sm:p-8 relative overflow-hidden transform transition-all duration-700 ease-out"
+  >
+    <!-- Halo décoratif -->
+    <div class="pointer-events-none absolute -top-16 -right-16 w-40 h-40 rounded-full bg-emerald-300/25 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-20 -left-10 w-44 h-44 rounded-full bg-emerald-500/20 blur-3xl"></div>
+
+    <!-- Logo + titre -->
+    <!-- Logo + titre -->
+<div class="relative flex flex-col items-center text-center mb-6 sm:mb-8">
+
+  <div class="relative mb-4 sm:mb-6 flex justify-center">
+    <div class="absolute inset-0 blur-2xl bg-emerald-200/60 rounded-full scale-125 -z-10"></div>
+    <img
+      src="assets/images/logo-removebg-preview.png"
+      alt="Logo MESRS"
+      class="h-28 w-28 sm:h-32 sm:w-32 drop-shadow-xl transition-transform duration-300"
+    />
+  </div>
+
+  
+  <p class="mt-1 text-xs sm:text-sm text-gray-500 max-w-xs">
+    {{
+      langue === 'ar'
+        ? 'الرجاء إدخال معلومات حسابكم للمتابعة.'
+        : 'Veuillez saisir vos identifiants pour continuer.'
+    }}
+  </p>
+</div>
+
+
+    <!-- Formulaire -->
+    <form
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      class="relative space-y-4 sm:space-y-5"
+    >
+      <!-- Champ utilisateur -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ langue === 'ar' ? 'اسم المستخدم' : 'Utilisateur' }}
+        </label>
+        <div class="relative">
+          <input
+            type="text"
+            formControlName="username"
+            [placeholder]="langue === 'ar' ? 'اكتب اسم المستخدم' : 'Entrez votre identifiant'"
+            class="w-full rounded-xl border border-gray-200 bg-gray-50/60 px-3.5 py-2.5
+                   pr-10 text-sm sm:text-base
+                   focus:bg-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50
+                   transition"
+          />
+          <span class="pointer-events-none absolute inset-y-0 end-3 flex items-center text-gray-400">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- Champ mot de passe -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ langue === 'ar' ? 'كلمة المرور' : 'Mot de passe' }}
+        </label>
+        <div class="relative">
+          <input
+            type="password"
+            formControlName="password"
+            [placeholder]="langue === 'ar' ? 'اكتب كلمة المرور' : 'Entrez votre mot de passe'"
+            class="w-full rounded-xl border border-gray-200 bg-gray-50/60 px-3.5 py-2.5
+                   pr-10 text-sm sm:text-base
+                   focus:bg-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50
+                   transition"
+          />
+          <span class="pointer-events-none absolute inset-y-0 end-3 flex items-center text-gray-400">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M16.5 10.5V9a4.5 4.5 0 10-9 0v1.5M6.75 10.5h10.5
+                       a1.5 1.5 0 011.5 1.5v5.25a1.5 1.5 0 01-1.5 1.5H6.75
+                       a1.5 1.5 0 01-1.5-1.5V12a1.5 1.5 0 011.5-1.5z"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- Bouton -->
+      <button
+        type="submit"
+        [disabled]="submitting || form.invalid"
+        class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700
+               text-white rounded-xl py-2.5 sm:py-3 font-semibold text-sm sm:text-base
+               hover:from-emerald-700 hover:to-emerald-800
+               disabled:opacity-60 disabled:cursor-not-allowed
+               shadow-md shadow-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/40
+               transform transition-all duration-200 hover:-translate-y-[1px]"
+      >
+        {{
+          submitting
+            ? (langue === 'ar' ? '...جارٍ تسجيل الدخول' : 'Connexion...')
+            : (langue === 'ar' ? 'تسجيل الدخول' : 'Se connecter')
+        }}
+      </button>
+
+      <!-- Lien retour -->
+      <a
+        routerLink="/"
+        class="block text-center text-xs sm:text-sm text-gray-600 hover:text-emerald-700 hover:underline mt-1.5"
+      >
+        {{ langue === 'ar' ? 'رجوع إلى الصفحة الرئيسية' : 'Retour à la page d’accueil' }}
+      </a>
+    </form>
+  </div>
+</div>

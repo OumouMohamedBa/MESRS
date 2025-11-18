@@ -1,0 +1,220 @@
+<app-sidebar></app-sidebar>
+
+<!-- Header -->
+<app-header
+  [title]="'Textes Réglementaires'"
+  [withSidebar]="true"
+  [langue]="langue()"
+  (toggleSidebar)="onToggleSidebar()"
+  (changeLang)="onChangeLang($event)"
+  (toggleDark)="onToggleDark()"
+  (openNotifications)="onOpenNotifications()"
+  (logout)="onLogout()"
+></app-header>
+<!-- Contenu principal -->
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 lg:mt-4 bg-gradient-to-b from-emerald-50/40 via-white to-white min-h-screen">
+
+  <div
+    class="bg-white/95 border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl
+           overflow-hidden transition-all duration-300">
+
+    <!-- 🔹 Barre d’en-tête avec bouton d’ajout -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 sm:p-6
+             border-b border-gray-100 bg-white/80 backdrop-blur-sm">
+
+      <!-- 🔍 Recherche + Filtres -->
+      <div class="flex flex-col lg:flex-row gap-3 lg:items-center w-full flex-wrap">
+
+        <!-- Recherche -->
+        <label class="relative w-full lg:w-72">
+          <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-sm"></i>
+          <input
+            type="search"
+            placeholder="Rechercher par titre / réf."
+            (input)="onQueryInput($any($event.target).value)"
+            class="w-full bg-gray-50 border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600
+                   placeholder:text-gray-400 transition"
+          />
+        </label>
+
+        <!-- Statut -->
+        <select
+          class="bg-white border border-gray-200 rounded-full px-3.5 py-2.5 text-xs sm:text-sm
+                 focus:ring-2 focus:ring-green-600 focus:border-green-600 text-gray-700"
+          (change)="onStatutChange($any($event.target).value)">
+          <option value="">Statut : Tous</option>
+          <option>En vigueur</option>
+          <option>Abrogé</option>
+          <option>Projet</option>
+        </select>
+
+        <!-- Date -->
+        <div class="flex items-center gap-2">
+          <span class="hidden sm:inline text-xs text-gray-500">Depuis :</span>
+          <input
+            type="date"
+            class="bg-white border border-gray-200 rounded-full px-3.5 py-2.5 text-xs sm:text-sm
+                   focus:ring-2 focus:ring-green-600 focus:border-green-600 text-gray-700"
+            (change)="onDateChange($any($event.target).value)"
+          />
+        </div>
+      </div>
+
+      <!-- 🔁 Boutons à droite -->
+      <div class="flex items-center gap-3 justify-end w-full sm:w-auto">
+        <!-- Bouton Réinitialiser -->
+        <button
+          class="flex items-center justify-center w-10 h-10 rounded-full text-gray-500
+                 hover:text-green-700 hover:bg-gray-100 border border-gray-200/60
+                 transition shadow-sm"
+          (click)="clearFilters()"
+          title="Réinitialiser les filtres">
+          <i class="fa-solid fa-rotate-right text-sm"></i>
+        </button>
+
+        <!-- Bouton Ajouter -->
+        <button
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700
+                 text-white px-4 h-10 text-sm font-semibold shadow-md shadow-emerald-500/30
+                 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg hover:shadow-emerald-500/40
+                 transition"
+          (click)="openAddForm()"
+          title="Ajouter un texte juridique">
+          <i class="fa-solid fa-circle-plus text-sm"></i>
+          <span class="hidden sm:inline">Nouveau texte</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 📋 Tableau -->
+    <div class="overflow-x-auto bg-white">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-500 border-b border-gray-100 bg-gray-50/80">
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Titre</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Type</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Référence</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Date</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Statut</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Portée</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            *ngFor="let t of paged()"
+            class="border-b border-gray-50 hover:bg-emerald-50/40 transition">
+            <td class="px-6 py-3 font-medium text-gray-900 max-w-xs">
+              <div class="line-clamp-2">
+                {{ t.titre }}
+              </div>
+            </td>
+            <td class="px-6 py-3 text-gray-700">{{ t.type }}</td>
+            <td class="px-6 py-3 text-gray-700">{{ t.reference }}</td>
+            <td class="px-6 py-3 text-gray-600">{{ t.datePublication }}</td>
+
+            <td class="px-6 py-3">
+              <span
+                [ngClass]="{
+                  'bg-green-100 text-green-700': t.statut==='En vigueur',
+                  'bg-red-100 text-red-700': t.statut==='Abrogé',
+                  'bg-yellow-100 text-yellow-700': t.statut==='Projet'
+                }"
+                class="px-2.5 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full"
+                      [ngClass]="{
+                        'bg-green-500': t.statut==='En vigueur',
+                        'bg-red-500': t.statut==='Abrogé',
+                        'bg-yellow-400': t.statut==='Projet'
+                      }"></span>
+                {{ t.statut }}
+              </span>
+            </td>
+
+            <td class="px-6 py-3">
+              <span
+                class="px-2.5 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="{
+                  'bg-yellow-100 text-yellow-800': t.portee==='Nationale',
+                  'bg-blue-100 text-blue-800': t.portee==='MESRS',
+                  'bg-purple-100 text-purple-800': t.portee==='Régionale'
+                }">
+                {{ t.portee }}
+              </span>
+            </td>
+
+            <td class="px-6 py-3 text-center">
+              <div class="flex items-center justify-center gap-3 text-base">
+                <a
+                  [routerLink]="['/textes', t.id]"
+                  class="text-emerald-700 hover:text-emerald-800 transition flex items-center justify-center"
+                  title="Voir détails">
+                  <i class="fa-solid fa-eye"></i>
+                </a>
+
+                <button
+                  class="text-blue-600 hover:text-blue-800 transition"
+                  title="Modifier"
+                  (click)="edit(t.id)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+
+                <button
+                  class="text-gray-500 hover:text-red-600 transition"
+                  title="Supprimer"
+                  (click)="remove(t.id)">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="paged().length===0">
+            <td colspan="7"
+                class="px-6 py-10 text-center text-gray-500 text-sm">
+              Aucun résultat trouvé avec les filtres actuels.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 📄 Pagination -->
+    <div
+      class="flex flex-col sm:flex-row items-center justify-between px-6 py-4
+             bg-gray-50/80 border-t border-gray-100 gap-3">
+      <div class="text-xs text-gray-500">
+        Affichage {{ displayStart() }}–{{ displayEnd() }} sur {{ filtered().length }}
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button
+          class="h-8 w-8 rounded-full border border-gray-200 text-xs
+                 disabled:opacity-50 hover:bg-gray-100 transition flex items-center justify-center"
+          (click)="pagePrev()"
+          [disabled]="page()===1">‹</button>
+
+        <ng-container *ngFor="let p of [].constructor(totalPages()); let i = index">
+          <button
+            class="h-8 w-8 rounded-full border text-xs flex items-center justify-center transition"
+            [ngClass]="{
+              'bg-emerald-600 text-white border-emerald-600': (i+1)===page(),
+              'border-gray-200 hover:bg-gray-100 text-gray-700': (i+1)!==page()
+            }"
+            (click)="pageGo(i+1)">
+            {{ i+1 }}
+          </button>
+        </ng-container>
+
+        <button
+          class="h-8 w-8 rounded-full border border-gray-200 text-xs
+                 disabled:opacity-50 hover:bg-gray-100 transition flex items-center justify-center"
+          (click)="pageNext()"
+          [disabled]="page()===totalPages()">›</button>
+      </div>
+    </div>
+  </div>
+</div>
