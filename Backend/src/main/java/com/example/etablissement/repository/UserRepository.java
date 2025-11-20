@@ -1,4 +1,14 @@
 package com.example.etablissement.repository;
 
-public interface UserRepository {
+import com.example.etablissement.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
+
+    Optional<User> findByUsername(String username);
+
+    boolean existsByUsername(String username);
 }
+

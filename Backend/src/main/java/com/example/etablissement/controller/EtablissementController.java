@@ -45,4 +45,24 @@ public class EtablissementController {
     public void delete(@PathVariable String id) {
         service.delete(id);
     }
+    @PostMapping("/{idEtab}/textes/{idTexte}")
+    public Etablissement addTexteToEtablissement(@PathVariable String idEtab,
+                                                 @PathVariable String idTexte) {
+        return service.addTexteToEtablissement(idEtab, idTexte);
+    }
+
+    // ❌ Enlever un texte d’un établissement
+    @DeleteMapping("/{idEtab}/textes/{idTexte}")
+    public Etablissement removeTexteFromEtablissement(@PathVariable String idEtab,
+                                                      @PathVariable String idTexte) {
+        return service.removeTexteFromEtablissement(idEtab, idTexte);
+    }
+
+    // 🔁 Associer plusieurs textes à un établissement (en une fois)
+    // body = ["T1","T2","T3"]
+    @PutMapping("/{idEtab}/textes")
+    public Etablissement setTextesForEtablissement(@PathVariable String idEtab,
+                                                   @RequestBody List<String> texteIds) {
+        return service.setTextesForEtablissement(idEtab, texteIds);
+    }
 }

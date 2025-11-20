@@ -45,4 +45,11 @@ public class TexteController {
     public void delete(@PathVariable String id) {
         service.delete(id);
     }
+
+    @PostMapping("/{idTexte}/etablissements")
+    public Texte addEtablissementsToTexte(@PathVariable String idTexte,
+                                          @RequestBody List<String> etabIds) {
+        return service.addEtablissementsToTexte(idTexte, etabIds);
+    }
+
 }

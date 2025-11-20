@@ -1,14 +1,9 @@
 package com.example.etablissement.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import javax.persistence.*;
-import java.time.*;
-import java.math.*;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Texte")
@@ -28,7 +23,7 @@ public class Texte {
     private String objet;
 
     @Column(name = "Date_publication")
-    private java.time.LocalDate datePublication;
+    private LocalDate datePublication;
 
     @Column(name = "Reference_officielle")
     private String referenceOfficielle;
@@ -36,7 +31,7 @@ public class Texte {
     @Column(name = "Portee")
     private String portee;
 
-    @Column(name = "Resume_contenu")
+    @Column(name = "Resume_contenu", length = 2000)
     private String resumeContenu;
 
     @Column(name = "Statut_application")
@@ -45,44 +40,42 @@ public class Texte {
     @Column(name = "Url")
     private String url;
 
-    public String getId() { return this.id; }
+    // 🔁 Inverse Many-to-Many avec Etablissement
+    @ManyToMany(mappedBy = "textes")
+    private Set<Etablissement> etablissements = new HashSet<>();
 
+    // ----- Getters / Setters -----
+
+    public String getId() { return this.id; }
     public void setId(String id) { this.id = id; }
 
     public String getTitre() { return this.titre; }
-
     public void setTitre(String titre) { this.titre = titre; }
 
     public String getTypeDocument() { return this.typeDocument; }
-
     public void setTypeDocument(String typeDocument) { this.typeDocument = typeDocument; }
 
     public String getObjet() { return this.objet; }
-
     public void setObjet(String objet) { this.objet = objet; }
 
-    public java.time.LocalDate getDatePublication() { return this.datePublication; }
-
-    public void setDatePublication(java.time.LocalDate datePublication) { this.datePublication = datePublication; }
+    public LocalDate getDatePublication() { return this.datePublication; }
+    public void setDatePublication(LocalDate datePublication) { this.datePublication = datePublication; }
 
     public String getReferenceOfficielle() { return this.referenceOfficielle; }
-
     public void setReferenceOfficielle(String referenceOfficielle) { this.referenceOfficielle = referenceOfficielle; }
 
     public String getPortee() { return this.portee; }
-
     public void setPortee(String portee) { this.portee = portee; }
 
     public String getResumeContenu() { return this.resumeContenu; }
-
     public void setResumeContenu(String resumeContenu) { this.resumeContenu = resumeContenu; }
 
     public String getStatutApplication() { return this.statutApplication; }
-
     public void setStatutApplication(String statutApplication) { this.statutApplication = statutApplication; }
 
     public String getUrl() { return this.url; }
-
     public void setUrl(String url) { this.url = url; }
 
+    public Set<Etablissement> getEtablissements() { return etablissements; }
+    public void setEtablissements(Set<Etablissement> etablissements) { this.etablissements = etablissements; }
 }
