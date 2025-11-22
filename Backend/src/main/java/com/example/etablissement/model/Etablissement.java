@@ -1,5 +1,7 @@
 package com.example.etablissement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -41,34 +43,36 @@ public class Etablissement {
     @Column(name = "Conseil_scientifique")
     private Boolean conseilScientifique;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Infrastructure> infrastructures;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Formation> formations;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Personnel_Enseignant> personnel_enseignants;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Personnel_Administratif_Techniques> personnel_administratif_techniquess;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Budget> budgets;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Structure_Recherche> structure_recherches;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Visite_Inspection> visite_inspections;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Etudiant> etudiants;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Projet_Recherche> projet_recherches;
 
     // 🔁 Many-to-Many avec Texte via table de jointure Etablissement_Texte
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "Etablissement_Texte",

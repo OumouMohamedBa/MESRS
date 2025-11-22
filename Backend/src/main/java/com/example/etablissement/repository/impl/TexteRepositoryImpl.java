@@ -6,6 +6,7 @@ import java.util.List;
 import com.example.etablissement.model.Texte;
 import com.example.etablissement.model.QTexte;
 import com.example.etablissement.repository.TexteRepositoryCustom;
+import com.example.etablissement.repository.TexteRepository;
 
 @Repository
 public class TexteRepositoryImpl implements TexteRepositoryCustom {
@@ -25,4 +26,15 @@ public class TexteRepositoryImpl implements TexteRepositoryCustom {
                 .where(q != null ? e.id.containsIgnoreCase(q) : null)
                 .fetch();
     }
+
+    public long countByStatut(String statut) {
+        QTexte t = QTexte.texte;
+
+        return queryFactory
+                .select(t.count())
+                .from(t)
+                .where(t.statutApplication.equalsIgnoreCase(statut))
+                .fetchOne();
+    }
+
 }

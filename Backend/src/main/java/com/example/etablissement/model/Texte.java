@@ -37,8 +37,9 @@ public class Texte {
     @Column(name = "Statut_application")
     private String statutApplication;
 
-    @Column(name = "Url")
-    private String url;
+    @Lob
+    @Column(name = "Fichier_pdf")
+    private byte[] fichierPdf;
 
     // 🔁 Inverse Many-to-Many avec Etablissement
     @ManyToMany(mappedBy = "textes")
@@ -73,9 +74,15 @@ public class Texte {
     public String getStatutApplication() { return this.statutApplication; }
     public void setStatutApplication(String statutApplication) { this.statutApplication = statutApplication; }
 
-    public String getUrl() { return this.url; }
-    public void setUrl(String url) { this.url = url; }
+
 
     public Set<Etablissement> getEtablissements() { return etablissements; }
     public void setEtablissements(Set<Etablissement> etablissements) { this.etablissements = etablissements; }
+    public byte[] getFichierPdf() {
+        return fichierPdf;
+    }
+
+    public void setFichierPdf(byte[] fichierPdf) {
+        this.fichierPdf = fichierPdf;
+    }
 }
