@@ -103,11 +103,15 @@ export class EtablissementsListComponent implements OnInit {
   remove(id: string) {
     if (!confirm('Supprimer cet établissement ?')) return;
 
-    // ⚠️ ton service delete() retourne void → on n’utilise PAS subscribe ici
-    this.svc.delete(id);
-
-    // On recharge la liste après suppression
-    this.reload();
+    // Appel HTTP asynchrone pour supprimer, puis recharger la liste
+    this.svc.delete(id).subscribe({
+      next: () => {
+        this.reload();
+      },
+      error: err => {
+        console.error('Erreur lors de la suppression de l\'établissement', err);
+      }
+    });
   }
 
   edit(id: string) {

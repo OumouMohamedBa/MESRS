@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { EtablissementService } from './etablissement.service';
+import { Etablissement } from './etablissement.model';
 
 @Component({
   selector: 'app-etablissements-add',
@@ -23,7 +24,7 @@ export class EtablissementsAddComponent {
       localisation: [''],
       dateCreation: ['', Validators.required],
       dateOuverture: ['', Validators.required],
-      telephone: [''],
+      contacts: [''],
       conseilAdministration: [false],
       conseilScientifique: [false]
     });
@@ -37,9 +38,18 @@ export class EtablissementsAddComponent {
       return;
     }
     this.submitting = true;
-    // Service create() est sync (mock). Pas de subscribe nécessaire.
-    this.svc.create(this.form.getRawValue() as any);
-    this.router.navigate(['/etablissements']);
+    const { id, ...rest } = this.form.getRawValue();
+    const payload = rest as Omit<Etablissement, 'id'>;
+    this.svc.create(payload).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.router.navigate(['/etablissements']);
+      },
+      error: err => {
+        console.error('Erreur lors de la création de l\'établissement', err);
+        this.submitting = false;
+      }
+    });
   }
 
   cancel() {

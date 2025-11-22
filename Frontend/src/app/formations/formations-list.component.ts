@@ -19,7 +19,19 @@ export class FormationsListComponent {
     private etabSvc: EtablissementService,
     private router: Router
   ) {
-    this.all.set(this.svc.snapshot);
+    this.loadFormations();
+  }
+
+  private loadFormations() {
+    this.svc.list().subscribe({
+      next: data => {
+        this.all.set(data || []);
+      },
+      error: err => {
+        console.error('Erreur lors du chargement des formations', err);
+        this.all.set([]);
+      }
+    });
   }
 
   langue = signal<'fr'|'ar'|'en'>('fr');
@@ -72,8 +84,15 @@ export class FormationsListComponent {
   view(id: string) { this.router.navigate(['/formations', id]); }
   remove(id: string) {
     if (!confirm('Supprimer cette formation ?')) return;
-    this.svc.delete(id);
-    this.all.set(this.svc.snapshot);
+    this.svc.delete(id).subscribe({
+      next: () => {
+        // recharger la liste
+        this.loadFormations();
+      },
+      error: err => {
+        console.error('Erreur lors de la suppression de la formation', err);
+      }
+    });
   }
 
   onQueryInput(v: string) { this.query.set(v); this.page.set(1); }

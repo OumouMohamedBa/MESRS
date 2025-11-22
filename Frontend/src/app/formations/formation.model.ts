@@ -16,6 +16,29 @@ export interface Formation {
   imports?: { [annee: string]: { [niveau: string]: UploadedDoc[] } };
 }
 
+// Payload pour le backend (dureeFormation en string)
+export interface FormationBackendPayload {
+  id?: string; // optionnel, généré côté front pour création
+  nomFiliere: string;
+  domaine: string;
+  diplomeDelivre: string;
+  dureeFormation: string; // backend attend string
+  dateCreation: string;
+  dateOuverture: string;
+  etatAccreditation: string;
+  nombreEnseignants: number;
+  nombreInscrits: number;
+  nombreDiplomesN1: number;
+  doubleDiplome: boolean;
+  revisionsRecentes?: string;
+  etablissementId: string;
+}
+
+// Payload pour les mises à jour partielles (incluant imports)
+export interface FormationUpdatePayload {
+  imports?: { [annee: string]: { [niveau: string]: UploadedDoc[] } };
+}
+
 export interface UploadedDoc {
   name: string;
   type: string;

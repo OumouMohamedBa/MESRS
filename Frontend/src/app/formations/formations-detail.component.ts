@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { FormationService } from './formation.service';
-import { Formation, UploadedDoc } from './formation.model';
+import { Formation, FormationUpdatePayload, UploadedDoc } from './formation.model';
 
 @Component({
   selector: 'app-formations-detail',
@@ -14,13 +14,28 @@ import { Formation, UploadedDoc } from './formation.model';
 })
 export class FormationsDetailComponent implements OnInit {
   data: Formation | null = null;
+  importsList: any[] = []; // Liste des imports depuis le backend
+  
   constructor(private route: ActivatedRoute, private router: Router, private svc: FormationService) {}
 
   ngOnInit(): void {
     const id = String(this.route.snapshot.paramMap.get('id'));
-    this.data = this.svc.getById(id);
-    if (!this.data) this.router.navigate(['/formations']);
-    this.initSelections();
+    this.svc.getById(id).subscribe({
+      next: data => {
+        if (!data) {
+          this.router.navigate(['/formations']);
+          return;
+        }
+        this.data = data;
+        this.initSelections();
+        // Charger la liste des imports depuis le backend
+        this.loadImports(id);
+      },
+      error: err => {
+        console.error('Erreur lors du chargement de la formation', err);
+        this.router.navigate(['/formations']);
+      }
+    });
   }
 
   back() { this.router.navigate(['/formations']); }
@@ -46,6 +61,27 @@ export class FormationsDetailComponent implements OnInit {
   onYearChange(v: string) { this.selectedYear = v; }
   onLevelChange(v: string) { this.selectedLevel = v; }
 
+  // Charger les imports depuis le backend
+  private loadImports(id: string) {
+    this.svc.listImports(id).subscribe({
+      next: (imports) => {
+        this.importsList = imports || [];
+        console.log('Imports chargés:', this.importsList);
+      },
+      error: err => {
+        console.error('Erreur lors du chargement des imports', err);
+        this.importsList = [];
+      }
+    });
+  }
+
+  // Recharger les imports après upload/suppression
+  private refreshImports() {
+    if (this.data) {
+      this.loadImports(this.data.id);
+    }
+  }
+
   onFileSelected(evt: Event) {
     if (!this.data || !this.selectedYear || !this.selectedLevel) return;
     const input = evt.target as HTMLInputElement;
@@ -55,27 +91,32 @@ export class FormationsDetailComponent implements OnInit {
     const ok = /\.(xlsx?|XLSX?)$/.test(file.name);
     if (!ok) { alert('Veuillez sélectionner un fichier Excel (.xls ou .xlsx).'); return; }
 
-    const doc: UploadedDoc = {
-      name: file.name,
-      type: file.type || 'application/vnd.ms-excel',
-      size: file.size,
-      uploadedAt: new Date().toISOString(),
-      url: URL.createObjectURL(file)
-    };
-
-    const imports = { ...(this.data.imports || {}) } as Formation['imports'];
-    if (!imports![this.selectedYear]) imports![this.selectedYear] = {};
-    if (!imports![this.selectedYear][this.selectedLevel]) imports![this.selectedYear][this.selectedLevel] = [];
-    imports![this.selectedYear][this.selectedLevel] = [doc, ...imports![this.selectedYear][this.selectedLevel]!];
-
-    this.svc.update(this.data.id, { imports });
-    this.data = this.svc.getById(this.data.id);
-    (evt.target as HTMLInputElement).value = '';
+    // Upload vers le backend
+    if (!this.data) return;
+    const dataId = this.data.id; // capturer l'ID avant le subscribe
+    this.svc.uploadExcel(dataId, this.selectedYear, this.selectedLevel, file).subscribe({
+      next: (doc) => {
+        console.log('Upload réussi:', doc);
+        // Recharger la liste des imports depuis le backend
+        this.refreshImports();
+        (evt.target as HTMLInputElement).value = '';
+      },
+      error: err => {
+        console.error('Erreur lors de l\'upload du fichier Excel', err);
+        if (err.error) {
+          console.error('Body erreur upload:', err.error);
+        }
+        alert('Erreur lors de l\'upload du fichier Excel');
+      }
+    });
   }
 
-  get currentDocs(): UploadedDoc[] {
-    if (!this.data || !this.selectedYear || !this.selectedLevel) return [];
-    return this.data.imports?.[this.selectedYear]?.[this.selectedLevel] || [];
+  get currentDocs(): any[] {
+    // Filtrer les imports selon l'année et le niveau sélectionnés
+    return this.importsList.filter(imp => 
+      imp.anneeUniversitaire === this.selectedYear && 
+      imp.niveau === this.selectedLevel
+    );
   }
 
   removeDoc(index: number) {
@@ -86,13 +127,22 @@ export class FormationsDetailComponent implements OnInit {
 
   removeDocAt(year: string, level: string, index: number) {
     if (!this.data) return;
-    const imports = { ...(this.data.imports || {}) } as Formation['imports'];
-    const list = [...(imports?.[year]?.[level] || [])];
-    list.splice(index, 1);
-    if (!imports![year]) imports![year] = {};
-    imports![year][level] = list;
-    this.svc.update(this.data.id, { imports });
-    this.data = this.svc.getById(this.data.id);
+    const docs = this.currentDocs;
+    const docToDelete = docs[index];
+    if (!docToDelete) return;
+
+    // Supprimer via le backend en utilisant l'ID de l'import
+    this.svc.deleteImport(docToDelete.id).subscribe({
+      next: () => {
+        console.log('Suppression réussie');
+        // Recharger la liste des imports
+        this.refreshImports();
+      },
+      error: err => {
+        console.error('Erreur lors de la suppression du fichier', err);
+        alert('Erreur lors de la suppression du fichier');
+      }
+    });
   }
 
   removeDocByRef(year: string, level: string, doc: UploadedDoc) {
@@ -130,4 +180,5 @@ export class FormationsDetailComponent implements OnInit {
     this.previewOpen = true;
   }
   closePreview() { this.previewOpen = false; this.previewUrl = undefined; }
+  
 }

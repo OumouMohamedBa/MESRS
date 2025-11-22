@@ -34,18 +34,25 @@ export class EtablissementsEditComponent implements OnInit {
       localisation: [''],
       dateCreation: ['', Validators.required],
       dateOuverture: ['', Validators.required],
-      telephone: [''],
+      contacts: [''],
       conseilAdministration: [false],
       conseilScientifique: [false]
     });
 
     this.id = String(this.route.snapshot.paramMap.get('id'));
-    const data = this.svc.getById(this.id);
-    if (!data) {
-      this.router.navigate(['/etablissements']);
-      return;
-    }
-    this.form.patchValue(data as any);
+    this.svc.getById(this.id).subscribe({
+      next: data => {
+        if (!data) {
+          this.router.navigate(['/etablissements']);
+          return;
+        }
+        this.form.patchValue(data as any);
+      },
+      error: err => {
+        console.error('Erreur lors du chargement de l\'établissement', err);
+        this.router.navigate(['/etablissements']);
+      }
+    });
   }
 
   submit() {
@@ -54,8 +61,17 @@ export class EtablissementsEditComponent implements OnInit {
       return;
     }
     this.submitting = true;
-    this.svc.update(this.id, this.form.getRawValue() as Partial<Etablissement>);
-    this.router.navigate(['/etablissements']);
+    const patch = this.form.getRawValue() as Partial<Etablissement>;
+    this.svc.update(this.id, patch).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.router.navigate(['/etablissements']);
+      },
+      error: err => {
+        console.error('Erreur lors de la mise à jour de l\'établissement', err);
+        this.submitting = false;
+      }
+    });
   }
 
   cancel() {

@@ -16,10 +16,10 @@
       </span>
     </div>
     <div class="flex items-center gap-2">
-      <a *ngIf="doc?.url" [href]="doc!.url" [download]="doc?.name"
+      <button *ngIf="doc" (click)="downloadFile()"
          class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-green-600 text-green-700 hover:bg-green-50 transition text-sm shadow-sm">
         <i class="fa-solid fa-download"></i> Télécharger
-      </a>
+      </button>
       <button (click)="toggleFullscreen()"
               class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm shadow-sm">
         <i class="fa-solid" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
@@ -34,7 +34,7 @@
 
   <!-- Contenu -->
   <div class="bg-gray-50">
-    <ng-container *ngIf="doc?.url; else nofile">
+    <ng-container *ngIf="doc; else nofile">
 
       <!-- Bandeau choix feuille / état -->
       <div class="px-4 pt-4">

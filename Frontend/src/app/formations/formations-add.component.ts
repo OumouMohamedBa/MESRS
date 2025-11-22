@@ -6,7 +6,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { FormationService } from './formation.service';
 import { EtablissementService } from '../etablissements/etablissement.service';
-import { UploadedDoc } from './formation.model';
+import { UploadedDoc, Formation, FormationBackendPayload } from './formation.model';
 
 @Component({
   selector: 'app-formations-add',
@@ -16,6 +16,8 @@ import { UploadedDoc } from './formation.model';
 })
 export class FormationsAddComponent implements OnInit {
   form!: FormGroup;
+  // Liste des établissements chargée depuis le backend
+  etablissements: any[] = [];
   constructor(private fb: FormBuilder, private svc: FormationService, private etabSvc: EtablissementService, private router: Router) {
     this.form = this.fb.group({
       nomFiliere: ['', [Validators.required, Validators.minLength(2)]],
@@ -34,8 +36,6 @@ export class FormationsAddComponent implements OnInit {
     });
   }
 
-  get etablissements() { return this.etabSvc.snapshot; }
-
   // Import Excel par année et niveau (temporaire avant enregistrement)
   years: string[] = [];
   levels: string[] = [];
@@ -44,6 +44,17 @@ export class FormationsAddComponent implements OnInit {
   imports: { [annee: string]: { [niveau: string]: UploadedDoc[] } } = {};
 
   ngOnInit(): void {
+    // Charger la liste des établissements pour le select
+    this.etabSvc.list().subscribe({
+      next: data => {
+        this.etablissements = data || [];
+      },
+      error: err => {
+        console.error('Erreur lors du chargement des établissements', err);
+        this.etablissements = [];
+      }
+    });
+
     this.initSelections();
     // Adapter dynamiquement les niveaux selon la durée
     this.form.get('dureeFormation')?.valueChanges.subscribe((v: number) => {
@@ -112,9 +123,45 @@ export class FormationsAddComponent implements OnInit {
   closePreview() { this.previewOpen = false; this.previewUrl = undefined; }
 
   submit() {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    this.svc.create({ ...this.form.getRawValue(), imports: this.imports });
-    this.router.navigate(['/formations']);
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    const raw = this.form.getRawValue();
+    // Mapping vers le backend
+    const payload: FormationBackendPayload = {
+      nomFiliere: raw.nomFiliere,
+      domaine: raw.domaine,
+      diplomeDelivre: raw.diplomeDelivre,
+      dureeFormation: String(raw.dureeFormation), // backend attend string
+      dateCreation: raw.dateCreation, // déjà format yyyy-mm-dd
+      dateOuverture: raw.dateOuverture, // déjà format yyyy-mm-dd
+      etatAccreditation: raw.etatAccreditation,
+      nombreEnseignants: raw.nombreEnseignants,
+      nombreInscrits: raw.nombreInscrits,
+      nombreDiplomesN1: raw.nombreDiplomesN1,
+      doubleDiplome: raw.doubleDiplome,
+      revisionsRecentes: raw.revisionsRecentes,
+      etablissementId: raw.etablissementId // indispensable pour la relation
+    };
+    console.log('Payload envoyé au backend:', payload);
+    this.svc.create(payload).subscribe({
+      next: () => {
+        this.router.navigate(['/formations']);
+      },
+      error: err => {
+        console.error('Erreur lors de la création de la formation', err);
+        if (err.error) {
+          console.error('Détail backend:', err.error);
+          // Afficher le contenu de l'erreur en format JSON lisible
+          try {
+            console.error('Backend error JSON:', JSON.stringify(err.error, null, 2));
+          } catch (e) {
+            console.error('Impossible de sérialiser l’erreur backend');
+          }
+        }
+      }
+    });
   }
   cancel() { this.router.navigate(['/formations']); }
 }

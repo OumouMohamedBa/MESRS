@@ -19,7 +19,7 @@ export class FormationsXlsComponent implements OnInit {
   year = '';
   level = '';
   index = 0;
-  doc: UploadedDoc | null = null;
+  doc: any = null; // Changé pour accepter le format du backend
   isFullscreen = false;
   // SheetJS state
   sheetNames: string[] = [];
@@ -29,6 +29,7 @@ export class FormationsXlsComponent implements OnInit {
   errorMsg = '';
   headerHasValues = false;
   colCount = 0;
+  importsList: any[] = []; // Liste des imports depuis le backend
 
   // Helpers pour le template
   padCount(row: any[]): number { return Math.max(0, this.colCount - ((row && row.length) || 0)); }
@@ -47,25 +48,92 @@ export class FormationsXlsComponent implements OnInit {
       this.router.navigate(['/formations']);
       return;
     }
-    this.formation = this.svc.getById(this.id);
-    if (!this.formation) {
-      this.router.navigate(['/formations']);
-      return;
-    }
+
+    // Charger la formation
+    this.svc.getById(this.id).subscribe({
+      next: formation => {
+        if (!formation) {
+          this.router.navigate(['/formations']);
+          return;
+        }
+        this.formation = formation;
+        
+        // Charger les imports depuis le backend
+        this.loadImportsAndShowFile();
+      },
+      error: err => {
+        console.error('Erreur lors du chargement de la formation', err);
+        this.router.navigate(['/formations']);
+      }
+    });
+  }
+
+  // Charger les imports et afficher le fichier demandé
+  private loadImportsAndShowFile() {
     const qp = this.route.snapshot.queryParamMap;
     this.year = qp.get('year') || '';
     this.level = qp.get('level') || '';
     this.index = Number(qp.get('index') || '0');
 
-    const list = this.formation.imports?.[this.year]?.[this.level] || [];
-    this.doc = list[this.index] || null;
-    if (!this.doc || !this.doc.url) {
-      this.router.navigate(['/formations', this.id]);
-      return;
-    }
-    // Charger le fichier et parser
-    this.loadWorkbook(this.doc.url).then(() => {
-      if (this.sheetNames.length) this.loadSheet(this.sheetNames[0]);
+    this.svc.listImports(this.id).subscribe({
+      next: (imports) => {
+        this.importsList = imports || [];
+        console.log('Imports chargés dans XLS:', this.importsList);
+
+        // Filtrer par année et niveau
+        const filtered = this.importsList.filter(imp => 
+          imp.anneeUniversitaire === this.year && 
+          imp.niveau === this.level
+        );
+
+        this.doc = filtered[this.index] || null;
+        if (!this.doc) {
+          console.error('Document non trouvé pour', { year: this.year, level: this.level, index: this.index });
+          this.router.navigate(['/formations', this.id]);
+          return;
+        }
+
+        // Télécharger et charger le fichier
+        this.downloadAndLoadFile();
+      },
+      error: err => {
+        console.error('Erreur lors du chargement des imports', err);
+        this.router.navigate(['/formations', this.id]);
+      }
+    });
+  }
+
+  // Télécharger le fichier depuis le backend et le charger
+  private downloadAndLoadFile() {
+    if (!this.doc) return;
+
+    console.log('Téléchargement du fichier avec ID:', this.doc.id);
+    this.svc.downloadImport(this.doc.id).subscribe({
+      next: (blob) => {
+        console.log('Blob reçu:', {
+          size: blob.size,
+          type: blob.type,
+          name: this.doc.name
+        });
+        
+        // Créer une URL temporaire pour le blob
+        const url = URL.createObjectURL(blob);
+        console.log('URL blob créée:', url);
+        
+        this.loadWorkbook(url).then(() => {
+          if (this.sheetNames.length) this.loadSheet(this.sheetNames[0]);
+          // Nettoyer l'URL temporaire après utilisation
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }).catch(err => {
+          console.error('Erreur lors du chargement du workbook:', err);
+          this.errorMsg = 'Impossible de lire le fichier Excel';
+        });
+      },
+      error: err => {
+        console.error('Erreur lors du téléchargement du fichier', err);
+        this.errorMsg = 'Impossible de télécharger le fichier Excel';
+        this.loading = false;
+      }
     });
   }
 
@@ -73,22 +141,40 @@ export class FormationsXlsComponent implements OnInit {
     try {
       this.loading = true;
       this.errorMsg = '';
+      console.log('Chargement du workbook depuis:', url);
+      
       // Import dynamique de SheetJS depuis la dépendance locale
       const XLSX = await import('xlsx');
+      console.log('SheetJS importé avec succès');
+      
       let buf: ArrayBuffer | null = null;
       try {
         // Stratégie 1: fetch direct ArrayBuffer (ok pour http(s) et blob:)
+        console.log('Tentative de fetch ArrayBuffer...');
         const resp = await fetch(url);
+        console.log('Response status:', resp.status, resp.statusText);
         buf = await resp.arrayBuffer();
-      } catch (_) {
+        console.log('ArrayBuffer reçu, taille:', buf.byteLength);
+      } catch (err) {
+        console.error('Erreur fetch ArrayBuffer:', err);
         // Stratégie 2: via Blob + FileReader (fallback)
+        console.log('Tentative de fallback Blob + FileReader...');
         const resp = await fetch(url);
         const blob = await resp.blob();
         buf = await blob.arrayBuffer();
+        console.log('ArrayBuffer via fallback, taille:', buf.byteLength);
       }
       if (!buf) throw new Error('buffer-empty');
+      
+      console.log('Parsing du fichier avec SheetJS...');
       const wb = XLSX.read(buf, { type: 'array' });
+      console.log('Workbook parsé:', {
+        SheetNames: wb.SheetNames,
+        SheetCount: wb.SheetNames.length
+      });
+      
       this.sheetNames = wb.SheetNames || [];
+      console.log('Feuilles détectées:', this.sheetNames);
       // stocker le workbook pour relecture des feuilles
       (this as any)._wb = wb;
       (this as any)._xlsx = XLSX;
@@ -103,19 +189,45 @@ export class FormationsXlsComponent implements OnInit {
   }
 
   loadSheet(name: string) {
-    const wb = (this as any)._wb;
+    console.log('Chargement de la feuille:', name);
     const XLSX = (this as any)._xlsx;
-    if (!wb) return;
-    this.selectedSheet = name;
-    const ws = wb.Sheets[name];
-    const arr = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true }) as any[][];
-    // Normaliser: remplacer undefined par '' pour l'affichage
-    const normalized = (arr || []).map(r => Array.isArray(r) ? r.map(c => (c == null ? '' : c)) : []);
-    this.rows = normalized;
-    // Calcul nombre de colonnes max
-    this.colCount = this.rows.reduce((m, r) => Math.max(m, r.length || 0), 0);
-    // Déterminer si la première ligne contient au moins une valeur non vide
-    this.headerHasValues = !!(this.rows[0] || []).some((v: any) => v !== '' && v != null);
+    const wb = (this as any)._wb;
+    if (!XLSX || !wb) {
+      console.error('Workbook ou XLSX non disponible');
+      return;
+    }
+
+    try {
+      const ws = wb.Sheets[name];
+      if (!ws) {
+        console.error('Feuille non trouvée:', name);
+        return;
+      }
+
+      console.log('Conversion de la feuille en JSON...');
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      console.log('Données brutes:', data);
+
+      this.rows = data as any[][];
+      console.log('Rows assignées:', this.rows.length, 'lignes');
+
+      // Compter colonnes
+      this.colCount = 0;
+      for (const r of this.rows) {
+        if (r && r.length > this.colCount) this.colCount = r.length;
+      }
+      console.log('Nombre de colonnes:', this.colCount);
+
+      // Vérifier si l'en-tête a des valeurs
+      this.headerHasValues = this.rows.length > 0 && this.rows[0].some((cell: any) => cell != null && cell !== '');
+      console.log('Header a des valeurs:', this.headerHasValues);
+
+      this.selectedSheet = name;
+      console.log('Feuille chargée avec succès');
+    } catch (e: any) {
+      console.error('Erreur lors du chargement de la feuille:', e);
+      this.errorMsg = 'Erreur lors de la lecture de la feuille: ' + e.message;
+    }
   }
 
   toggleFullscreen(): void {
@@ -161,5 +273,29 @@ export class FormationsXlsComponent implements OnInit {
   getTitle(): string {
     const base = this.formation?.nomFiliere || 'Formation';
     return `${base} • ${this.year} ${this.level}`;
+  }
+
+  // Télécharger le fichier via le backend
+  downloadFile() {
+    if (!this.doc) return;
+    
+    this.svc.downloadImport(this.doc.id).subscribe({
+      next: (blob) => {
+        // Créer une URL temporaire et déclencher le téléchargement
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = this.doc.name || 'fichier.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        // Nettoyer l'URL temporaire
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      },
+      error: err => {
+        console.error('Erreur lors du téléchargement du fichier', err);
+        alert('Impossible de télécharger le fichier');
+      }
+    });
   }
 }
