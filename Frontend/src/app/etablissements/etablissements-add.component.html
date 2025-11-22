@@ -1,0 +1,250 @@
+<app-sidebar></app-sidebar>
+
+<app-header
+  [title]="'Nouvel établissement'"
+  [withSidebar]="true"
+  [langue]="'fr'"
+  (toggleSidebar)="{}"
+  (changeLang)="{}"
+  (toggleDark)="{}"
+  (openNotifications)="{}"
+  (logout)="{}"
+></app-header>
+
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 lg:mt-4
+            bg-gradient-to-b from-emerald-50/40 via-white to-white min-h-screen">
+
+  <div
+    class="max-w-4xl mx-auto bg-white/95 border border-gray-200 rounded-2xl
+           shadow-lg hover:shadow-xl overflow-hidden transition-shadow duration-300">
+
+    <!-- 🧩 En-tête de la carte -->
+    <div class="flex items-center justify-between gap-4 p-6 border-b border-gray-100 bg-white/90">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shadow-inner">
+          <i class="fa-solid fa-building-columns text-emerald-700 text-lg"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900">Créer un établissement</h2>
+          <p class="text-xs text-gray-500">
+            Renseignez les informations administratives, juridiques et de contact.
+          </p>
+        </div>
+      </div>
+
+      <div class="hidden sm:flex items-center gap-2 text-xs text-gray-400">
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Brouillon
+        </span>
+      </div>
+    </div>
+
+    <!-- 📝 Formulaire -->
+    <form
+      class="p-6 space-y-6"
+      [formGroup]="form"
+      (ngSubmit)="submit()">
+
+      <!-- 🔹 Section : Informations générales -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+            Informations générales
+          </h3>
+          <span class="text-[11px] text-gray-400">
+            Champs marqués * obligatoires
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Nom -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Nom de l’établissement <span class="text-red-500">*</span>
+            </label>
+            <input
+              formControlName="nom"
+              type="text"
+              class="w-full rounded-xl border
+                     border-gray-200 bg-gray-50/80
+                     focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition"
+              placeholder="Ex : Université de Nouakchott El Asriya" />
+            <div
+              *ngIf="form.get('nom')?.invalid && form.get('nom')?.touched"
+              class="mt-1 text-xs text-red-600">
+              Le nom doit contenir au moins 2 caractères.
+            </div>
+          </div>
+
+          <!-- Type -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Type <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="type"
+              class="w-full rounded-full border border-gray-200 bg-white
+                     px-3.5 py-2.5 text-sm text-gray-700
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     shadow-sm">
+              <option value="">— Sélectionner —</option>
+              <option>Université</option>
+              <option>Institut</option>
+              <option>Faculté</option>
+              <option>École</option>
+            </select>
+            <div
+              *ngIf="form.get('type')?.invalid && form.get('type')?.touched"
+              class="mt-1 text-xs text-red-600">
+              Le type d’établissement est obligatoire.
+            </div>
+          </div>
+
+          <!-- Statut juridique -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Statut juridique <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="statutJuridique"
+              class="w-full rounded-full border border-gray-200 bg-white
+                     px-3.5 py-2.5 text-sm text-gray-700
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     shadow-sm">
+              <option value="">— Sélectionner —</option>
+              <option>Public</option>
+              <option>Privé</option>
+              <option>Autonome</option>
+            </select>
+            <div
+              *ngIf="form.get('statutJuridique')?.invalid && form.get('statutJuridique')?.touched"
+              class="mt-1 text-xs text-red-600">
+              Le statut juridique est obligatoire.
+            </div>
+          </div>
+
+          <!-- Localisation -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Localisation
+            </label>
+            <input
+              formControlName="localisation"
+              type="text"
+              class="w-full rounded-xl border border-gray-200 bg-gray-50/80
+                     focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition"
+              placeholder="Ex : Nouakchott, Nouadhibou, Kiffa…" />
+          </div>
+
+          <!-- Dates -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Date de création <span class="text-red-500">*</span>
+            </label>
+            <input
+              formControlName="dateCreation"
+              type="date"
+              class="w-full rounded-xl border border-gray-200 bg-white
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Date d’ouverture <span class="text-red-500">*</span>
+            </label>
+            <input
+              formControlName="dateOuverture"
+              type="date"
+              class="w-full rounded-xl border border-gray-200 bg-white
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔹 Section : Contacts -->
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+          Coordonnées
+        </h3>
+
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Téléphone
+          </label>
+          <input
+            formControlName="telephone"
+            type="tel"
+            class="w-full rounded-xl border border-gray-200 bg-gray-50/80
+                   focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                   text-sm px-3 py-2.5 transition"
+            placeholder="Ex : +222 44 00 00 00" />
+        </div>
+      </div>
+
+      <!-- 🔹 Section : Gouvernance -->
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+          Gouvernance & Conseils
+        </h3>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              formControlName="conseilAdministration"
+              class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-600" />
+            Conseil d’administration
+          </label>
+
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              formControlName="conseilScientifique"
+              class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-600" />
+            Conseil scientifique
+          </label>
+        </div>
+
+        <p class="text-[11px] text-gray-400">
+          Ces informations sont utilisées pour les rapports de gouvernance et les visites d’inspection.
+        </p>
+      </div>
+
+      <!-- 🔹 Actions -->
+      <div
+        class="flex items-center justify-between gap-3 pt-4 mt-2
+               border-t border-gray-100 bg-gray-50/60 rounded-b-2xl -mx-6 px-6 pb-3">
+
+        <p class="text-[11px] text-gray-400">
+          Vérifiez les informations avant d’enregistrer. Vous pourrez toujours modifier plus tard.
+        </p>
+
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="cancel()"
+            class="px-4 h-10 rounded-full border border-gray-200 text-gray-700
+                   hover:bg-gray-100 text-sm font-medium transition">
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            [disabled]="submitting || form.invalid"
+            class="px-5 h-10 rounded-full bg-emerald-600 text-white text-sm font-semibold
+                   shadow-md shadow-emerald-500/30
+                   disabled:opacity-50 disabled:cursor-not-allowed
+                   hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/40
+                   transition">
+            {{ submitting ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

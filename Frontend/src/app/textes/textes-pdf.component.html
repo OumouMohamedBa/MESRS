@@ -15,7 +15,7 @@
       </span>
     </div>
     <div class="flex items-center gap-2">
-      <a *ngIf="texte?.fichierUrl" [href]="texte!.fichierUrl" [download]="getFileName()"
+      <a *ngIf="texte" [href]="getPdfUrl()" [download]="getFileName()"
          class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-green-600 text-green-700 hover:bg-green-50 transition text-sm shadow-sm">
         <i class="fa-solid fa-download"></i> Télécharger
       </a>
@@ -33,9 +33,9 @@
 
   <!-- 📄 Contenu PDF -->
   <div class="bg-white">
-    <ng-container *ngIf="texte?.fichierUrl; else nofile">
+    <ng-container *ngIf="texte; else nofile">
       <iframe 
-        [src]="getSafeUrl(texte!.fichierUrl!)" 
+        [src]="getSafeUrl(getPdfUrl())" 
         class="w-full border-0"
         style="height: calc(100vh - 12rem);"
         allowfullscreen>

@@ -1,0 +1,287 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Détail formation'" [withSidebar]="true"></app-header>
+
+<!-- Même structure que la fiche texte -->
+<div class="lg:ml-80 pt-32 px-6 pb-10 bg-gray-50 min-h-screen">
+
+  <div class="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 max-w-4xl mx-auto animate-fade-in">
+
+    <!-- 🧾 En-tête -->
+    <div class="flex items-center justify-between mb-8 border-b pb-4">
+      <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+        <i class="fa-solid fa-graduation-cap text-green-600 text-lg"></i>
+        Fiche détaillée de la formation
+      </h2>
+
+      <div class="flex items-center gap-2">
+        <button
+          (click)="edit()"
+          class="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition text-sm shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square"></i> Modifier
+        </button>
+        <button
+          (click)="back()"
+          class="px-4 py-2 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left"></i> Retour
+        </button>
+      </div>
+    </div>
+
+    <!-- 🧩 Contenu principal -->
+    <ng-container *ngIf="data; else notfound">
+
+      <!-- 🔹 Bloc 1 : infos générales -->
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Nom de la filière
+          </dt>
+          <dd class="text-base font-semibold text-gray-900 mt-1">
+            {{ data.nomFiliere }}
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Diplôme délivré
+          </dt>
+          <dd class="text-base text-gray-800 mt-1">
+            {{ data.diplomeDelivre }}
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Domaine
+          </dt>
+          <dd class="text-base text-gray-800 mt-1">
+            {{ data.domaine || '—' }}
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            État d’accréditation
+          </dt>
+          <dd class="mt-2">
+            <span
+              class="px-3 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="{
+                'bg-green-100 text-green-700': data.etatAccreditation === 'Accréditée',
+                'bg-yellow-100 text-yellow-700': data.etatAccreditation === 'En cours',
+                'bg-red-100 text-red-700': data.etatAccreditation === 'Expirée'
+              }">
+              {{ data.etatAccreditation || '—' }}
+            </span>
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Double diplôme
+          </dt>
+          <dd class="text-base mt-2">
+            <span
+              class="px-3 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="data.doubleDiplome
+                ? 'bg-green-100 text-green-700'
+                : 'bg-gray-100 text-gray-500'">
+              {{ data.doubleDiplome ? 'Oui' : 'Non' }}
+            </span>
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Durée de la formation (années)
+          </dt>
+          <dd class="text-base text-gray-800 mt-1">
+            {{ data.dureeFormation || '—' }}
+          </dd>
+        </div>
+      </dl>
+
+      <!-- 🔹 Bloc 2 : chronologie & effectifs -->
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Date de création
+          </dt>
+          <dd class="text-base text-gray-800 mt-1">
+            {{ data.dateCreation || '—' }}
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Date d’ouverture
+          </dt>
+          <dd class="text-base text-gray-800 mt-1">
+            {{ data.dateOuverture || '—' }}
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Diplômés (N-1)
+          </dt>
+          <dd class="text-base text-gray-800 mt-1">
+            {{ data.nombreDiplomesN1 }}
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Nombre d’enseignants
+          </dt>
+          <dd class="text-base text-gray-800 mt-1">
+            {{ data.nombreEnseignants }}
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4 md:col-span-2">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Nombre d’inscrits
+          </dt>
+          <dd class="text-base text-gray-800 mt-1">
+            {{ data.nombreInscrits }}
+          </dd>
+        </div>
+      </dl>
+
+      <!-- 🔹 Bloc 3 : révisions -->
+      <div class="mt-8 bg-gray-50 rounded-xl p-4">
+        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+          Révisions récentes
+        </dt>
+        <dd class="text-base text-gray-800 mt-2 whitespace-pre-wrap">
+          {{ data.revisionsRecentes || 'Aucune révision renseignée.' }}
+        </dd>
+      </div>
+
+      <!-- 🔹 Bloc 4 : Import Excel par année / niveau -->
+      <div class="mt-8 bg-gray-50 rounded-xl p-4">
+        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+          Imports Excel par année et niveau
+        </dt>
+
+        <div class="flex flex-col md:flex-row gap-3 items-start md:items-end">
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Année</label>
+            <select class="border rounded-lg px-3 py-2 text-sm"
+                    (change)="onYearChange($any($event.target).value)">
+              <option *ngFor="let y of years" [value]="y" [selected]="y===selectedYear">{{ y }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Niveau</label>
+            <select class="border rounded-lg px-3 py-2 text-sm"
+                    (change)="onLevelChange($any($event.target).value)">
+              <option *ngFor="let l of levels" [value]="l" [selected]="l===selectedLevel">{{ l }}</option>
+            </select>
+          </div>
+          <div class="flex-1"></div>
+        </div>
+
+        <div class="mt-4 border-t pt-3">
+          <div class="text-xs text-gray-500 mb-2">Fichiers pour {{ selectedYear }} - {{ selectedLevel }}</div>
+          <div *ngIf="currentDocs.length; else nofiles" class="space-y-2">
+            <div *ngFor="let f of currentDocs; index as i" class="flex items-center justify-between bg-white border rounded-lg px-3 py-2">
+              <div class="flex items-center gap-3">
+                <i class="fa-regular fa-file-excel text-green-600"></i>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">{{ f.name }}</div>
+                  <div class="text-xs text-gray-500">{{ (f.size/1024) | number:'1.0-0' }} KB • {{ f.uploadedAt | date:'short' }}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 text-gray-600">
+               
+                <a [routerLink]="['/formations', data.id, 'xls']"
+                   [queryParams]="{ year: selectedYear, level: selectedLevel, index: i }"
+                   class="hover:text-emerald-700" title="Ouvrir dans le viewer">
+                  <i class="fa-solid fa-display"></i>
+                </a>
+                <a *ngIf="f.url" [href]="f.url" [download]="f.name" class="hover:text-blue-700" title="Télécharger">
+                  <i class="fa-solid fa-download"></i>
+                </a>
+                <button type="button" class="hover:text-red-700" title="Supprimer"
+                        (click)="removeDoc(i)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <ng-template #nofiles>
+            <div class="text-sm text-gray-500">Aucun fichier importé pour cette année et ce niveau.</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- 🔹 Bloc 5 : Tous les fichiers Excel (toutes années et niveaux) -->
+      <div class="mt-8 bg-gray-50 rounded-xl p-4">
+        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+          Tous les fichiers Excel
+        </dt>
+        <div *ngIf="allDocs.length; else noAll" class="divide-y">
+          <div *ngFor="let row of allDocs" class="flex items-center justify-between py-2">
+            <div class="flex items-center gap-3">
+              <i class="fa-regular fa-file-excel text-green-600"></i>
+              <div>
+                <div class="text-sm font-medium text-gray-900">{{ row.doc.name }}</div>
+                <div class="text-xs text-gray-500">Année {{ row.year }} • {{ row.level }} • {{ (row.doc.size/1024) | number:'1.0-0' }} KB • {{ row.doc.uploadedAt | date:'short' }}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-gray-600">
+             
+              <a [routerLink]="['/formations', data.id, 'xls']"
+                 [queryParams]="{ year: row.year, level: row.level, index: row.index }"
+                 class="hover:text-emerald-700" title="Ouvrir dans le viewer">
+                <i class="fa-solid fa-display"></i>
+              </a>
+              
+              <a *ngIf="row.doc.url" [href]="row.doc.url" [download]="row.doc.name" class="hover:text-blue-700" title="Télécharger">
+                <i class="fa-solid fa-download"></i>
+              </a>
+              <button type="button" class="hover:text-red-700" title="Supprimer"
+                      (click)="removeDocByRef(row.year, row.level, row.doc)">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-template #noAll>
+          <div class="text-sm text-gray-500">Aucun fichier importé pour cette formation.</div>
+        </ng-template>
+      </div>
+
+      <!-- 🪟 Modal d'aperçu plein écran -->
+      <div *ngIf="previewOpen" class="fixed inset-0 z-50 flex flex-col bg-black/70">
+        <div class="flex items-center justify-between px-4 py-3 bg-white shadow">
+          <div class="text-sm font-semibold text-gray-800 truncate">{{ previewTitle }}</div>
+          <div class="flex items-center gap-3">
+            <a *ngIf="previewUrl" [href]="previewUrl" target="_blank" rel="noopener" class="text-blue-600 text-sm hover:underline">Ouvrir dans un onglet</a>
+            <button type="button" (click)="closePreview()" class="text-gray-600 hover:text-gray-900">
+              <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+          </div>
+        </div>
+        <div class="flex-1 bg-white">
+          <iframe *ngIf="previewUrl" [src]="previewUrl" class="w-full h-full"></iframe>
+          <div *ngIf="!previewUrl" class="h-full flex items-center justify-center text-white">Aperçu indisponible</div>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <!-- ❌ Formation introuvable -->
+    <ng-template #notfound>
+      <div class="text-center text-gray-500 py-16">
+        <i class="fa-solid fa-circle-exclamation text-3xl mb-3 text-gray-400"></i>
+        <p class="text-sm">Formation introuvable.</p>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

@@ -1,0 +1,89 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Formations'" [withSidebar]="true" [langue]="langue()"
+  (toggleSidebar)="onToggleSidebar()" (changeLang)="onChangeLang($event)" (toggleDark)="onToggleDark()"
+  (openNotifications)="onOpenNotifications()" (logout)="onLogout()"></app-header>
+
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 lg:mt-4 bg-gradient-to-b from-emerald-50/40 via-white to-white min-h-screen">
+  <div class="bg-white/95 border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl overflow-hidden transition-all duration-300">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 sm:p-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm">
+      <div class="flex flex-col lg:flex-row gap-3 lg:items-center w-full flex-wrap">
+        <label class="relative w-full lg:w-72">
+          <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-sm"></i>
+          <input type="search" placeholder="Rechercher par filière / diplôme" (input)="onQueryInput($any($event.target).value)"
+            class="w-full bg-gray-50 border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600 placeholder:text-gray-400 transition" />
+        </label>
+        <select class="bg-white border border-gray-200 rounded-full px-3.5 py-2.5 text-xs sm:text-sm focus:ring-2 focus:ring-green-600 focus:border-green-600 text-gray-700" (change)="onDiplomeChange($any($event.target).value)">
+          <option value="">Diplôme : Tous</option>
+          <option>Licence</option>
+          <option>Master</option>
+          <option>Doctorat</option>
+        </select>
+        <label class="relative w-full lg:w-56">
+          <i class="fa-solid fa-layer-group text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-sm"></i>
+          <input type="text" placeholder="Filtrer par domaine" (input)="onDomaineInput($any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-xs sm:text-sm focus:ring-2 focus:ring-green-600 focus:border-green-600 text-gray-700" />
+        </label>
+      </div>
+      <div class="flex items-center gap-3 justify-end w-full sm:w-auto">
+        <button class="flex items-center justify-center w-10 h-10 rounded-full text-gray-500 hover:text-green-700 hover:bg-gray-100 border border-gray-200/60 transition shadow-sm" (click)="clearFilters()" title="Réinitialiser">
+          <i class="fa-solid fa-rotate-right text-sm"></i>
+        </button>
+        <button class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 h-10 text-sm font-semibold shadow-md shadow-emerald-500/30 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg hover:shadow-emerald-500/40 transition" (click)="openAddForm()" title="Ajouter formation">
+          <i class="fa-solid fa-circle-plus text-sm"></i>
+          <span class="hidden sm:inline"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto bg-white">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-500 border-b border-gray-100 bg-gray-50/80">
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Filière</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Diplôme</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Domaine</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Durée</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Accréditation</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let f of paged()" class="border-b border-gray-50 hover:bg-emerald-50/40 transition">
+            <td class="px-6 py-3 font-medium text-gray-900">{{ f.nomFiliere }}</td>
+            <td class="px-6 py-3 text-gray-700">{{ f.diplomeDelivre }}</td>
+            <td class="px-6 py-3 text-gray-700">{{ f.domaine }}</td>
+            <td class="px-6 py-3 text-gray-700">{{ f.dureeFormation }}</td>
+            <td class="px-6 py-3">
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="{
+                  'bg-green-100 text-green-700': f.etatAccreditation==='Accréditée',
+                  'bg-yellow-100 text-yellow-700': f.etatAccreditation==='En cours',
+                  'bg-red-100 text-red-700': f.etatAccreditation==='Expirée'
+                }">
+                {{ f.etatAccreditation }}
+              </span>
+            </td>
+            <td class="px-6 py-3 text-center">
+              <div class="flex items-center justify-center gap-3 text-base">
+                <a [routerLink]="['/formations', f.id]" class="text-emerald-700 hover:text-emerald-800 transition" title="Voir">
+                  <i class="fa-solid fa-eye"></i>
+                </a>
+                <button class="text-blue-600 hover:text-blue-800 transition" title="Modifier" (click)="edit(f.id)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="text-gray-500 hover:text-red-600 transition" title="Supprimer" (click)="remove(f.id)">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="paged().length===0">
+            <td colspan="6" class="px-6 py-10 text-center text-gray-500 text-sm">Aucune formation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+</div>

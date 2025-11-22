@@ -1,0 +1,132 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Visualiser le fichier Excel'" [withSidebar]="true"></app-header>
+
+<div class="lg:ml-80 pt-28 px-0 pb-0 bg-gray-50 min-h-screen">
+  <!-- Barre de contrôle -->
+  <div class="px-4 py-3 bg-white border-b border-gray-200 flex items-center justify-between shadow-sm">
+    <div class="flex items-center gap-4">
+      <a routerLink="/formations/{{id}}"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition text-sm shadow-sm">
+        <i class="fa-solid fa-arrow-left"></i>
+        Retour au détail
+      </a>
+      <span class="text-sm text-gray-600 flex items-center gap-2" *ngIf="formation">
+        <i class="fa-regular fa-file-excel text-green-600"></i>
+        {{ getTitle() }}
+      </span>
+    </div>
+    <div class="flex items-center gap-2">
+      <a *ngIf="doc?.url" [href]="doc!.url" [download]="doc?.name"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-green-600 text-green-700 hover:bg-green-50 transition text-sm shadow-sm">
+        <i class="fa-solid fa-download"></i> Télécharger
+      </a>
+      <button (click)="toggleFullscreen()"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm shadow-sm">
+        <i class="fa-solid" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
+        {{ isFullscreen ? 'Réduire' : 'Plein écran' }}
+      </button>
+      <a routerLink="/formations"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition text-sm shadow-sm">
+        <i class="fa-solid fa-list"></i> Liste
+      </a>
+    </div>
+  </div>
+
+  <!-- Contenu -->
+  <div class="bg-gray-50">
+    <ng-container *ngIf="doc?.url; else nofile">
+
+      <!-- Bandeau choix feuille / état -->
+      <div class="px-4 pt-4">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-wrap items-center gap-3 px-4 py-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Feuille</span>
+            <select
+              class="border border-gray-200 rounded-full px-3 py-1.5 text-sm text-gray-800 bg-gray-50 hover:bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              [ngModel]="selectedSheet"
+              (ngModelChange)="loadSheet($event)">
+              <option *ngFor="let s of sheetNames" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+
+          <div class="ml-auto flex items-center gap-4">
+            <div class="text-xs text-gray-500" *ngIf="rows.length">
+  {{ rows.length - (headerHasValues ? 1 : 0) }} ligne(s) •
+  {{ colCount || (rows.length ? (rows[0].length || 0) : 0) }} colonne(s)
+</div>
+
+            <div class="text-xs text-amber-600 flex items-center gap-2" *ngIf="loading">
+              <i class="fa-solid fa-spinner animate-spin"></i>
+              Chargement…
+            </div>
+            <div class="text-xs text-red-600" *ngIf="!loading && errorMsg">
+              {{ errorMsg }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau style “Excel” -->
+      <div class="px-4 pb-4 pt-3">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="overflow-auto" style="height: calc(100vh - 14rem);">
+            <table class="min-w-full text-sm border-collapse">
+              <thead *ngIf="rows.length">
+                <tr class="bg-emerald-50 text-gray-800 border-b border-gray-200 sticky top-0 z-10">
+                  <ng-container *ngIf="headerHasValues; else genericHeader">
+                    <th
+                      *ngFor="let _ of rows[0]; index as i"
+                      class="px-3 py-2 border-r border-gray-200 text-left font-semibold text-xs uppercase tracking-wide">
+                      {{ rows[0][i] || ('Col ' + (i+1)) }}
+                    </th>
+                  </ng-container>
+                  <ng-template #genericHeader>
+                    <th
+                      *ngFor="let _ of arrayN(colCount); index as j"
+                      class="px-3 py-2 border-r border-gray-200 text-left font-semibold text-xs uppercase tracking-wide">
+                      {{ 'Col ' + (j+1) }}
+                    </th>
+                  </ng-template>
+                </tr>
+              </thead>
+
+              <tbody class="bg-white">
+                <tr
+                  *ngFor="let r of rows; index as ri"
+                  [class.hidden]="headerHasValues && ri===0"
+                  [ngClass]="ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'">
+                  <td
+                    *ngFor="let c of r; index as ci"
+                    class="px-3 py-2 border-b border-r border-gray-100 text-gray-800 whitespace-pre-wrap align-top">
+                    {{ c }}
+                  </td>
+                  <!-- compléter les cellules manquantes pour lignes plus courtes -->
+                  <td
+                    *ngFor="let _ of arrayN(padCount(r)); index as k"
+                    class="px-3 py-2 border-b border-r border-gray-100 text-gray-800">
+                  </td>
+                </tr>
+
+                <tr *ngIf="!rows.length && !loading && !errorMsg">
+                  <td class="px-3 py-6 text-center text-gray-400">
+                    Feuille vide.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <ng-template #nofile>
+      <div class="flex items-center justify-center" style="height: calc(100vh - 12rem);">
+        <div class="text-center text-gray-500">
+          <i class="fa-regular fa-file-excel text-6xl mb-4 text-gray-400"></i>
+          <p class="text-lg">Aucun fichier Excel disponible.</p>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

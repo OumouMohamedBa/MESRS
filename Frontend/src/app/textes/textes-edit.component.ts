@@ -16,9 +16,10 @@ import { Texte } from './texte.model';
 export class TextesEditComponent implements OnInit {
   form!: FormGroup;
   submitting = false;
-  texteId!: number;
+  texteId!: string;
   texte!: Texte | null;
   selectedFileName = '';
+  private selectedFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -39,19 +40,30 @@ export class TextesEditComponent implements OnInit {
     });
 
     const idParam = this.route.snapshot.paramMap.get('id');
-    this.texteId = Number(idParam);
-    if (!this.texteId) {
+    if (!idParam) {
       this.router.navigate(['/textes']);
       return;
     }
+    this.texteId = idParam;
 
-    this.texte = this.svc.getById(this.texteId);
-    if (!this.texte) {
-      this.router.navigate(['/textes']);
-      return;
-    }
-
-    this.form.patchValue(this.texte);
+    this.svc.getById(this.texteId).subscribe({
+      next: texte => {
+        this.texte = texte;
+        this.form.patchValue({
+          titre: texte.titre,
+          type: texte.typeDocument,
+          reference: texte.referenceOfficielle,
+          datePublication: texte.datePublication,
+          statut: texte.statutApplication,
+          portee: texte.portee,
+          fichierUrl: texte.url
+        });
+      },
+      error: err => {
+        console.error('Erreur lors du chargement du texte', err);
+        this.router.navigate(['/textes']);
+      }
+    });
   }
 
   // 🧾 Gestion du fichier PDF
@@ -67,8 +79,8 @@ export class TextesEditComponent implements OnInit {
     }
 
     this.selectedFileName = file.name;
-    const blobUrl = URL.createObjectURL(file);
-    this.form.patchValue({ fichierUrl: blobUrl });
+    this.selectedFile = file;
+    this.form.patchValue({ fichierUrl: file.name });
   }
 
   submit() {
@@ -78,7 +90,31 @@ export class TextesEditComponent implements OnInit {
     }
 
     this.submitting = true;
-    this.svc.update(this.texteId, this.form.value);
-    this.router.navigate(['/textes']);
+    const { titre, type, reference, datePublication, statut, portee } = this.form.value;
+
+    const partialTexte: Partial<Texte> = {
+      titre: titre!,
+      typeDocument: type!,
+      referenceOfficielle: reference!,
+      datePublication: datePublication!,
+      statutApplication: statut!,
+      portee: portee!,
+      url: this.texte?.url || ''
+    };
+
+    this.svc.update(this.texteId, partialTexte, this.selectedFile || undefined).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.router.navigate(['/textes']);
+      },
+      error: err => {
+        this.submitting = false;
+        console.error('Erreur lors de la mise a jour du texte', err);
+      }
+    });
+  }
+
+  getPdfUrl(): string {
+    return `http://localhost:8080/api/texte/${this.texteId}/fichier`;
   }
 }

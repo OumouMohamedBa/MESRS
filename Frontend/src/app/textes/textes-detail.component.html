@@ -34,12 +34,12 @@
 
         <div class="bg-gray-50 rounded-xl p-4">
           <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Type</dt>
-          <dd class="text-base text-gray-800 mt-1">{{ texte.type }}</dd>
+          <dd class="text-base text-gray-800 mt-1">{{ texte.typeDocument }}</dd>
         </div>
 
         <div class="bg-gray-50 rounded-xl p-4">
           <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Référence</dt>
-          <dd class="text-base text-gray-800 mt-1">{{ texte.reference }}</dd>
+          <dd class="text-base text-gray-800 mt-1">{{ texte.referenceOfficielle }}</dd>
         </div>
 
         <div class="bg-gray-50 rounded-xl p-4">
@@ -52,10 +52,10 @@
           <dd class="mt-1">
             <span class="px-3 py-1 rounded-full text-xs font-semibold"
               [ngClass]="{
-                'bg-green-100 text-green-700': texte.statut==='En vigueur',
-                'bg-red-100 text-red-700': texte.statut==='Abrogé',
-                'bg-yellow-100 text-yellow-700': texte.statut==='Projet'
-              }">{{ texte.statut }}</span>
+                'bg-green-100 text-green-700': texte.statutApplication==='En vigueur',
+                'bg-red-100 text-red-700': texte.statutApplication==='Abrogé',
+                'bg-yellow-100 text-yellow-700': texte.statutApplication==='Projet'
+              }">{{ texte.statutApplication }}</span>
           </dd>
         </div>
 
@@ -67,7 +67,7 @@
 
       <!-- 📎 Fichier PDF -->
       <div class="mt-8 flex items-center justify-between bg-green-50 border border-green-100 rounded-xl p-4"
-           *ngIf="texte.fichierUrl">
+           *ngIf="texte">
         <div class="flex items-center gap-3 text-green-800">
           <i class="fa-solid fa-file-pdf text-2xl"></i>
           <span class="font-medium">Fichier PDF disponible</span>
@@ -77,7 +77,7 @@
              class="px-4 py-2 bg-white border border-green-600 text-green-700 rounded-full hover:bg-green-50 transition text-sm shadow-sm flex items-center gap-2">
             <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Plein écran
           </a>
-          <a [href]="texte.fichierUrl" [download]="getFileName()"
+          <a [href]="getPdfUrl()" [download]="getFileName()"
              class="px-4 py-2 bg-white border border-green-600 text-green-700 rounded-full hover:bg-green-50 transition text-sm shadow-sm flex items-center gap-2">
             <i class="fa-solid fa-download"></i> Télécharger
           </a>

@@ -15,7 +15,7 @@ import { Texte } from './texte.model';
 })
 export class TextesPdfComponent implements OnInit {
   texte: Texte | null = null;
-  id!: number;
+  id!: string;
   isFullscreen = false;
 
   constructor(
@@ -27,19 +27,28 @@ export class TextesPdfComponent implements OnInit {
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
-    this.id = Number(idParam);
-    if (!this.id) {
+    if (!idParam) {
       this.router.navigate(['/textes']);
       return;
     }
-    this.texte = this.svc.getById(this.id);
-    if (!this.texte || !this.texte.fichierUrl) {
-      this.router.navigate(['/textes', this.id]);
-    }
+    this.id = idParam;
+    this.svc.getById(this.id).subscribe({
+      next: texte => {
+        this.texte = texte;
+      },
+      error: err => {
+        console.error('Erreur lors du chargement du texte', err);
+        this.router.navigate(['/textes']);
+      }
+    });
   }
 
   getSafeUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  getPdfUrl(): string {
+    return `http://localhost:8080/api/texte/${this.id}/fichier`;
   }
 
   toggleFullscreen(): void {

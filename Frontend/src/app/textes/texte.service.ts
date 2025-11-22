@@ -1,42 +1,102 @@
+// texte.service.ts
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Texte, PorteeTexte, StatutTexte } from './texte.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Texte } from './texte.model';
 
 @Injectable({ providedIn: 'root' })
 export class TexteService {
-  private readonly _textes$ = new BehaviorSubject<Texte[]>([
-    { id: 1, titre: 'Décret 120/2023', type: 'Décret', reference: '120/2023', datePublication: '2023-02-03', statut: 'En vigueur', portee: 'Nationale', fichierUrl: 'assets/pdfs/decret-120-2023.pdf' },
-    { id: 2, titre: 'Décret 121/2023', type: 'Décret', reference: '121/2023', datePublication: '2023-02-03', statut: 'En vigueur', portee: 'Nationale' },
-    { id: 3, titre: 'Décret 122/2023', type: 'Décret', reference: '122/2023', datePublication: '2023-02-03', statut: 'En vigueur', portee: 'MESRS' },
-    { id: 4, titre: 'Décret 123/2023', type: 'Décret', reference: '123/2023', datePublication: '2023-02-03', statut: 'En vigueur', portee: 'MESRS' },
-  ]);
 
-  get textes$() { return this._textes$.asObservable(); }
-  get snapshot() { return this._textes$.value; }
+  // adapte selon ton backend (host/port/contexte)
+  private readonly apiUrl = 'http://localhost:8080/api/texte';
 
-  list() { return this.textes$; }
-  getById(id: number) { return this.snapshot.find(t => t.id === id) || null; }
+  constructor(private http: HttpClient) {}
 
-  create(data: Omit<Texte, 'id'>) {
-    const nextId = Math.max(0, ...this.snapshot.map(t => t.id)) + 1;
-    this._textes$.next([...this.snapshot, { id: nextId, ...data }]);
+  // ---- CRUD de base ----
+
+  list(): Observable<Texte[]> {
+    return this.http.get<Texte[]>(this.apiUrl);
   }
 
-  update(id: number, patch: Partial<Texte>) {
-    this._textes$.next(this.snapshot.map(t => t.id === id ? { ...t, ...patch } : t));
+  search(q: string): Observable<Texte[]> {
+    const params = new HttpParams().set('q', q);
+    return this.http.get<Texte[]>(`${this.apiUrl}/search`, { params });
   }
 
-  delete(id: number) {
-    this._textes$.next(this.snapshot.filter(t => t.id !== id));
+  getById(id: string): Observable<Texte> {
+    return this.http.get<Texte>(`${this.apiUrl}/${id}`);
   }
 
-  search(query: string, statut?: StatutTexte, date?: string) {
-    const q = query?.toLowerCase().trim();
-    return this.snapshot.filter(t => {
-      const matchQ = !q || [t.titre, t.type, t.reference].some(v => v.toLowerCase().includes(q));
-      const matchS = !statut || t.statut === statut;
-      const matchD = !date || t.datePublication === date;
-      return matchQ && matchS && matchD;
-    });
+  create(data: Texte, file: File): Observable<Texte> {
+    const formData = new FormData();
+
+    formData.append('id', data.id);
+    formData.append('titre', data.titre);
+    formData.append('typeDocument', data.typeDocument);
+    if (data.objet) {
+      formData.append('objet', data.objet);
+    }
+    formData.append('datePublication', data.datePublication);
+    formData.append('referenceOfficielle', data.referenceOfficielle);
+    formData.append('portee', data.portee);
+    if (data.resumeContenu) {
+      formData.append('resumeContenu', data.resumeContenu);
+    }
+    formData.append('statutApplication', data.statutApplication);
+    formData.append('file', file);
+
+    return this.http.post<Texte>(this.apiUrl, formData);
+  }
+
+  update(id: string, data: Partial<Texte>, file?: File): Observable<Texte> {
+    const formData = new FormData();
+
+    if (data.titre) {
+      formData.append('titre', data.titre);
+    }
+    if (data.typeDocument) {
+      formData.append('typeDocument', data.typeDocument);
+    }
+    if (data.objet !== undefined) {
+      formData.append('objet', data.objet);
+    }
+    if (data.datePublication) {
+      formData.append('datePublication', data.datePublication);
+    }
+    if (data.referenceOfficielle) {
+      formData.append('referenceOfficielle', data.referenceOfficielle);
+    }
+    if (data.portee) {
+      formData.append('portee', data.portee);
+    }
+    if (data.resumeContenu !== undefined) {
+      formData.append('resumeContenu', data.resumeContenu);
+    }
+    if (data.statutApplication) {
+      formData.append('statutApplication', data.statutApplication);
+    }
+    if (file) {
+      formData.append('file', file);
+    }
+
+    return this.http.put<Texte>(`${this.apiUrl}/${id}`, formData);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // ---- Gestion de la relation Texte <-> Établissements ----
+
+  addEtablissements(idTexte: string, etabIds: string[]): Observable<Texte> {
+    return this.http.post<Texte>(
+      `${this.apiUrl}/${idTexte}/etablissements`,
+      etabIds
+    );
+  }
+
+  getTextesByEtablissement(idEtab: string): Observable<Texte[]> {
+    const params = new HttpParams().set('etablissementId', idEtab);
+    return this.http.get<Texte[]>(`${this.apiUrl}/by-etablissement`, { params });
   }
 }

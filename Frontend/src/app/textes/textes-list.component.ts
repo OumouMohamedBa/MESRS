@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
@@ -13,11 +13,9 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   imports: [CommonModule, RouterLink, HeaderComponent, SidebarComponent],
   templateUrl: './textes-list.component.html'
 })
-export class TextesListComponent {
+export class TextesListComponent implements OnInit {
 
-  constructor(private svc: TexteService, private router: Router) {
-    this.all.set(this.svc.snapshot);
-  }
+  constructor(private svc: TexteService, private router: Router) {}
 
   // 🔹 État global UI
   langue = signal<'fr' | 'ar' | 'en'>('fr');
@@ -45,11 +43,11 @@ export class TextesListComponent {
     return this.all().filter(t => {
       const matchQ =
         !q ||
-        [t.titre, t.type, t.reference].some(v =>
+        [t.titre, t.typeDocument, t.referenceOfficielle].some(v =>
           v.toLowerCase().includes(q)
         );
 
-      const matchS = !s || t.statut === s;
+      const matchS = !s || t.statutApplication === s;
       const matchD = !d || t.datePublication === d;
 
       return matchQ && matchS && matchD;
@@ -89,19 +87,22 @@ export class TextesListComponent {
     this.router.navigate(['/textes/nouveau']);
   }
 
-  remove(id: number) {
+  remove(id: string) {
     if (!confirm('Supprimer ce texte ?')) return;
-
-    this.svc.delete(id);
-    this.all.set(this.svc.snapshot);
-
-    // ⚠️ totalPages est un computed ⇒ il faut l’appeler
-    if (this.page() > this.totalPages()) {
-      this.page.set(this.totalPages());
-    }
+    this.svc.delete(id).subscribe({
+      next: () => {
+        this.all.update(list => list.filter(t => t.id !== id));
+        if (this.page() > this.totalPages()) {
+          this.page.set(this.totalPages());
+        }
+      },
+      error: err => {
+        console.error('Erreur lors de la suppression du texte', err);
+      }
+    });
   }
 
-  edit(id: number) {
+  edit(id: string) {
     this.router.navigate(['/textes', id, 'edit']);
   }
 
@@ -173,5 +174,16 @@ export class TextesListComponent {
   onLogout() {
     console.log('Déconnexion');
     // ex : this.router.navigate(['/login']);
+  }
+
+  ngOnInit(): void {
+    this.svc.list().subscribe({
+      next: data => {
+        this.all.set(data);
+      },
+      error: err => {
+        console.error('Erreur lors du chargement des textes', err);
+      }
+    });
   }
 }

@@ -1,0 +1,265 @@
+<app-sidebar></app-sidebar>
+
+<!-- Header -->
+<app-header
+  [title]="'Établissements'"
+  [withSidebar]="true"
+  [langue]="langue()"
+  (toggleSidebar)="onToggleSidebar()"
+  (changeLang)="onChangeLang($event)"
+  (toggleDark)="onToggleDark()"
+  (openNotifications)="onOpenNotifications()"
+  (logout)="onLogout()"
+></app-header>
+
+<!-- Contenu principal -->
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 lg:mt-4 bg-gradient-to-b from-emerald-50/40 via-white to-white min-h-screen">
+
+  <div
+    class="bg-white/95 border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl
+           overflow-hidden transition-all duration-300">
+
+    <!-- 🔹 Barre d’en-tête avec recherche + bouton d’ajout -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 sm:p-6
+             border-b border-gray-100 bg-white/80 backdrop-blur-sm">
+
+      <!-- 🔍 Recherche + filtres -->
+      <div class="flex flex-col lg:flex-row gap-3 lg:items-center w-full flex-wrap">
+
+        <!-- Recherche globale -->
+        <label class="relative w-full lg:w-72">
+          <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-sm"></i>
+          <input
+            type="search"
+            placeholder="Rechercher par nom / type / localisation"
+            (input)="onQueryInput($any($event.target).value)"
+            class="w-full bg-gray-50 border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600
+                   placeholder:text-gray-400 transition"
+          />
+        </label>
+
+        <!-- Statut juridique -->
+       <label class="relative inline-block">
+  <select
+    class="appearance-none bg-white border border-gray-300 rounded-full pl-4 pr-10 py-2.5 text-xs sm:text-sm
+           focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 text-gray-700 cursor-pointer
+           shadow-sm hover:shadow transition"
+    (change)="onStatutChange($any($event.target).value)">
+
+    <option value="">Statut : Tous</option>
+    <option value="Public">Public</option>
+    <option value="Autonome">Autonome</option>
+    <option value="Privé">Privé</option>
+  </select>
+
+  <!-- Icône flèche -->
+  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+  </span>
+</label>
+
+
+        <!-- Localisation (simple champ texte filtré) -->
+        <label class="relative w-full lg:w-56">
+          <i class="fa-solid fa-location-dot text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-sm"></i>
+          <input
+            type="text"
+            placeholder="Filtrer par ville / région"
+            (input)="onLocalisationInput($any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-xs sm:text-sm
+                   focus:ring-2 focus:ring-green-600 focus:border-green-600 text-gray-700"
+          />
+        </label>
+      </div>
+
+      <!-- 🔁 Boutons à droite -->
+      <div class="flex items-center gap-3 justify-end w-full sm:w-auto">
+        <!-- Bouton Réinitialiser -->
+        <button
+          class="flex items-center justify-center w-10 h-10 rounded-full text-gray-500
+                 hover:text-green-700 hover:bg-gray-100 border border-gray-200/60
+                 transition shadow-sm"
+          (click)="clearFilters()"
+          title="Réinitialiser les filtres">
+          <i class="fa-solid fa-rotate-right text-sm"></i>
+        </button>
+
+        <!-- Bouton Ajouter -->
+        <button
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700
+                 text-white px-4 h-10 text-sm font-semibold shadow-md shadow-emerald-500/30
+                 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg hover:shadow-emerald-500/40
+                 transition"
+          (click)="openAddForm()"
+          title="Ajouter un établissement">
+          <i class="fa-solid fa-circle-plus text-sm"></i>
+          <span class="hidden sm:inline"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 📋 Tableau -->
+    <div class="overflow-x-auto bg-white">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-500 border-b border-gray-100 bg-gray-50/80">
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">ID</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Nom</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Type</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Statut</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Localisation</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Dates</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Conseils</th>
+            <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            *ngFor="let e of paged()"
+            class="border-b border-gray-50 hover:bg-emerald-50/40 transition">
+
+            <td class="px-6 py-3 text-gray-700">
+              {{ e.id }}
+            </td>
+
+            <td class="px-6 py-3 font-medium text-gray-900 max-w-xs">
+              <div class="line-clamp-2">
+                {{ e.nom }}
+              </div>
+            </td>
+
+            <td class="px-6 py-3 text-gray-700">
+              {{ e.type }}
+            </td>
+
+            <td class="px-6 py-3">
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': e.statutJuridique==='Public',
+                      'bg-blue-100 text-blue-800': e.statutJuridique==='Autonome',
+                      'bg-purple-100 text-purple-800': e.statutJuridique==='Privé'
+                    }">
+                {{ e.statutJuridique || '—' }}
+              </span>
+            </td>
+
+            <td class="px-6 py-3 text-gray-700">
+              {{ e.localisation || '—' }}
+            </td>
+
+            <td class="px-6 py-3 text-gray-700">
+              <div class="text-xs text-gray-600">Création : {{ e.dateCreation }}</div>
+              <div class="text-xs text-gray-600">Ouverture : {{ e.dateOuverture }}</div>
+            </td>
+
+            <td class="px-6 py-3 text-gray-700">
+
+  <!-- Conseil d’Administration (CA) -->
+  <div class="relative inline-block group cursor-help text-xs">
+    <span class="underline decoration-dotted">
+      CA : {{ e.conseilAdministration ? 'Oui' : 'Non' }}
+    </span>
+    <!-- Tooltip minimal -->
+    <div
+      class="absolute hidden group-hover:block left-1/2 -translate-x-1/2 mt-1 w-max
+             bg-gray-50 border border-gray-200 text-gray-700 text-[10px]
+             rounded-md px-2 py-1 shadow-sm whitespace-nowrap z-20">
+      Conseil d'Administration
+    </div>
+  </div>
+
+  <br />
+
+  <!-- Conseil Scientifique (CS) -->
+  <div class="relative inline-block group cursor-help text-xs">
+    <span class="underline decoration-dotted">
+      CS : {{ e.conseilScientifique ? 'Oui' : 'Non' }}
+    </span>
+    <!-- Tooltip minimal -->
+    <div
+      class="absolute hidden group-hover:block left-1/2 -translate-x-1/2 mt-1 w-max
+             bg-gray-50 border border-gray-200 text-gray-700 text-[10px]
+             rounded-md px-2 py-1 shadow-sm whitespace-nowrap z-20">
+      Conseil Scientifique
+    </div>
+  </div>
+
+</td>
+
+
+            <td class="px-6 py-3 text-center">
+              <div class="flex items-center justify-center gap-3 text-base">
+                <a
+                  [routerLink]="['/etablissements', e.id]"
+                  class="text-emerald-700 hover:text-emerald-800 transition flex items-center justify-center"
+                  title="Voir détails">
+                  <i class="fa-solid fa-eye"></i>
+                </a>
+
+                <button
+                  class="text-blue-600 hover:text-blue-800 transition"
+                  title="Modifier"
+                  (click)="edit(e.id)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+
+                <button
+                  class="text-gray-500 hover:text-red-600 transition"
+                  title="Supprimer"
+                  (click)="remove(e.id)">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="paged().length===0">
+            <td colspan="8"
+                class="px-6 py-10 text-center text-gray-500 text-sm">
+              Aucun établissement trouvé avec les filtres actuels.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 📄 Pagination -->
+    <div
+      class="flex flex-col sm:flex-row items-center justify-between px-6 py-4
+             bg-gray-50/80 border-t border-gray-100 gap-3">
+
+      <div class="text-xs text-gray-500">
+        Affichage {{ displayStart() }}–{{ displayEnd() }} sur {{ filtered().length }}
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button
+          class="h-8 w-8 rounded-full border border-gray-200 text-xs
+                 disabled:opacity-50 hover:bg-gray-100 transition flex items-center justify-center"
+          (click)="pagePrev()"
+          [disabled]="page()===1">‹</button>
+
+        <ng-container *ngFor="let p of [].constructor(totalPages()); let i = index">
+          <button
+            class="h-8 w-8 rounded-full border text-xs flex items-center justify-center transition"
+            [ngClass]="{
+              'bg-emerald-600 text-white border-emerald-600': (i+1)===page(),
+              'border-gray-200 hover:bg-gray-100 text-gray-700': (i+1)!==page()
+            }"
+            (click)="pageGo(i+1)">
+            {{ i+1 }}
+          </button>
+        </ng-container>
+
+        <button
+          class="h-8 w-8 rounded-full border border-gray-200 text-xs
+                 disabled:opacity-50 hover:bg-gray-100 transition flex items-center justify-center"
+          (click)="pageNext()"
+          [disabled]="page()===totalPages()">›</button>
+      </div>
+    </div>
+  </div>
+</div>

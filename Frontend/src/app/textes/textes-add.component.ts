@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { TexteService } from './texte.service';
+import { Texte } from './texte.model';
 
 @Component({
   selector: 'app-textes-add',
@@ -22,6 +23,8 @@ export class TextesAddComponent {
 
   // flag pour ignorer les valueChanges déclenchés par setValue dans le code
   private isProgrammatic = false;
+
+  private selectedFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -85,21 +88,38 @@ export class TextesAddComponent {
       return;
     }
 
+    if (!this.selectedFile) {
+      alert('Veuillez sélectionner un fichier PDF.');
+      return;
+    }
+
     this.submitting = true;
 
-    const { titre, type, reference, datePublication, statut, portee, fichierUrl } = this.form.value;
+    const { titre, type, reference, datePublication, statut, portee } = this.form.value;
 
-    this.svc.create({
+    const payload: Texte = {
+      id: Date.now().toString(),
       titre: titre!,
-      type: type!,
-      reference: reference!,
+      typeDocument: type!,
+      objet: '',
       datePublication: datePublication!,
-      statut: statut as any,
-      portee: portee as any,
-      fichierUrl: fichierUrl || undefined
-    });
+      referenceOfficielle: reference!,
+      portee: portee!,
+      resumeContenu: '',
+      statutApplication: statut!,
+      url: ''
+    };
 
-    this.router.navigate(['/textes']);
+    this.svc.create(payload, this.selectedFile).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.router.navigate(['/textes']);
+      },
+      error: err => {
+        this.submitting = false;
+        console.error('Erreur lors de la creation du texte', err);
+      }
+    });
   }
 
   onFileSelected(event: Event) {
@@ -114,7 +134,7 @@ export class TextesAddComponent {
     }
 
     this.selectedFileName = file.name;
-    const blobUrl = URL.createObjectURL(file);
-    this.form.patchValue({ fichierUrl: blobUrl });
+    this.selectedFile = file;
+    this.form.patchValue({ fichierUrl: file.name });
   }
 }

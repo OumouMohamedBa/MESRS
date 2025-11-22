@@ -1,0 +1,429 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Modifier formation'" [withSidebar]="true"></app-header>
+
+<div
+  class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 lg:mt-4
+         bg-gradient-to-b from-emerald-50/40 via-white to-white min-h-screen">
+
+  <div
+    class="max-w-4xl mx-auto bg-white/95 border border-gray-200 rounded-2xl
+           shadow-lg hover:shadow-xl overflow-hidden transition-shadow duration-300">
+
+    <!-- 🧩 En-tête -->
+    <div class="flex items-center justify-between gap-4 p-6 border-b border-gray-100 bg-white/90">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shadow-inner">
+          <i class="fa-solid fa-graduation-cap text-emerald-700 text-lg"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900">
+            Modifier la formation
+          </h2>
+          <p class="text-xs text-gray-500">
+            Mettez à jour les informations académiques, administratives et les effectifs de la filière.
+          </p>
+        </div>
+      </div>
+
+      <div class="hidden sm:flex items-center gap-2 text-xs text-gray-400">
+        <span
+          class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          En modification
+        </span>
+      </div>
+    </div>
+
+    <!-- 📝 Formulaire -->
+    <form
+      class="p-6 space-y-7"
+      [formGroup]="form"
+      (ngSubmit)="submit()">
+
+      <!-- 🔹 Section : Informations générales -->
+      <section class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+            Informations générales
+          </h3>
+          <span class="text-[11px] text-gray-400">
+            Champs marqués * obligatoires
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Nom filière -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Nom de la filière <span class="text-red-500">*</span>
+            </label>
+            <input
+              formControlName="nomFiliere"
+              type="text"
+              class="w-full rounded-xl border border-gray-200 bg-gray-50/80
+                     focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition"
+              placeholder="Ex : Licence Informatique, Master Droit public..." />
+            <div
+              *ngIf="form.get('nomFiliere')?.invalid && form.get('nomFiliere')?.touched"
+              class="mt-1 text-xs text-red-600">
+              Le nom de la filière est obligatoire.
+            </div>
+          </div>
+
+          <!-- Diplôme délivré -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Diplôme délivré <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="diplomeDelivre"
+              class="w-full rounded-full border border-gray-200 bg-white
+                     px-3.5 py-2.5 text-sm text-gray-700
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     shadow-sm">
+              <option value="">— Sélectionner —</option>
+              <option>Licence</option>
+              <option>Master</option>
+              <option>Doctorat</option>
+            </select>
+          </div>
+
+          <!-- Domaine -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Domaine
+            </label>
+            <input
+              formControlName="domaine"
+              type="text"
+              class="w-full rounded-xl border border-gray-200 bg-gray-50/80
+                     focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition"
+              placeholder="Ex : Sciences et Technologies, Droit, Économie…" />
+          </div>
+
+          <!-- Établissement -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Établissement <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="etablissementId"
+              class="w-full rounded-full border border-gray-200 bg-white
+                     px-3.5 py-2.5 text-sm text-gray-700
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     shadow-sm">
+              <option value="">— Sélectionner —</option>
+              <option *ngFor="let e of etablissements" [value]="e.id">
+                {{ e.nom }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Double diplôme -->
+          <div class="flex items-center mt-1">
+            <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                formControlName="doubleDiplome"
+                class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-600" />
+              Double diplôme
+            </label>
+          </div>
+
+          <!-- Durée -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Durée (années) <span class="text-red-500">*</span>
+            </label>
+            <input
+              formControlName="dureeFormation"
+              type="number"
+              min="1"
+              class="w-full rounded-xl border border-gray-200 bg-white
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition" />
+          </div>
+
+          <!-- État d’accréditation -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              État d’accréditation <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="etatAccreditation"
+              class="w-full rounded-full border border-gray-200 bg-white
+                     px-3.5 py-2.5 text-sm text-gray-700
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     shadow-sm">
+              <option value="">— Sélectionner —</option>
+              <option>Accréditée</option>
+              <option>En cours</option>
+              <option>Expirée</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- 🔹 Section : Chronologie -->
+      <section class="space-y-4">
+        <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+          Chronologie
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Date de création
+            </label>
+            <input
+              formControlName="dateCreation"
+              type="date"
+              class="w-full rounded-xl border border-gray-200 bg-white
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Date d’ouverture
+            </label>
+            <input
+              formControlName="dateOuverture"
+              type="date"
+              class="w-full rounded-xl border border-gray-200 bg-white
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 🔹 Section : Effectifs & indicateurs -->
+      <section class="space-y-4">
+        <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+          Effectifs & indicateurs
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Diplômés (N-1)
+            </label>
+            <input
+              formControlName="nombreDiplomesN1"
+              type="number"
+              min="0"
+              class="w-full rounded-xl border border-gray-200 bg-white
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Enseignants
+            </label>
+            <input
+              formControlName="nombreEnseignants"
+              type="number"
+              min="0"
+              class="w-full rounded-xl border border-gray-200 bg-white
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Inscrits
+            </label>
+            <input
+              formControlName="nombreInscrits"
+              type="number"
+              min="0"
+              class="w-full rounded-xl border border-gray-200 bg-white
+                     focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                     text-sm px-3 py-2.5 transition" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 🔹 Section : Révisions -->
+      <section class="space-y-3">
+        <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+          Révisions récentes
+        </h3>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Historique ou remarques
+          </label>
+          <input
+            formControlName="revisionsRecentes"
+            type="text"
+            class="w-full rounded-xl border border-gray-200 bg-gray-50/80
+                   focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
+                   text-sm px-3 py-2.5 transition"
+            placeholder="Ex : Révision du programme en 2022, mise à jour des maquettes…" />
+        </div>
+      </section>
+
+      <!-- 🔹 Section : Fichiers Excel par année & niveau -->
+      <section class="space-y-4">
+        <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+          Fichiers Excel par année et niveau
+        </h3>
+
+        <!-- Sélection année / niveau + bouton d’import -->
+        <div class="flex flex-wrap items-end gap-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">
+              Année académique
+            </label>
+            <select
+              class="border border-gray-200 rounded-full px-3.5 py-2 text-sm text-gray-800 bg-white
+                     focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
+              (change)="onYearChange($any($event.target).value)">
+              <option *ngFor="let y of years" [value]="y" [selected]="y === selectedYear">
+                {{ y }}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">
+              Niveau
+            </label>
+            <select
+              class="border border-gray-200 rounded-full px-3.5 py-2 text-sm text-gray-800 bg-white
+                     focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
+              (change)="onLevelChange($any($event.target).value)">
+              <option *ngFor="let l of levels" [value]="l" [selected]="l === selectedLevel">
+                {{ l }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex-1"></div>
+
+          <!-- Bouton importer -->
+          <div>
+            <label
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-emerald-600
+                     text-emerald-700 hover:bg-emerald-50 cursor-pointer text-sm shadow-sm">
+              <i class="fa-solid fa-file-arrow-up"></i>
+              Importer / ajouter
+              <input
+                type="file"
+                accept=".xls,.xlsx"
+                class="hidden"
+                (change)="onFileSelected($event)" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Liste des fichiers pour l'année + niveau sélectionnés -->
+        <div class="mt-3">
+          <div
+            *ngIf="currentDocs.length; else noExcel"
+            class="rounded-xl border border-gray-100 bg-gray-50/80 overflow-hidden">
+
+            <table class="min-w-full text-sm">
+              <thead class="bg-gray-100 text-gray-600 text-xs uppercase tracking-wide">
+                <tr>
+                  <th class="px-4 py-2 text-left">Fichier</th>
+                  <th class="px-4 py-2 text-left hidden sm:table-cell">Taille</th>
+                  <th class="px-4 py-2 text-left hidden sm:table-cell">Importé le</th>
+                  <th class="px-4 py-2 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let f of currentDocs; index as i"
+                  class="border-t border-gray-100 bg-white hover:bg-emerald-50/50 transition-colors">
+                  <td class="px-4 py-2">
+                    <div class="flex items-center gap-3">
+                      <i class="fa-regular fa-file-excel text-green-600"></i>
+                      <div>
+                        <div class="font-medium text-gray-900 truncate max-w-xs">
+                          {{ f.name }}
+                        </div>
+                        <div class="text-[11px] text-gray-400 sm:hidden">
+                          {{ (f.size/1024) | number:'1.0-0' }} KB • {{ f.uploadedAt | date:'short' }}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-2 text-gray-600 text-xs hidden sm:table-cell">
+                    {{ (f.size/1024) | number:'1.0-0' }} KB
+                  </td>
+                  <td class="px-4 py-2 text-gray-600 text-xs hidden sm:table-cell">
+                    {{ f.uploadedAt | date:'short' }}
+                  </td>
+                  <td class="px-4 py-2 text-right">
+                    <div class="inline-flex items-center gap-2">
+                      <!-- 👁️ Voir -->
+<button
+  type="button"
+  title="Voir le fichier"
+  class="text-emerald-600 hover:text-emerald-800 text-sm"
+  (click)="openViewer(i)">
+  <i class="fa-solid fa-eye"></i>
+</button>
+
+<!-- 🗑️ Supprimer -->
+<button
+  type="button"
+  title="Supprimer le fichier"
+  class="text-red-600 hover:text-red-800 text-sm ml-2"
+  (click)="removeDoc(i)">
+  <i class="fa-solid fa-trash"></i>
+</button>
+
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+          <ng-template #noExcel>
+            <p class="text-sm text-gray-500 mt-1">
+              Aucun fichier Excel importé pour l’année {{ selectedYear }} ({{ selectedLevel }}).
+            </p>
+          </ng-template>
+        </div>
+      </section>
+
+      <!-- 🔹 Actions -->
+      <div
+        class="flex items-center justify-between gap-3 pt-4 mt-2
+               border-t border-gray-100 bg-gray-50/60 -mx-6 px-6 pb-3 rounded-b-2xl">
+
+        <p class="text-[11px] text-gray-400">
+          Vérifiez les modifications avant d’enregistrer. Vous pourrez toujours ajuster la fiche formation plus tard.
+        </p>
+
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="cancel()"
+            class="px-4 h-10 rounded-full border border-gray-200 text-gray-700
+                   hover:bg-gray-100 text-sm font-medium transition">
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            [disabled]="form.invalid"
+            class="px-5 h-10 rounded-full bg-emerald-600 text-white text-sm font-semibold
+                   shadow-md shadow-emerald-500/30
+                   disabled:opacity-50 disabled:cursor-not-allowed
+                   hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/40
+                   transition">
+            Mettre à jour
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

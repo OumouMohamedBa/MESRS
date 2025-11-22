@@ -1,0 +1,163 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Détails de l’établissement'" [withSidebar]="true"></app-header>
+
+<!-- 📌 Espacement ajusté -->
+<div class="lg:ml-80 pt-32 px-6 pb-10 bg-gray-50 min-h-screen">
+
+  <div class="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 max-w-5xl mx-auto animate-fade-in">
+
+    <!-- 🏛 En-tête -->
+    <div class="flex items-center justify-between mb-8 border-b pb-4">
+      <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+        <i class="fa-solid fa-building-columns text-green-600 text-lg"></i>
+        Fiche établissement
+      </h2>
+
+      <div class="flex items-center gap-2">
+        <button (click)="edit()"
+          class="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition text-sm shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square"></i> Modifier
+        </button>
+
+        <button (click)="back()"
+          class="px-4 py-2 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left"></i> Retour
+        </button>
+      </div>
+    </div>
+
+    <!-- 🧩 Contenu principal -->
+    <ng-container *ngIf="etab; else notfound">
+
+      <!-- 🔹 Infos générales + Chronologie -->
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Nom</dt>
+          <dd class="text-base font-semibold text-gray-900 mt-1">{{ etab.nom }}</dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Type</dt>
+          <dd class="text-base text-gray-800 mt-1">{{ etab.type }}</dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Statut juridique</dt>
+          <dd class="mt-1">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="{
+                'bg-green-100 text-green-700': etab.statutJuridique==='Public',
+                'bg-blue-100 text-blue-700': etab.statutJuridique==='Autonome',
+                'bg-purple-100 text-purple-700': etab.statutJuridique==='Privé'
+              }">
+              {{ etab.statutJuridique }}
+            </span>
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Localisation</dt>
+          <dd class="text-base text-gray-800 mt-1">{{ etab.localisation }}</dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Date de création</dt>
+          <dd class="text-base text-gray-800 mt-1">{{ etab.dateCreation }}</dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Date d’ouverture</dt>
+          <dd class="text-base text-gray-800 mt-1">{{ etab.dateOuverture }}</dd>
+        </div>
+
+      </dl>
+
+      <!-- 🏛 Gouvernance -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Conseil d’administration</dt>
+          <dd class="mt-2 font-semibold"
+              [ngClass]="etab.conseilAdministration ? 'text-green-700' : 'text-gray-500'">
+            {{ etab.conseilAdministration ? 'Oui' : 'Non' }}
+          </dd>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Conseil scientifique</dt>
+          <dd class="mt-2 font-semibold"
+              [ngClass]="etab.conseilScientifique ? 'text-green-700' : 'text-gray-500'">
+            {{ etab.conseilScientifique ? 'Oui' : 'Non' }}
+          </dd>
+        </div>
+
+      </div>
+
+      <!-- 📞 Téléphone -->
+      <div class="mt-8 bg-gray-50 rounded-xl p-4">
+        <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Téléphone</dt>
+        <dd class="text-base text-gray-800 mt-2">
+          {{ etab.telephone || 'Aucun numéro renseigné.' }}
+        </dd>
+      </div>
+
+      <!-- 📚 Textes associés -->
+      <div class="mt-12">
+        <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-4">
+          <i class="fa-solid fa-scale-balanced text-green-600"></i>
+          Textes réglementaires associés
+        </h3>
+
+        <div class="overflow-x-auto rounded-xl border border-gray-200">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr class="text-left text-gray-600">
+                <th class="px-4 py-2 text-xs font-semibold uppercase">Titre</th>
+                <th class="px-4 py-2 text-xs font-semibold uppercase">Type</th>
+                <th class="px-4 py-2 text-xs font-semibold uppercase">Référence</th>
+                <th class="px-4 py-2 text-xs font-semibold uppercase">Statut</th>
+                <th class="px-4 py-2 text-xs font-semibold uppercase">Portée</th>
+              </tr>
+            </thead>
+            <tbody>
+             <tr *ngFor="let t of textes" class="border-t">
+  <td class="px-4 py-2 font-semibold text-gray-900">{{ t.titre }}</td>
+  <td class="px-4 py-2 text-gray-700">{{ t.typeDocument }}</td>
+  <td class="px-4 py-2 text-gray-700">{{ t.referenceOfficielle }}</td>
+  <td class="px-4 py-2">
+    <span class="px-3 py-0.5 rounded-full text-xs font-semibold"
+      [ngClass]="{
+        'bg-green-100 text-green-700': t.statutApplication==='En vigueur',
+        'bg-red-100 text-red-700': t.statutApplication==='Abrogé',
+        'bg-yellow-100 text-yellow-700': t.statutApplication==='Projet'
+      }">
+      {{ t.statutApplication }}
+    </span>
+  </td>
+  <td class="px-4 py-2 text-gray-700">{{ t.portee }}</td>
+</tr>
+
+              <tr *ngIf="textes.length === 0">
+                <td colspan="5" class="text-center text-gray-500 py-10">
+                  Aucun texte associé.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </ng-container>
+
+    <!-- ❌ Établissement introuvable -->
+    <ng-template #notfound>
+      <div class="text-center text-gray-500 py-16">
+        <i class="fa-solid fa-circle-exclamation text-3xl mb-3 text-gray-400"></i>
+        <p class="text-sm">Établissement introuvable.</p>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
-import { TexteService } from '../textes/texte.service';
 import { DashboardService } from './dashboard.service';
 
 @Component({
@@ -27,7 +26,6 @@ export class DashboardComponent implements OnInit {
   };
 
   constructor(
-    private texteService: TexteService,
     private dashboardService: DashboardService
   ) {}
 
@@ -36,22 +34,20 @@ export class DashboardComponent implements OnInit {
   }
 
   loadAllStats(): void {
-    // Textes réglementaires
-    this.texteService.list().subscribe(textes => {
-      this.stats.textes.total = textes.length;
-      this.stats.textes.enVigueur = textes.filter(t => t.statut === 'En vigueur').length;
-      this.stats.textes.abroges = textes.filter(t => t.statut === 'Abrogé').length;
-      this.stats.textes.projet = textes.filter(t => t.statut === 'Projet').length;
-    });
+    // Textes réglementaires (stats depuis le backend)
+    this.dashboardService.getTextesStats().subscribe(stats => {
+      this.stats.textes.total = stats.total;
+      this.stats.textes.enVigueur = stats.enVigueur;
+      this.stats.textes.abroges = stats.abroges;
+      this.stats.textes.projet = stats.projet;
 
-    // Charger les données des graphiques
-    this.loadChartData();
-  }
-
-  loadChartData(): void {
-    // Graphique Textes
-    this.dashboardService.getTextesEvolution().subscribe(data => {
-      this.chartData.textes = data;
+      // Mettre a jour les donnees du graphique a partir des stats
+      this.chartData.textes.labels = ['En vigueur', 'Abrogés', 'Projet'];
+      this.chartData.textes.data = [
+        stats.enVigueur,
+        stats.abroges,
+        stats.projet
+      ];
     });
   }
 

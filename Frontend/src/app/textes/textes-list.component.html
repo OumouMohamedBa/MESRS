@@ -112,25 +112,25 @@
                 {{ t.titre }}
               </div>
             </td>
-            <td class="px-6 py-3 text-gray-700">{{ t.type }}</td>
-            <td class="px-6 py-3 text-gray-700">{{ t.reference }}</td>
+            <td class="px-6 py-3 text-gray-700">{{ t.typeDocument }}</td>
+            <td class="px-6 py-3 text-gray-700">{{ t.referenceOfficielle }}</td>
             <td class="px-6 py-3 text-gray-600">{{ t.datePublication }}</td>
 
             <td class="px-6 py-3">
               <span
                 [ngClass]="{
-                  'bg-green-100 text-green-700': t.statut==='En vigueur',
-                  'bg-red-100 text-red-700': t.statut==='Abrogé',
-                  'bg-yellow-100 text-yellow-700': t.statut==='Projet'
+                  'bg-green-100 text-green-700': t.statutApplication==='En vigueur',
+                  'bg-red-100 text-red-700': t.statutApplication==='Abrogé',
+                  'bg-yellow-100 text-yellow-700': t.statutApplication==='Projet'
                 }"
                 class="px-2.5 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full"
                       [ngClass]="{
-                        'bg-green-500': t.statut==='En vigueur',
-                        'bg-red-500': t.statut==='Abrogé',
-                        'bg-yellow-400': t.statut==='Projet'
+                        'bg-green-500': t.statutApplication==='En vigueur',
+                        'bg-red-500': t.statutApplication==='Abrogé',
+                        'bg-yellow-400': t.statutApplication==='Projet'
                       }"></span>
-                {{ t.statut }}
+                {{ t.statutApplication }}
               </span>
             </td>
 

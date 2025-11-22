@@ -125,3 +125,25 @@
 .animate-slide-up {
   animation: slide-up 0.5s ease-out forwards;
 }
+/* Tooltip Arrow */
+.tooltip-arrow {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid rgb(5 150 105); /* emerald-600 */
+}
+
+/* Animation douce */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in .2s ease-out forwards;
+}
