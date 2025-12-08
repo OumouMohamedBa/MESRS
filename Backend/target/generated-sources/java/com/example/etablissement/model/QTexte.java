@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -20,6 +21,10 @@ public class QTexte extends EntityPathBase<Texte> {
     public static final QTexte texte = new QTexte("texte");
 
     public final DatePath<java.time.LocalDate> datePublication = createDate("datePublication", java.time.LocalDate.class);
+
+    public final SetPath<Etablissement, QEtablissement> etablissements = this.<Etablissement, QEtablissement>createSet("etablissements", Etablissement.class, QEtablissement.class, PathInits.DIRECT2);
+
+    public final ArrayPath<byte[], Byte> fichierPdf = createArray("fichierPdf", byte[].class);
 
     public final StringPath id = createString("id");
 
@@ -36,8 +41,6 @@ public class QTexte extends EntityPathBase<Texte> {
     public final StringPath titre = createString("titre");
 
     public final StringPath typeDocument = createString("typeDocument");
-
-    public final StringPath url = createString("url");
 
     public QTexte(String variable) {
         super(Texte.class, forVariable(variable));

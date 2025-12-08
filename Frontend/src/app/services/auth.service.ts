@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap, map } from 'rxjs';
 
 export type Role = 'INSPECTEUR_GENERAL' | 'SOUS_INSPECTEUR';
 
@@ -12,7 +14,7 @@ export interface AuthUser {
 export class AuthService {
   private storageKey = 'auth_user';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   get currentUser(): AuthUser | null {
     const raw = localStorage.getItem(this.storageKey);
@@ -30,16 +32,20 @@ export class AuthService {
     return arr.includes(user.role);
   }
 
-  login(username: string, password: string): boolean {
-    // Demo/in-memory: choose role by username convention.
-    // In a real app, call backend and receive a token + role.
-    const role: Role = username.toLowerCase().includes('general')
-      ? 'INSPECTEUR_GENERAL'
-      : 'SOUS_INSPECTEUR';
-
-    const user: AuthUser = { username, role };
-    localStorage.setItem(this.storageKey, JSON.stringify(user));
-    return true;
+  login(username: string, password: string): Observable<void> {
+    return this.http
+      .post<{ username: string; role: Role }>('http://localhost:8080/auth/login', {
+        username,
+        password,
+      })
+      .pipe(
+        tap((res) => {
+          const user: AuthUser = { username: res.username, role: res.role };
+          localStorage.setItem(this.storageKey, JSON.stringify(user));
+        }),
+        // on ne renvoie rien au composant, juste la complétion (type void)
+        map(() => void 0)
+      );
   }
 
   logout(): void {

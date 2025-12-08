@@ -25,7 +25,7 @@ public class TexteController {
         this.service = service;
     }
 
-    // ---------- LISTE / RECHERCHE / LECTURE SIMPLE ----------
+
 
     @GetMapping
     public List<Texte> findAll() {
@@ -59,8 +59,7 @@ public class TexteController {
         return service.findByEtablissement(etablissementId);
     }
 
-    // ---------- CREATE AVEC FICHIER PDF (multipart/form-data) ----------
-    // un texte = 1 seul PDF au moment de la création
+
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Texte create(
@@ -84,9 +83,7 @@ public class TexteController {
         );
     }
 
-    // ---------- UPDATE AVEC FICHIER PDF OPTIONNEL ----------
-    // si "file" est fourni, l'ancien PDF est écrasé ;
-    // si "file" est null / vide, on garde l'ancien PDF.
+
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Texte update(
@@ -110,7 +107,7 @@ public class TexteController {
         );
     }
 
-    // ---------- DOWNLOAD PDF STOCKÉ EN BDD ----------
+
 
     @GetMapping("/{id}/fichier")
     public ResponseEntity<byte[]> downloadPdf(@PathVariable String id) {

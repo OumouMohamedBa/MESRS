@@ -12,9 +12,11 @@ import { AuthService } from '../services/auth.service';
   
 })
 export class SidebarComponent {
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService) {
+  }
 
+  // 👉 propriété calculée utilisée par le *ngIf dans le HTML
   get isIG(): boolean {
-    return this.auth.hasRole('INSPECTEUR_GENERAL');
+    return this.auth.hasRole(['INSPECTEUR_GENERAL']);
   }
 }

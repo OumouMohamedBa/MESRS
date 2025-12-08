@@ -20,6 +20,7 @@ import { EtablissementsAddComponent } from './etablissements/etablissements-add.
 import { EtablissementsEditComponent } from './etablissements/etablissements-edit.component';
 import { EtablissementsDetailComponent } from './etablissements/etablissements-detail.component';
 
+
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
@@ -38,6 +39,7 @@ export const routes: Routes = [
   { path: 'formations', component: FormationsListComponent, canActivate: [AuthGuard] },
   { path: 'etablissements', component: EtablissementsListComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersListComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['INSPECTEUR_GENERAL'] } },
+  { path: 'users', component: UsersListComponent },
   { path: '', pathMatch: 'full', component: HomeComponent },
   { path: '**', redirectTo: 'dashboard' }
 ];

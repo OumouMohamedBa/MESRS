@@ -9,6 +9,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
+  title = 'mesrs-front';  
   langue: 'fr' | 'ar' = 'fr';
   currentYear = new Date().getFullYear();
 

@@ -7,7 +7,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
   form!: FormGroup;
@@ -37,11 +37,16 @@ export class LoginComponent {
     this.submitting = true;
     const { username, password } = this.form.value as { username: string; password: string };
 
-    const ok = this.auth.login(username, password);
-    this.submitting = false;
-
-    if (ok) {
-      this.router.navigateByUrl('/dashboard');
-    }
+    this.auth.login(username, password).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.router.navigateByUrl('/dashboard');
+      },
+      error: (err) => {
+        this.submitting = false;
+        console.error('Erreur login', err);
+        alert('Identifiants incorrects ou compte non autorisé.');
+      },
+    });
   }
 }

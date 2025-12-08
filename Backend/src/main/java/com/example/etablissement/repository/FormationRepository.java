@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface FormationRepository extends JpaRepository<Formation, String> {
 
-    // 🔍 Recherche (adapte selon ton besoin)
+    // Recherche (adapte selon ton besoin)
     @Query("""
         select f from Formation f
         where lower(f.nomFiliere) like lower(concat('%', :q, '%'))

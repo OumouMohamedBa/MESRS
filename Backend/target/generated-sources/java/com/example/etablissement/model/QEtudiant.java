@@ -74,7 +74,7 @@ public class QEtudiant extends EntityPathBase<Etudiant> {
 
     public QEtudiant(Class<? extends Etudiant> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement"), inits.get("etablissement")) : null;
+        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement")) : null;
         this.formation = inits.isInitialized("formation") ? new QFormation(forProperty("formation"), inits.get("formation")) : null;
     }
 

@@ -100,7 +100,7 @@ public class TexteService {
         t.setResumeContenu(resumeContenu);
         t.setStatutApplication(statutApplication);
 
-        // 🔁 Ici : si un nouveau fichier est envoyé, on ÉCRASE l'ancien PDF
+        // Ici : si un nouveau fichier est envoyé, on ÉCRASE l'ancien PDF
         if (file != null && !file.isEmpty()) {
             t.setFichierPdf(file.getBytes());
         }

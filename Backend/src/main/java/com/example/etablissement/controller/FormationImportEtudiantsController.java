@@ -24,7 +24,7 @@ public class FormationImportEtudiantsController {
         this.importRepo = importRepo;
     }
 
-    // 📌 UPLOAD FICHIER EXCEL
+
     @PostMapping("/{id}/etudiants/import")
     public ResponseEntity<?> upload(@PathVariable String id,
                                     @RequestParam String anneeUniversitaire,
@@ -58,7 +58,7 @@ public class FormationImportEtudiantsController {
         return ResponseEntity.ok(dto);
     }
 
-    // 📌 LISTE DES IMPORTS POUR UNE FORMATION
+
     @GetMapping("/{id}/etudiants/imports")
     public List<Map<String, Object>> list(@PathVariable String id) {
         List<FormationImportEtudiant> files = importRepo.findByFormation_Id(id);
@@ -78,7 +78,7 @@ public class FormationImportEtudiantsController {
         return result;
     }
 
-    // 📌 DOWNLOAD D’UN FICHIER
+
     @GetMapping("/etudiants/imports/{importId}/download")
     public ResponseEntity<byte[]> download(@PathVariable Long importId) {
         FormationImportEtudiant imp = importRepo.findById(importId)
@@ -92,7 +92,7 @@ public class FormationImportEtudiantsController {
                 .body(imp.getData());
     }
 
-    // 📌 DELETE D’UN FICHIER
+
     @DeleteMapping("/etudiants/imports/{importId}")
     public void deleteImport(@PathVariable Long importId) {
         importRepo.deleteById(importId);

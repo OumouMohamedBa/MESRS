@@ -18,8 +18,6 @@ public class QEtablissement extends EntityPathBase<Etablissement> {
 
     private static final long serialVersionUID = -1022434392L;
 
-    private static final PathInits INITS = PathInits.DIRECT2;
-
     public static final QEtablissement etablissement = new QEtablissement("etablissement");
 
     public final ListPath<Budget, QBudget> budgets = this.<Budget, QBudget>createList("budgets", Budget.class, QBudget.class, PathInits.DIRECT2);
@@ -56,31 +54,22 @@ public class QEtablissement extends EntityPathBase<Etablissement> {
 
     public final ListPath<Structure_Recherche, QStructure_Recherche> structure_recherches = this.<Structure_Recherche, QStructure_Recherche>createList("structure_recherches", Structure_Recherche.class, QStructure_Recherche.class, PathInits.DIRECT2);
 
-    public final QTexte texte;
+    public final SetPath<Texte, QTexte> textes = this.<Texte, QTexte>createSet("textes", Texte.class, QTexte.class, PathInits.DIRECT2);
 
     public final StringPath type = createString("type");
 
     public final ListPath<Visite_Inspection, QVisite_Inspection> visite_inspections = this.<Visite_Inspection, QVisite_Inspection>createList("visite_inspections", Visite_Inspection.class, QVisite_Inspection.class, PathInits.DIRECT2);
 
     public QEtablissement(String variable) {
-        this(Etablissement.class, forVariable(variable), INITS);
+        super(Etablissement.class, forVariable(variable));
     }
 
     public QEtablissement(Path<? extends Etablissement> path) {
-        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+        super(path.getType(), path.getMetadata());
     }
 
     public QEtablissement(PathMetadata metadata) {
-        this(metadata, PathInits.getFor(metadata, INITS));
-    }
-
-    public QEtablissement(PathMetadata metadata, PathInits inits) {
-        this(Etablissement.class, metadata, inits);
-    }
-
-    public QEtablissement(Class<? extends Etablissement> type, PathMetadata metadata, PathInits inits) {
-        super(type, metadata, inits);
-        this.texte = inits.isInitialized("texte") ? new QTexte(forProperty("texte")) : null;
+        super(Etablissement.class, metadata);
     }
 
 }

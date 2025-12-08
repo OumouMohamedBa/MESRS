@@ -36,7 +36,7 @@ public class QFormation extends EntityPathBase<Formation> {
 
     public final QEtablissement etablissement;
 
-    public final BooleanPath etatAccreditation = createBoolean("etatAccreditation");
+    public final StringPath etatAccreditation = createString("etatAccreditation");
 
     public final StringPath id = createString("id");
 
@@ -68,7 +68,7 @@ public class QFormation extends EntityPathBase<Formation> {
 
     public QFormation(Class<? extends Formation> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement"), inits.get("etablissement")) : null;
+        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement")) : null;
     }
 
 }
