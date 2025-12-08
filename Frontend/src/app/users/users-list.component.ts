@@ -1,492 +1,197 @@
-import { Component } from '@angular/core';
+// src/app/users/users-list.component.ts
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { UserService, AppUser } from '../services/user.service';
-import { AuthService } from '../services/auth.service';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+
+import { UserService, UserDto, UserPayload } from '../services/user.service';
+
+export interface RoleOption {
+  id: number;
+  code: string;
+  label: string;
+}
 
 @Component({
   selector: 'app-users-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeaderComponent, SidebarComponent],
-  template: `
-    <app-sidebar></app-sidebar>
-
-    <!-- Header -->
-    <app-header
-      [title]="'Gestion des sous-inspecteurs'"
-      [withSidebar]="true"
-      [langue]="langue"
-      (toggleSidebar)="onToggleSidebar()"
-      (changeLang)="onChangeLang($event)"
-      (toggleDark)="onToggleDark()"
-      (openNotifications)="onOpenNotifications()"
-      (logout)="onLogout()"
-    ></app-header>
-
-    <!-- Contenu principal -->
-    <div
-      class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 lg:mt-4
-             bg-gradient-to-b from-emerald-50/40 via-white to-white min-h-screen">
-
-      <div
-        class="bg-white/95 border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl
-               overflow-hidden transition-all duration-300">
-
-        <!-- 🔹 Barre d’en-tête : recherche + filtres + bouton -->
-        <div
-          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 sm:p-6
-                 border-b border-gray-100 bg-white/80 backdrop-blur-sm">
-
-          <!-- 🔍 Recherche + Filtres -->
-          <div class="flex flex-col lg:flex-row gap-3 lg:items-center w-full flex-wrap">
-
-            <!-- Recherche -->
-            <label class="relative w-full lg:w-72">
-              <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-sm"></i>
-              <input
-                type="search"
-                placeholder="Rechercher par nom / identifiant / téléphone"
-                (input)="onSearchChange($any($event.target).value)"
-                class="w-full bg-gray-50 border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600
-                       placeholder:text-gray-400 transition"
-              />
-            </label>
-
-            <!-- Filtre état actif -->
-            <select
-              class="bg-white border border-gray-200 rounded-full px-3.5 py-2.5 text-xs sm:text-sm
-                     focus:ring-2 focus:ring-green-600 focus:border-green-600 text-gray-700"
-              (change)="onEtatChange($any($event.target).value)">
-              <option value="">État : Tous</option>
-              <option value="actif">Actifs</option>
-              <option value="inactif">Inactifs</option>
-            </select>
-
-            <!-- Filtre validation -->
-            <select
-              class="bg-white border border-gray-200 rounded-full px-3.5 py-2.5 text-xs sm:text-sm
-                     focus:ring-2 focus:ring-green-600 focus:border-green-600 text-gray-700"
-              (change)="onValidationChange($any($event.target).value)">
-              <option value="">Validation : Tous</option>
-              <option value="valide">Validés</option>
-              <option value="non_valide">Non validés</option>
-            </select>
-          </div>
-
-          
-        </div>
-
-        <!-- 🧾 Formulaire -->
-        <div class="px-5 sm:px-6 pt-4 pb-6 border-b border-gray-100 bg-white/90">
-          <h3 class="text-sm font-semibold text-gray-800 mb-3">
-            {{ editingId ? 'Modifier un sous-inspecteur' : 'Ajouter un sous-inspecteur' }}
-          </h3>
-
-          <form
-            [formGroup]="form"
-            (ngSubmit)="submit()"
-            class="flex flex-col gap-4">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-600">Identifiant (username)</label>
-                <input
-                  formControlName="username"
-                  placeholder="Ex : sinspecteur01"
-                  class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
-                />
-              </div>
-
-              <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-600">Nom complet</label>
-                <input
-                  formControlName="name"
-                  placeholder="Nom et prénom"
-                  class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
-                />
-              </div>
-
-              <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-600">Téléphone</label>
-                <input
-                  formControlName="phone"
-                  placeholder="Ex : 22 33 44 55"
-                  class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
-                />
-              </div>
-
-              <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-600">Mot de passe</label>
-                <input
-                  type="password"
-                  formControlName="password"
-                  placeholder="Mot de passe"
-                  class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
-                />
-              </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-              <div class="flex items-center gap-2">
-                <label class="text-xs font-medium text-gray-600">Photo</label>
-                <input
-                  type="file"
-                  (change)="onPhotoSelected($event)"
-                  accept="image/*"
-                  class="text-xs"
-                />
-              </div>
-
-              <img
-                *ngIf="form.value.photo"
-                [src]="form.value.photo"
-                class="w-10 h-10 object-cover rounded-full border border-gray-200 shadow-sm"
-              />
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2">
-              <button
-                type="submit"
-                [disabled]="form.invalid"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold
-                       text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60
-                       shadow-sm hover:shadow transition">
-                <i class="fa-solid fa-check"></i>
-                <span>{{ editingId ? 'Mettre à jour' : 'Ajouter' }}</span>
-              </button>
-
-              <button
-                type="button"
-                *ngIf="editingId"
-                (click)="cancelEdit()"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold
-                       text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-200
-                       shadow-sm hover:shadow transition">
-                <i class="fa-solid fa-xmark"></i>
-                <span>Annuler</span>
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- 📋 Tableau des sous-inspecteurs -->
-        <div class="overflow-x-auto bg-white">
-          <table class="min-w-full text-sm">
-            <thead>
-              <tr class="text-left text-gray-500 border-b border-gray-100 bg-gray-50/80">
-                <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Sous-inspecteur</th>
-                <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Téléphone</th>
-                <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase">Statut</th>
-                <th class="px-6 py-3 text-[11px] font-semibold tracking-wide uppercase text-center">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr
-                *ngFor="let u of filteredSousInspecteurs()"
-                class="border-b border-gray-50 hover:bg-emerald-50/40 transition">
-                <!-- Sous-inspecteur -->
-                <td class="px-6 py-3">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="h-10 w-10 rounded-full bg-emerald-50 border border-emerald-100
-                             flex items-center justify-center overflow-hidden">
-                      <img
-                        *ngIf="u.photo"
-                        [src]="u.photo"
-                        class="w-full h-full object-cover"
-                      />
-                      <span
-                        *ngIf="!u.photo"
-                        class="text-xs font-semibold text-emerald-700">
-                        {{ u.name ? u.name[0] : 'U' }}
-                      </span>
-                    </div>
-                    <div>
-                      <div class="font-semibold text-gray-900">
-                        {{ u.name }}
-                        <span class="text-gray-500 text-xs">({{ '@' }}{{ u.username }})</span>
-                      </div>
-                      <div class="text-xs text-gray-500">
-                        ID interne : {{ u.id }}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-
-                <!-- Téléphone -->
-                <td class="px-6 py-3 text-gray-700">
-                  {{ u.phone }}
-                </td>
-
-                <!-- Statut -->
-                <td class="px-6 py-3">
-                  <div class="flex flex-col gap-1">
-                    <span
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
-                      [ngClass]="u.active
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'">
-                      <span
-                        class="w-1.5 h-1.5 rounded-full"
-                        [ngClass]="u.active ? 'bg-green-500' : 'bg-red-500'">
-                      </span>
-                      {{ u.active ? 'Actif' : 'Inactif' }}
-                    </span>
-
-                    <span
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
-                      [ngClass]="u.validated
-                        ? 'bg-emerald-50 text-emerald-700'
-                        : 'bg-yellow-50 text-yellow-700'">
-                      <i
-                        class="fa-solid"
-                        [ngClass]="u.validated ? 'fa-circle-check' : 'fa-hourglass-half'">
-                      </i>
-                      {{ u.validated ? 'Validé' : 'Non validé' }}
-                    </span>
-                  </div>
-                </td>
-
-                <!-- Actions -->
-                <td class="px-6 py-3 text-center">
-                  <div class="flex items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm">
-
-                    <button
-                      class="inline-flex items-center justify-center h-8 px-3 rounded-full
-                             border border-blue-100 text-blue-700 bg-blue-50/70
-                             hover:bg-blue-100 hover:border-blue-200 transition"
-                      title="Modifier"
-                      type="button"
-                      (click)="startEdit(u)">
-                      <i class="fa-solid fa-pen-to-square text-xs mr-1"></i>
-                      <span class="hidden sm:inline">Modifier</span>
-                    </button>
-
-                    <button
-                      class="inline-flex items-center justify-center h-8 px-3 rounded-full
-                             border text-xs font-medium
-                             hover:shadow-sm transition"
-                      type="button"
-                      [ngClass]="u.active
-                        ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                        : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'"
-                      (click)="toggleActive(u)">
-                      <i
-                        class="fa-solid text-xs mr-1"
-                        [ngClass]="u.active ? 'fa-ban' : 'fa-check'">
-                      </i>
-                      <span class="hidden sm:inline">
-                        {{ u.active ? 'Désactiver' : 'Activer' }}
-                      </span>
-                    </button>
-
-                    <button
-                      class="inline-flex items-center justify-center h-8 px-3 rounded-full
-                             border border-emerald-200 bg-emerald-50 text-emerald-700
-                             hover:bg-emerald-100 hover:border-emerald-300 transition
-                             disabled:opacity-50"
-                      type="button"
-                      (click)="validate(u)"
-                      [disabled]="u.validated">
-                      <i class="fa-solid fa-badge-check text-xs mr-1"></i>
-                      <span class="hidden sm:inline">Valider</span>
-                    </button>
-
-                    <button
-                      class="inline-flex items-center justify-center h-8 w-8 rounded-full
-                             border border-red-200 text-red-600 bg-red-50
-                             hover:bg-red-100 hover:border-red-300 transition"
-                      type="button"
-                      (click)="delete(u.id)">
-                      <i class="fa-regular fa-trash-can text-sm"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-
-              <tr *ngIf="filteredSousInspecteurs().length === 0">
-                <td colspan="4"
-                    class="px-6 py-10 text-center text-gray-500 text-sm">
-                  Aucun sous-inspecteur ne correspond aux filtres actuels.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-    </div>
-  `
+  imports: [CommonModule, FormsModule, HeaderComponent, SidebarComponent],
+  templateUrl: './users-list.component.html',
+  styleUrls: ['./users-list.component.css'],
 })
-export class UsersListComponent {
-  form!: FormGroup;
-  sousInspecteurs: AppUser[] = [];
-  editingId: number | null = null;
+export class UsersListComponent implements OnInit {
+  // liste d’utilisateurs affichée dans le tableau
+  users: UserDto[] = [];
 
-  // pour le header
-  langue: 'fr' | 'ar' | 'en' = 'fr';
+  // simple formulaire "flat"
+  formModel: {
+    id: number | null;
+    name: string;
+    username: string;
+    phone: string;
+    password: string;
+    photo: string | null;
+    roleCode: string | null;
+    active: boolean;
+    validated: boolean;
+  } = this.getEmptyForm();
 
-  // filtres
-  private search = '';
-  private etat: '' | 'actif' | 'inactif' = '';
-  private validation: '' | 'valide' | 'non_valide' = '';
+  // options de rôle – adapte les id pour coller à ta base
+  roleOptions: RoleOption[] = [
+    { id: 1, code: 'INSPECTEUR_GENERAL',       label: 'Inspecteur général' },
+    { id: 2, code: 'SOUS_INSPECTEUR_TEXTES',   label: 'Sous-inspecteur des textes' },
+    { id: 3, code: 'SOUS_INSPECTEUR_FINANCES', label: 'Sous-inspecteur des finances' },
+  ];
+
+  loading = false;
+
+  // contrôle de l'affichage du formulaire de création
+  showForm = false;
+
+  // id de l'utilisateur en cours d'édition (null = création)
+  editingUserId: number | null = null;
 
   constructor(
-    private fb: FormBuilder,
     private userService: UserService,
-    private auth: AuthService
-  ) {
-    this.form = this.fb.group({
-      username: ['', Validators.required],
-      name: ['', Validators.required],
-      phone: ['', Validators.required],
-      password: ['', Validators.required],
-      photo: [''],
-    });
-    this.refresh();
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.loadUsers();
   }
 
-  private refresh() {
-    this.sousInspecteurs = this.userService.listSousInspecteurs();
+  // --------- helpers ---------
+
+  openForm(): void {
+    this.editingUserId = null;
+    this.formModel = this.getEmptyForm();
+    this.showForm = true;
   }
 
-  // 🔎 Filtres
-
-  onSearchChange(v: string) {
-    this.search = v.toLowerCase().trim();
-  }
-
-  onEtatChange(v: string) {
-    this.etat = v as any;
-  }
-
-  onValidationChange(v: string) {
-    this.validation = v as any;
-  }
-
-  filteredSousInspecteurs(): AppUser[] {
-    return this.sousInspecteurs.filter(u => {
-      const matchSearch =
-        !this.search ||
-        [u.name, u.username, u.phone]
-          .filter(Boolean)
-          .some(v => (v || '').toLowerCase().includes(this.search));
-
-      const matchEtat =
-        !this.etat ||
-        (this.etat === 'actif' && u.active) ||
-        (this.etat === 'inactif' && !u.active);
-
-      const matchValidation =
-        !this.validation ||
-        (this.validation === 'valide' && u.validated) ||
-        (this.validation === 'non_valide' && !u.validated);
-
-      return matchSearch && matchEtat && matchValidation;
-    });
-  }
-
-  // 🔁 CRUD
-
-  delete(id: number) {
-    if (!confirm('Supprimer ce sous-inspecteur ?')) return;
-    this.userService.deleteUser(id);
-    this.refresh();
-  }
-
-  startCreate() {
-    this.editingId = null;
-    this.form.reset();
-  }
-
-  submit() {
-    if (this.form.invalid) return;
-    const { username, name, phone, password, photo } = this.form.value as any;
-
-    if (this.editingId) {
-      this.userService.updateUser(this.editingId, { username, name, phone, password, photo });
-    } else {
-      this.userService.addUser({
-        username,
-        name,
-        phone,
-        password,
-        photo,
-        role: 'SOUS_INSPECTEUR',
-        active: true,
-        validated: false
-      });
+  closeForm(form?: NgForm): void {
+    if (form) {
+      form.resetForm(this.getEmptyForm());
     }
-    this.cancelEdit();
-    this.refresh();
+    this.showForm = false;
+    this.editingUserId = null;
   }
 
-  startEdit(u: AppUser) {
-    this.editingId = u.id;
-    this.form.patchValue({
-      username: u.username,
-      name: u.name,
-      phone: u.phone,
-      password: u.password,
-      photo: u.photo || ''
+  private getEmptyForm() {
+    return {
+      id: null,
+      name: '',
+      username: '',
+      phone: '',
+      password: '',
+      photo: null,
+      roleCode: null,
+      active: true,
+      validated: true,
+    };
+  }
+
+  loadUsers(): void {
+    this.loading = true;
+    this.userService.getAll().subscribe({
+      next: (dtos) => {
+        this.users = dtos;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement users', err);
+        this.loading = false;
+        alert("Impossible de charger les utilisateurs.");
+      },
     });
   }
 
-  cancelEdit() {
-    this.editingId = null;
-    this.form.reset();
-  }
-
-  toggleActive(u: AppUser) {
-    this.userService.toggleActive(u.id);
-    this.refresh();
-  }
-
-  validate(u: AppUser) {
-    this.userService.validateUser(u.id);
-    this.refresh();
-  }
-
-  onPhotoSelected(event: Event) {
+  // fichier choisi → on garde juste le nom dans `photo`
+  onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.form.patchValue({ photo: reader.result as string });
+    const file = input.files?.[0];
+    this.formModel.photo = file ? file.name : null;
+  }
+
+  // --------- création / édition ---------
+
+  onSubmit(form: NgForm): void {
+    if (form.invalid) {
+      alert('Merci de remplir les champs obligatoires.');
+      return;
+    }
+    if (!this.formModel.roleCode) {
+      alert('Merci de choisir un rôle.');
+      return;
+    }
+
+    const payload: UserPayload = {
+      id: this.formModel.id,
+      fullname: this.formModel.name,
+      username: this.formModel.username,
+      phone: this.formModel.phone,
+      // le backend ne lit pas password / photo / validated pour l'instant
+      active: this.formModel.active,
+      role: this.formModel.roleCode,
     };
-    reader.readAsDataURL(file);
+
+    // création ou mise à jour selon editingUserId
+    const request$ = this.editingUserId
+      ? this.userService.update(this.editingUserId, payload)
+      : this.userService.create(payload);
+
+    request$.subscribe({
+      next: (user) => {
+        if (this.editingUserId) {
+          // remplacement dans la liste
+          this.users = this.users.map((u) => (u.id === user.id ? user : u));
+        } else {
+          this.users.push(user);
+        }
+        this.formModel = this.getEmptyForm();
+        form.resetForm(this.formModel);
+        this.showForm = false;
+        this.editingUserId = null;
+        alert(this.editingUserId ? 'Utilisateur mis à jour avec succès.' : 'Utilisateur créé avec succès.');
+      },
+      error: (err) => {
+        console.error('Erreur sauvegarde utilisateur', err);
+        alert("Erreur lors de la sauvegarde de l'utilisateur.");
+      },
+    });
   }
 
-  // 🔧 handlers pour le header
-
-  onToggleSidebar() {
-    // à connecter si tu gères l’ouverture/fermeture du sidebar
+  onEdit(user: UserDto): void {
+    this.editingUserId = user.id;
+    this.formModel = {
+      id: user.id,
+      name: user.fullname,
+      username: user.username,
+      phone: user.phone || '',
+      password: '',
+      photo: user.photo || null,
+      roleCode: user.role?.code || null,
+      active: user.active,
+      validated: user.validated,
+    };
+    this.showForm = true;
   }
 
-  onChangeLang(lang: 'fr' | 'ar' | 'en') {
-    this.langue = lang;
-  }
+  onDelete(user: UserDto): void {
+    if (!confirm(`Supprimer l'utilisateur ${user.username} ?`)) {
+      return;
+    }
 
-  onToggleDark() {
-    const root = document.documentElement;
-    root.classList.toggle('dark');
-  }
-
-  onOpenNotifications() {
-    console.log('Notifications ouvertes');
-  }
-
-  onLogout() {
-    console.log('Déconnexion');
-    // ex: this.auth.logout();
+    this.userService.delete(user.id).subscribe({
+      next: () => {
+        this.users = this.users.filter((u) => u.id !== user.id);
+      },
+      error: (err) => {
+        console.error('Erreur suppression utilisateur', err);
+        alert("Impossible de supprimer l'utilisateur.");
+      },
+    });
   }
 }

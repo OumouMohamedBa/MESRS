@@ -22,6 +22,7 @@ import { EtablissementsDetailComponent } from './etablissements/etablissements-d
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 
+
 export const routes: Routes = [
   { path: 'about', component: AboutComponent },
   { path: 'contact', component: ContactComponent },
@@ -42,6 +43,7 @@ export const routes: Routes = [
   { path: 'formations', component: FormationsListComponent, canActivate: [AuthGuard] },
   { path: 'etablissements', component: EtablissementsListComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersListComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['INSPECTEUR_GENERAL'] } },
+  { path: 'users', component: UsersListComponent },
   { path: '', pathMatch: 'full', component: HomeComponent },
   { path: '**', redirectTo: 'dashboard' }
 ];

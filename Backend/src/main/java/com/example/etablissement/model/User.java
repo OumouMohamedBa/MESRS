@@ -33,7 +33,7 @@ public class User {
     @Column(nullable = false)
     private boolean validated;
 
-    // ✅ Constructeur vide obligatoire pour JPA + new User()
+    //  Constructeur vide obligatoire pour JPA + new User()
     public User() {
     }
 
@@ -52,7 +52,7 @@ public class User {
         this.validated = validated;
     }
 
-    // ✅ Getters / Setters
+    //  Getters / Setters
 
     public Long getId() {
         return id;

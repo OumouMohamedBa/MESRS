@@ -66,7 +66,7 @@ public class QVisite_Inspection extends EntityPathBase<Visite_Inspection> {
 
     public QVisite_Inspection(Class<? extends Visite_Inspection> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement"), inits.get("etablissement")) : null;
+        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement")) : null;
     }
 
 }

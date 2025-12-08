@@ -34,7 +34,7 @@ public class FormationImportEtudiant {
     @Column(name = "uploaded_at")
     private Instant uploadedAt;
 
-    // ⚠️ ICI : plus de @Lob -> on laisse Hibernate mapper sur BYTEA
+
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "data")
     private byte[] data;

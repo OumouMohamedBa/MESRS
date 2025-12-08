@@ -41,7 +41,7 @@ public class Texte {
     @Column(name = "Fichier_pdf")
     private byte[] fichierPdf;
 
-    // 🔁 Inverse Many-to-Many avec Etablissement
+    // Inverse Many-to-Many avec Etablissement
     @ManyToMany(mappedBy = "textes")
     private Set<Etablissement> etablissements = new HashSet<>();
 

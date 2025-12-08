@@ -84,7 +84,7 @@ public class QPersonnel_Enseignant extends EntityPathBase<Personnel_Enseignant> 
 
     public QPersonnel_Enseignant(Class<? extends Personnel_Enseignant> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement"), inits.get("etablissement")) : null;
+        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement")) : null;
     }
 
 }

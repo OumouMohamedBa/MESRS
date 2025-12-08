@@ -1,0 +1,305 @@
+<!-- src/app/users/users-list.component.html -->
+
+<app-header></app-header>
+
+<div class="flex min-h-screen bg-slate-50">
+  <!-- Sidebar à gauche -->
+  <app-sidebar class="w-64 flex-shrink-0"></app-sidebar>
+
+  <!-- Contenu principal -->
+  <main class="flex-1 px-6 lg:px-10 py-6 space-y-6">
+    <!-- Titre principal -->
+    <section class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-semibold text-slate-900">
+          Utilisateurs du système
+        </h1>
+        <p class="text-sm text-slate-500 mt-1">
+          Gestion des comptes (création, rôles, activation, validation).
+        </p>
+      </div>
+    </section>
+
+    <!-- FORMULAIRE CREATION UTILISATEUR -->
+    <section
+      *ngIf="showForm"
+      class="bg-white rounded-2xl shadow-md shadow-slate-200/80 border border-slate-100 px-6 py-5"
+    >
+      <h2 class="text-lg font-semibold text-slate-900 mb-4">
+        {{ editingUserId ? 'Modifier un utilisateur' : 'Nouvel utilisateur' }}
+      </h2>
+
+      <form
+        #userForm="ngForm"
+        (ngSubmit)="onSubmit(userForm)"
+        class="grid grid-cols-1 md:grid-cols-2 gap-5"
+      >
+        <!-- Nom complet -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-700"
+            >Nom complet *</label
+          >
+          <input
+            type="text"
+            name="name"
+            [(ngModel)]="formModel.name"
+            required
+            placeholder="Ex : Inspecteur 1"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <!-- Nom d'utilisateur -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-700"
+            >Nom d’utilisateur *</label
+          >
+          <input
+            type="text"
+            name="username"
+            [(ngModel)]="formModel.username"
+            required
+            placeholder="Ex : i1.mesrs"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <!-- Téléphone -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-700">Téléphone</label>
+          <input
+            type="text"
+            name="phone"
+            [(ngModel)]="formModel.phone"
+            placeholder="+222 ..."
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-700"
+            >Mot de passe *</label
+          >
+          <input
+            type="password"
+            name="password"
+            [(ngModel)]="formModel.password"
+            required
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <!-- Photo -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-700"
+            >Photo (nom de fichier)</label
+          >
+          <input
+            type="file"
+            (change)="onFileSelected($event)"
+            class="block w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
+          />
+          <p
+            *ngIf="formModel.photo"
+            class="text-xs text-slate-500 mt-1"
+          >
+            Fichier sélectionné : {{ formModel.photo }}
+          </p>
+        </div>
+
+        <!-- Rôle -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-700">Rôle *</label>
+          <select
+            name="roleCode"
+            [(ngModel)]="formModel.roleCode"
+            required
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option [ngValue]="null" disabled>Sélectionner un rôle...</option>
+            <option
+              *ngFor="let r of roleOptions"
+              [ngValue]="r.code"
+            >
+              {{ r.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Statut -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-700">Statut</label>
+          <button
+            type="button"
+            (click)="formModel.active = !formModel.active"
+            [ngClass]="{
+              'bg-emerald-50 text-emerald-700 border-emerald-200':
+                formModel.active,
+              'bg-slate-100 text-slate-600 border-slate-200':
+                !formModel.active
+            }"
+            class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition"
+          >
+            <span
+              class="h-2 w-2 rounded-full"
+              [ngClass]="{
+                'bg-emerald-500': formModel.active,
+                'bg-slate-400': !formModel.active
+              }"
+            ></span>
+            {{ formModel.active ? 'Actif' : 'Inactif' }}
+          </button>
+        </div>
+
+        <!-- Validation -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-700">Validation</label>
+          <button
+            type="button"
+            (click)="formModel.validated = !formModel.validated"
+            [ngClass]="{
+              'bg-emerald-50 text-emerald-700 border-emerald-200':
+                formModel.validated,
+              'bg-amber-50 text-amber-700 border-amber-200':
+                !formModel.validated
+            }"
+            class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition"
+          >
+            <span
+              class="h-2 w-2 rounded-full"
+              [ngClass]="{
+                'bg-emerald-500': formModel.validated,
+                'bg-amber-400': !formModel.validated
+              }"
+            ></span>
+            {{ formModel.validated ? 'Validé' : 'En attente' }}
+          </button>
+        </div>
+
+        <!-- Boutons -->
+        <div
+          class="md:col-span-2 flex justify-end gap-3 pt-2 border-t border-slate-100 mt-2"
+        >
+          <button
+            type="button"
+            (click)="closeForm(userForm)"
+            class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            [disabled]="userForm.invalid"
+            class="rounded-full bg-emerald-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:bg-slate-400 disabled:cursor-not-allowed"
+          >
+            Créer l’utilisateur
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- LISTE DES UTILISATEURS -->
+    <section
+      class="bg-white rounded-2xl shadow-md shadow-slate-200/80 border border-slate-100 px-6 py-5 mt-4"
+    >
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold text-slate-900">
+          Liste des utilisateurs
+        </h2>
+        <button
+          type="button"
+          (click)="openForm()"
+          class="rounded-full bg-emerald-600 px-4 py-1.5 text-xs md:text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
+        >
+          Créer un utilisateur
+        </button>
+      </div>
+
+      <div *ngIf="!loading; else loadingTpl" class="overflow-x-auto">
+        <table
+          *ngIf="users.length > 0; else emptyTpl"
+          class="min-w-full text-sm text-left"
+        >
+          <thead>
+            <tr class="border-b border-slate-100 text-xs text-slate-500">
+              <th class="py-2 pr-4 font-medium">Nom complet</th>
+              <th class="py-2 pr-4 font-medium">Nom d’utilisateur</th>
+              <th class="py-2 pr-4 font-medium">Téléphone</th>
+              <th class="py-2 pr-4 font-medium">Rôle</th>
+              <th class="py-2 pr-4 font-medium">Statut</th>
+              <th class="py-2 pr-4 font-medium">Validation</th>
+              <th class="py-2 pl-2 font-medium text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let user of users"
+              class="border-b border-slate-50 hover:bg-slate-50/60"
+            >
+              <td class="py-2 pr-4 text-slate-900">{{ user.fullname }}</td>
+              <td class="py-2 pr-4 text-slate-700">{{ '@' + user.username }}</td>
+              <td class="py-2 pr-4 text-slate-700">
+                {{ user.phone || '—' }}
+              </td>
+              <td class="py-2 pr-4 text-slate-700">
+                {{ user.role.label || '—' }}
+              </td>
+              <td class="py-2 pr-4">
+                <span
+                  class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700': user.active,
+                    'bg-slate-100 text-slate-600': !user.active
+                  }"
+                >
+                  {{ user.active ? 'Actif' : 'Inactif' }}
+                </span>
+              </td>
+              <td class="py-2 pr-4">
+                <span
+                  class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700': user.validated,
+                    'bg-amber-50 text-amber-700': !user.validated
+                  }"
+                >
+                  {{ user.validated ? 'Validé' : 'En attente' }}
+                </span>
+              </td>
+              <td class="py-2 pl-2 text-right space-x-2">
+                <button
+                  type="button"
+                  (click)="onEdit(user)"
+                  class="inline-flex items-center justify-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200"
+                >
+                  Modifier
+                </button>
+                <button
+                  type="button"
+                  (click)="onDelete(user)"
+                  class="inline-flex items-center justify-center rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100"
+                >
+                  Supprimer
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ng-template #emptyTpl>
+          <p class="py-6 text-center text-sm text-slate-500">
+            Aucun utilisateur enregistré pour l’instant.
+          </p>
+        </ng-template>
+      </div>
+
+      <ng-template #loadingTpl>
+        <p class="py-6 text-center text-sm text-slate-500">
+          Chargement des utilisateurs...
+        </p>
+      </ng-template>
+    </section>
+  </main>
+</div>

@@ -64,7 +64,7 @@ public class QStructure_Recherche extends EntityPathBase<Structure_Recherche> {
 
     public QStructure_Recherche(Class<? extends Structure_Recherche> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement"), inits.get("etablissement")) : null;
+        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement")) : null;
     }
 
 }

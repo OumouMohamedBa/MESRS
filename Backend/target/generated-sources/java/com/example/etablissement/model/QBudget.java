@@ -70,7 +70,7 @@ public class QBudget extends EntityPathBase<Budget> {
 
     public QBudget(Class<? extends Budget> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement"), inits.get("etablissement")) : null;
+        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement")) : null;
     }
 
 }

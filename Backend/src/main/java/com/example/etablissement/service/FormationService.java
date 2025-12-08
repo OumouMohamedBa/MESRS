@@ -38,14 +38,14 @@ public class FormationService {
 
     public Formation create(Formation f) {
         try {
-            // 1️⃣ vérifier id (front génère via crypto.randomUUID)
+            //  vérifier id (front génère via crypto.randomUUID)
             if (f.getId() == null || f.getId().isBlank()) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "L'id de la formation est obligatoire");
             }
 
-            // 2️⃣ lier l'établissement via etablissementId
+            //  lier l'établissement via etablissementId
             if (f.getEtablissementId() != null) {
                 Etablissement etab = etabRepo.findById(f.getEtablissementId())
                         .orElseThrow(() -> new ResponseStatusException(

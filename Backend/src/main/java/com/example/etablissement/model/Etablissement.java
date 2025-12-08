@@ -71,7 +71,7 @@ public class Etablissement {
     @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
     private List<Projet_Recherche> projet_recherches;
 
-    // 🔁 Many-to-Many avec Texte via table de jointure Etablissement_Texte
+    // Many-to-Many avec Texte via table de jointure Etablissement_Texte
     @JsonIgnore
     @ManyToMany
     @JoinTable(

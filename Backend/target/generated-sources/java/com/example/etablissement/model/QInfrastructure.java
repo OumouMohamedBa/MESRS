@@ -54,7 +54,7 @@ public class QInfrastructure extends EntityPathBase<Infrastructure> {
 
     public QInfrastructure(Class<? extends Infrastructure> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement"), inits.get("etablissement")) : null;
+        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement")) : null;
     }
 
 }

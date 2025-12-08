@@ -1,109 +1,82 @@
 package com.example.etablissement.service;
 
+import com.example.etablissement.dto.UserDto;
 import com.example.etablissement.model.Role;
 import com.example.etablissement.model.User;
 import com.example.etablissement.repository.RoleRepository;
 import com.example.etablissement.repository.UserRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+  private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
 
-    // ✅ Constructeur explicite pour l’injection
-    public UserService(UserRepository userRepository,
-                       RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+  public UserService(UserRepository userRepository,
+                     RoleRepository roleRepository) {
+    this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
+  }
+
+  public List<UserDto> findAll() {
+    return userRepository.findAll()
+      .stream()
+      .map(UserDto::fromEntity)
+      .collect(Collectors.toList());
+  }
+
+  public UserDto create(UserDto dto) {
+    if (userRepository.existsByUsername(dto.getUsername())) {
+      throw new RuntimeException("Username déjà utilisé.");
     }
 
-    @Transactional
-    public User createUser(User user, String roleCode) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Username déjà utilisé : " + user.getUsername());
-        }
+    Role role = roleRepository.findByCode(dto.getRole())
+      .orElseThrow(() -> new RuntimeException("Rôle introuvable: " + dto.getRole()));
 
-        Role role = roleRepository.findByCode(roleCode)
-                .orElseThrow(() -> new NoSuchElementException("Rôle introuvable : " + roleCode));
+    User user = new User();
+    dto.updateEntity(user, role);
 
-        user.setRole(role);
-        user.setActive(true);
-        user.setValidated(false);
+    // password par défaut (à adapter, ou générer aléatoire)
+    user.setPassword("changeme");
+    user.setValidated(true); // ou false si tu veux validation plus tard
 
-        return userRepository.save(user);
+    User saved = userRepository.save(user);
+    return UserDto.fromEntity(saved);
+  }
+
+  public UserDto update(Long id, UserDto dto) {
+    User user = userRepository.findById(id)
+      .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+    Role role = roleRepository.findByCode(dto.getRole())
+      .orElseThrow(() -> new RuntimeException("Rôle introuvable: " + dto.getRole()));
+
+    dto.updateEntity(user, role);
+
+    User saved = userRepository.save(user);
+    return UserDto.fromEntity(saved);
+  }
+
+  public void delete(Long id) {
+    if (!userRepository.existsById(id)) {
+      throw new RuntimeException("Utilisateur introuvable");
     }
+    userRepository.deleteById(id);
+  }
 
-    @Transactional
-    public User updateUser(Long userId, String name, String phone, String photo) {
-        User user = getUserById(userId);
-        if (name != null) user.setName(name);
-        if (phone != null) user.setPhone(phone);
-        if (photo != null) user.setPhoto(photo);
-        return userRepository.save(user);
-    }
+  public UserDto toggleActive(Long id) {
+    User user = userRepository.findById(id)
+      .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
-    @Transactional
-    public void activateUser(Long userId) {
-        User user = getUserById(userId);
-        user.setActive(true);
-        userRepository.save(user);
-    }
+    user.setActive(!user.isActive());
 
-    @Transactional
-    public void deactivateUser(Long userId) {
-        User user = getUserById(userId);
-        user.setActive(false);
-        userRepository.save(user);
-    }
-
-    @Transactional
-    public void validateUser(Long userId) {
-        User user = getUserById(userId);
-        user.setValidated(true);
-        userRepository.save(user);
-    }
-
-    @Transactional
-    public void invalidateUser(Long userId) {
-        User user = getUserById(userId);
-        user.setValidated(false);
-        userRepository.save(user);
-    }
-
-    @Transactional
-    public void changeUserRole(Long userId, String newRoleCode) {
-        User user = getUserById(userId);
-        Role role = roleRepository.findByCode(newRoleCode)
-                .orElseThrow(() -> new NoSuchElementException("Rôle introuvable : " + newRoleCode));
-        user.setRole(role);
-        userRepository.save(user);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<User> searchInspectors(String roleCode,
-                                       Boolean active,
-                                       Boolean validated,
-                                       String keyword,
-                                       Pageable pageable) {
-        return userRepository.searchInspectors(roleCode, active, validated, keyword, pageable);
-    }
-
-    @Transactional(readOnly = true)
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable id=" + userId));
-    }
-
-    @Transactional(readOnly = true)
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable username=" + username));
-    }
+    User saved = userRepository.save(user);
+    return UserDto.fromEntity(saved);
+  }
 }

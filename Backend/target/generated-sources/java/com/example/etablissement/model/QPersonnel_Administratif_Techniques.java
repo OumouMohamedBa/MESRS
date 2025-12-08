@@ -78,7 +78,7 @@ public class QPersonnel_Administratif_Techniques extends EntityPathBase<Personne
 
     public QPersonnel_Administratif_Techniques(Class<? extends Personnel_Administratif_Techniques> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement"), inits.get("etablissement")) : null;
+        this.etablissement = inits.isInitialized("etablissement") ? new QEtablissement(forProperty("etablissement")) : null;
     }
 
 }
