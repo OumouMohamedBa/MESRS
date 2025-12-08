@@ -1,34 +1,46 @@
 <header
   class="fixed top-4 right-4 left-4 lg:left-[288px] z-50
-         bg-white/90 backdrop-blur-md border border-gray-200/80 shadow-xl
-         rounded-2xl transition-all duration-300"
+         bg-white/95 backdrop-blur-xl border border-emerald-100/50 
+         shadow-[0_8px_30px_-5px_rgba(16,185,129,0.15)]
+         rounded-2xl transition-all duration-300
+         hover:shadow-[0_12px_40px_-5px_rgba(16,185,129,0.2)]"
 >
+  <!-- Gradient top border -->
+  <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent rounded-t-2xl"></div>
+  
   <div class="mx-auto px-4 sm:px-5 h-16 flex items-center justify-between gap-4">
 
-    <!-- 🟢 (Optionnel) Bouton menu pour mobile -->
+    <!-- 🟢 Bouton menu pour mobile avec animation -->
     <button
-      class="lg:hidden p-2 rounded-xl border border-gray-200/70 bg-white shadow-sm hover:shadow-md"
+      class="lg:hidden p-2.5 rounded-xl border border-emerald-200/70 bg-gradient-to-br from-white to-emerald-50/30
+             shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95
+             group"
       (click)="toggleSidebar.emit()"
       aria-label="Ouvrir le menu"
     >
-      <i class="fa-solid fa-bars text-gray-700 text-lg"></i>
+      <i class="fa-solid fa-bars text-emerald-700 text-lg group-hover:rotate-90 transition-transform duration-300"></i>
     </button>
 
-    <!-- 🟢 Titre + icône -->
+    <!-- 🟢 Titre + icône avec animations -->
     <div class="flex items-center gap-3 min-w-[180px] sm:min-w-[240px] overflow-hidden">
       <div
-        class="flex items-center justify-center w-10 h-10 rounded-xl
-               bg-gradient-to-br from-emerald-50 to-emerald-100
-               shadow-inner border border-emerald-100"
+        class="relative flex items-center justify-center w-11 h-11 rounded-xl
+               bg-gradient-to-br from-emerald-500 to-teal-500
+               shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110
+               group overflow-hidden"
       >
-        <i class="fa-solid fa-layer-group text-emerald-700 text-lg"></i>
+        <!-- Shimmer effect -->
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                    translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+        <i class="fa-solid fa-layer-group text-white text-lg relative z-10"></i>
       </div>
       <div class="flex flex-col">
-        <h1 class="text-sm sm:text-base md:text-lg font-semibold text-gray-900 tracking-tight truncate">
+        <h1 class="text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-emerald-700 to-teal-600 
+                   bg-clip-text text-transparent tracking-tight truncate">
           {{ title }}
         </h1>
-        <span class="hidden sm:inline text-xs text-gray-400">
-          Inspection interne – MESRS
+        <span class="hidden sm:inline text-xs text-gray-500 font-medium">
+          Inspection interne • MESRS
         </span>
       </div>
     </div>
@@ -39,37 +51,47 @@
       <!-- 🌍 Langue (menu au clic) -->
       <div class="relative lang-menu">
         <button
-          class="inline-flex items-center gap-2 text-xs sm:text-sm px-3 py-2 rounded-full
-                 border border-gray-200 bg-white shadow-sm
-                 hover:shadow-md hover:bg-gray-50 transition-all duration-200"
+          class="group inline-flex items-center gap-2 text-xs sm:text-sm px-3 py-2 rounded-xl
+                 border border-emerald-200 bg-gradient-to-br from-white to-emerald-50/30 shadow-md
+                 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
           (click)="toggleLangMenu($event)"
         >
-          <i class="fa-solid fa-globe text-emerald-700 text-sm"></i>
-          <span class="font-medium">{{ langue | uppercase }}</span>
-          <i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
+          <i class="fa-solid fa-globe text-emerald-600 text-sm group-hover:rotate-12 transition-transform duration-300"></i>
+          <span class="font-bold text-emerald-700">{{ langue | uppercase }}</span>
+          <i class="fa-solid fa-chevron-down text-emerald-500 text-[10px] group-hover:translate-y-0.5 transition-transform duration-300"></i>
         </button>
 
         <div
           *ngIf="isLangOpen"
-          class="absolute right-0 mt-2 w-28 bg-white
-                 border border-gray-200 rounded-xl shadow-lg py-1 z-10"
+          class="absolute right-0 mt-2 w-32 bg-white/95 backdrop-blur-xl
+                 border border-emerald-100 rounded-xl shadow-2xl py-2 z-10
+                 animate-fadeIn"
         >
           <button
-            class="w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-gray-700
+                   hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700
+                   transition-all duration-200 flex items-center gap-2"
             (click)="onSelectLang('fr')"
           >
+            <span class="text-base">🇫🇷</span>
             Français
           </button>
           <button
-            class="w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-gray-700
+                   hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700
+                   transition-all duration-200 flex items-center gap-2"
             (click)="onSelectLang('ar')"
           >
+            <span class="text-base">🇸🇦</span>
             العربية
           </button>
           <button
-            class="w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            class="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-gray-700
+                   hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700
+                   transition-all duration-200 flex items-center gap-2"
             (click)="onSelectLang('en')"
           >
+            <span class="text-base">🇬🇧</span>
             English
           </button>
         </div>
@@ -77,14 +99,18 @@
 
       <!-- 🔔 Notifications -->
       <button
-        class="relative p-2.5 rounded-xl hover:bg-gray-100 border border-gray-200/70
-               shadow-sm hover:shadow-md transition"
+        class="group relative p-2.5 rounded-xl border border-emerald-200/70
+               bg-gradient-to-br from-white to-emerald-50/30
+               shadow-md hover:shadow-lg transition-all duration-300
+               hover:scale-105 active:scale-95"
         (click)="onOpenNotifications()"
       >
-        <i class="fa-regular fa-bell text-gray-700 text-base sm:text-lg"></i>
+        <i class="fa-regular fa-bell text-emerald-700 text-base sm:text-lg
+                  group-hover:animate-bounce"></i>
         <span
-          class="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px]
-                 leading-3 px-1.5 rounded-full shadow-sm"
+          class="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-red-500 to-pink-500 
+                 text-white text-[10px] font-bold leading-3 px-1.5 rounded-full 
+                 shadow-lg animate-pulse"
         >
           3
         </span>
@@ -92,48 +118,60 @@
 
       <!-- 🌙 Mode sombre -->
       <button
-        class="p-2.5 rounded-xl hover:bg-gray-100 border border-gray-200/70
-               shadow-sm hover:shadow-md transition"
+        class="group p-2.5 rounded-xl border border-emerald-200/70
+               bg-gradient-to-br from-white to-emerald-50/30
+               shadow-md hover:shadow-lg transition-all duration-300
+               hover:scale-105 active:scale-95"
         (click)="onToggleDark()"
       >
-        <i class="fa-regular fa-moon text-gray-700 text-base sm:text-lg"></i>
+        <i class="fa-regular fa-moon text-emerald-700 text-base sm:text-lg
+                  group-hover:rotate-12 transition-transform duration-300"></i>
       </button>
 
       <!-- 👤 Profil (menu au clic) -->
       <div class="relative profile-menu">
         <button
-          class="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-gray-200
-                 bg-white shadow-sm hover:shadow-md transition-all duration-200"
+          class="group inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-emerald-200
+                 bg-gradient-to-br from-white to-emerald-50/30 shadow-md hover:shadow-lg 
+                 transition-all duration-300 hover:scale-105 active:scale-95"
           (click)="toggleProfileMenu($event)"
         >
           <span
             class="inline-flex h-8 w-8 items-center justify-center rounded-full
-                   bg-emerald-700 text-white text-xs font-semibold"
+                   bg-gradient-to-br from-emerald-600 to-teal-600 text-white text-xs font-bold
+                   shadow-md group-hover:shadow-lg transition-shadow duration-300"
           >
             IN
           </span>
-          <span class="hidden sm:block text-xs sm:text-sm font-medium text-gray-800">
+          <span class="hidden sm:block text-xs sm:text-sm font-bold text-emerald-700">
             Inspecteur
           </span>
-          <i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i>
+          <i class="fa-solid fa-chevron-down text-emerald-500 text-[10px] 
+                    group-hover:translate-y-0.5 transition-transform duration-300"></i>
         </button>
 
         <div
           *ngIf="isProfileOpen"
-          class="absolute right-0 mt-2 w-44 bg-white border border-gray-200
-                 rounded-xl shadow-lg py-1 z-10"
+          class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-xl border border-emerald-100
+                 rounded-xl shadow-2xl py-2 z-10 animate-fadeIn"
         >
           <a
             routerLink="/profile"
-            class="block px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            class="flex items-center gap-3 px-4 py-2.5 text-xs sm:text-sm font-medium text-gray-700
+                   hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700
+                   transition-all duration-200"
             (click)="closeMenus()"
           >
+            <i class="fa-solid fa-user text-emerald-600"></i>
             Profil
           </a>
           <button
-            class="w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-50"
+            class="w-full flex items-center gap-3 text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-gray-700
+                   hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600
+                   transition-all duration-200"
             (click)="onLogout()"
           >
+            <i class="fa-solid fa-right-from-bracket text-red-500"></i>
             Déconnexion
           </button>
         </div>
