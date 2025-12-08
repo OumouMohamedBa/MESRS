@@ -12,6 +12,8 @@ import { ChatbotComponent } from './chatbot/chatbot.component';
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
+  currentDate = new Date(); // Date actuelle pour l'affichage
+  
   stats = {
     textes: {
       total: 0,

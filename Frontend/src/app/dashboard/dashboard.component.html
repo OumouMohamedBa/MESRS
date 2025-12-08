@@ -1,113 +1,152 @@
 <app-sidebar></app-sidebar>
 <app-header [title]="'Tableau de bord'" [withSidebar]="true"></app-header>
 
-<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 bg-gradient-to-b from-emerald-50/40 via-white to-white min-h-screen space-y-8">
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 bg-gradient-to-br from-emerald-50/60 via-teal-50/30 to-white min-h-screen space-y-8">
 
-  <!-- 🌟 En-tête -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+  <!-- Background decorations -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div class="absolute top-20 right-10 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-20 left-10 w-80 h-80 bg-teal-200/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s"></div>
+  </div>
+
+  <!-- 🌟 En-tête avec animation -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fadeIn">
     <div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Tableau de bord</h1>
-      
+      <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+        Tableau de bord
+      </h1>
+      <p class="text-sm text-gray-600 mt-2 flex items-center gap-2">
+        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+        Vue d'ensemble de vos données
+      </p>
+    </div>
+    
+    <!-- Date et heure -->
+    <div class="flex items-center gap-3 px-4 py-2.5 bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-emerald-100">
+      <i class="fa-solid fa-calendar-days text-emerald-600"></i>
+      <span class="text-sm font-medium text-gray-700">{{ currentDate | date:'dd MMMM yyyy' }}</span>
     </div>
   </div>
 
-  <!-- 📊 Statistiques principales -->
+  <!-- 📊 Statistiques principales avec animations -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
     <!-- Total -->
     <div
-      class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-sm hover:shadow-md
-             border border-blue-100/70 p-5 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-[2px]"
+      class="group relative bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-lg hover:shadow-2xl
+             border border-blue-200/50 p-6 flex flex-col justify-between 
+             transition-all duration-300 hover:-translate-y-2 hover:scale-105
+             overflow-hidden animate-fadeIn"
+      style="animation-delay: 0.1s"
     >
-      <div class="flex justify-between items-start mb-4">
-        <div class="p-3 rounded-2xl bg-white/70 shadow-sm">
-          <i class="fa-solid fa-file-lines text-blue-700 text-xl"></i>
+      <!-- Glow effect -->
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      <div class="relative flex justify-between items-start mb-4">
+        <div class="p-3 rounded-xl bg-white shadow-md group-hover:shadow-lg transition-shadow duration-300">
+          <i class="fa-solid fa-file-lines text-blue-600 text-2xl group-hover:scale-110 transition-transform duration-300"></i>
         </div>
-        <span class="text-xs font-semibold text-blue-800 bg-white/60 px-2 py-1 rounded-full">
+        <span class="text-xs font-bold text-blue-700 bg-white px-3 py-1.5 rounded-full shadow-sm">
           Total
         </span>
       </div>
-      <div>
-        <h3 class="text-3xl sm:text-4xl font-bold text-blue-900 leading-none mb-1">
+      <div class="relative">
+        <h3 class="text-4xl sm:text-5xl font-extrabold text-blue-900 leading-none mb-2 group-hover:scale-105 transition-transform duration-300">
           {{ stats.textes.total }}
         </h3>
-        <p class="text-xs sm:text-sm text-blue-800/90">Textes réglementaires</p>
+        <p class="text-sm text-blue-700 font-medium">Textes réglementaires</p>
       </div>
     </div>
 
     <!-- En vigueur -->
     <div
-      class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl shadow-sm hover:shadow-md
-             border border-emerald-100/70 p-5 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-[2px]"
+      class="group relative bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl shadow-lg hover:shadow-2xl
+             border border-emerald-200/50 p-6 flex flex-col justify-between 
+             transition-all duration-300 hover:-translate-y-2 hover:scale-105
+             overflow-hidden animate-fadeIn"
+      style="animation-delay: 0.2s"
     >
-      <div class="flex justify-between items-start mb-4">
-        <div class="p-3 rounded-2xl bg-white/70 shadow-sm">
-          <i class="fa-solid fa-check-circle text-emerald-700 text-xl"></i>
+      <div class="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      <div class="relative flex justify-between items-start mb-4">
+        <div class="p-3 rounded-xl bg-white shadow-md group-hover:shadow-lg transition-shadow duration-300">
+          <i class="fa-solid fa-check-circle text-emerald-600 text-2xl group-hover:scale-110 transition-transform duration-300"></i>
         </div>
-        <span class="text-xs font-semibold text-emerald-800 bg-white/60 px-2 py-1 rounded-full">
+        <span class="text-xs font-bold text-emerald-700 bg-white px-3 py-1.5 rounded-full shadow-sm">
           Actifs
         </span>
       </div>
-      <div>
-        <h3 class="text-3xl sm:text-4xl font-bold text-emerald-900 leading-none mb-1">
+      <div class="relative">
+        <h3 class="text-4xl sm:text-5xl font-extrabold text-emerald-900 leading-none mb-2 group-hover:scale-105 transition-transform duration-300">
           {{ stats.textes.enVigueur }}
         </h3>
-        <p class="text-xs sm:text-sm text-emerald-800/90">Textes en vigueur</p>
+        <p class="text-sm text-emerald-700 font-medium">Textes en vigueur</p>
       </div>
     </div>
 
     <!-- Abrogés -->
     <div
-      class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl shadow-sm hover:shadow-md
-             border border-red-100/70 p-5 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-[2px]"
+      class="group relative bg-gradient-to-br from-red-50 to-red-100 rounded-2xl shadow-lg hover:shadow-2xl
+             border border-red-200/50 p-6 flex flex-col justify-between 
+             transition-all duration-300 hover:-translate-y-2 hover:scale-105
+             overflow-hidden animate-fadeIn"
+      style="animation-delay: 0.3s"
     >
-      <div class="flex justify-between items-start mb-4">
-        <div class="p-3 rounded-2xl bg-white/70 shadow-sm">
-          <i class="fa-solid fa-ban text-red-700 text-xl"></i>
+      <div class="absolute inset-0 bg-gradient-to-br from-red-400/0 to-red-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      <div class="relative flex justify-between items-start mb-4">
+        <div class="p-3 rounded-xl bg-white shadow-md group-hover:shadow-lg transition-shadow duration-300">
+          <i class="fa-solid fa-ban text-red-600 text-2xl group-hover:scale-110 transition-transform duration-300"></i>
         </div>
-        <span class="text-xs font-semibold text-red-800 bg-white/60 px-2 py-1 rounded-full">
+        <span class="text-xs font-bold text-red-700 bg-white px-3 py-1.5 rounded-full shadow-sm">
           Inactifs
         </span>
       </div>
-      <div>
-        <h3 class="text-3xl sm:text-4xl font-bold text-red-900 leading-none mb-1">
+      <div class="relative">
+        <h3 class="text-4xl sm:text-5xl font-extrabold text-red-900 leading-none mb-2 group-hover:scale-105 transition-transform duration-300">
           {{ stats.textes.abroges }}
         </h3>
-        <p class="text-xs sm:text-sm text-red-800/90">Textes abrogés</p>
+        <p class="text-sm text-red-700 font-medium">Textes abrogés</p>
       </div>
     </div>
 
     <!-- Projets -->
     <div
-      class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl shadow-sm hover:shadow-md
-             border border-amber-100/70 p-5 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-[2px]"
+      class="group relative bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl shadow-lg hover:shadow-2xl
+             border border-amber-200/50 p-6 flex flex-col justify-between 
+             transition-all duration-300 hover:-translate-y-2 hover:scale-105
+             overflow-hidden animate-fadeIn"
+      style="animation-delay: 0.4s"
     >
-      <div class="flex justify-between items-start mb-4">
-        <div class="p-3 rounded-2xl bg-white/70 shadow-sm">
-          <i class="fa-solid fa-clock text-amber-700 text-xl"></i>
+      <div class="absolute inset-0 bg-gradient-to-br from-amber-400/0 to-amber-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      <div class="relative flex justify-between items-start mb-4">
+        <div class="p-3 rounded-xl bg-white shadow-md group-hover:shadow-lg transition-shadow duration-300">
+          <i class="fa-solid fa-clock text-amber-600 text-2xl group-hover:scale-110 transition-transform duration-300"></i>
         </div>
-        <span class="text-xs font-semibold text-amber-800 bg-white/60 px-2 py-1 rounded-full">
+        <span class="text-xs font-bold text-amber-700 bg-white px-3 py-1.5 rounded-full shadow-sm">
           En attente
         </span>
       </div>
-      <div>
-        <h3 class="text-3xl sm:text-4xl font-bold text-amber-900 leading-none mb-1">
+      <div class="relative">
+        <h3 class="text-4xl sm:text-5xl font-extrabold text-amber-900 leading-none mb-2 group-hover:scale-105 transition-transform duration-300">
           {{ stats.textes.projet }}
         </h3>
-        <p class="text-xs sm:text-sm text-amber-800/90">Textes en projet</p>
+        <p class="text-sm text-amber-700 font-medium">Textes en projet</p>
       </div>
     </div>
   </div>
 
-  <!-- 📂 Autres informations -->
+  <!-- 📂 Autres informations avec animations -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
     <!-- 🏆 Top catégories -->
-    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-blue-50">
-          <i class="fa-solid fa-layer-group text-blue-600 text-sm"></i>
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl border border-emerald-100 p-6 
+                transition-all duration-300 hover:-translate-y-1 animate-fadeIn" style="animation-delay: 0.5s">
+      <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
+        <span class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+          <i class="fa-solid fa-layer-group text-white text-base"></i>
         </span>
-        <span>Top catégories de textes</span>
+        <span class="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">Top catégories de textes</span>
       </h3>
 
       <ul class="space-y-3">

@@ -1,76 +1,254 @@
 <aside
-  class="h-screen w-72 bg-white border border-gray-100 rounded-2xl shadow-lg 
-         fixed left-4 top-4 z-40 flex flex-col overflow-hidden transition-all duration-300">
+  class="h-[calc(100vh-2rem)] w-72 
+         bg-gradient-to-b from-white via-emerald-50/50 to-teal-50/30
+         rounded-2xl shadow-2xl 
+         fixed left-4 top-4 z-40 flex flex-col overflow-hidden 
+         transition-all duration-500
+         border border-emerald-100">
+
+  <!-- Background decorations -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <!-- Gradient orbs - tons verts clairs -->
+    <div class="absolute -top-20 -left-20 w-40 h-40 bg-emerald-300/30 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/3 -right-10 w-32 h-32 bg-teal-300/25 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-20 -left-10 w-36 h-36 bg-green-200/30 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-0 w-48 h-48 bg-emerald-200/20 rounded-full blur-3xl"></div>
+    
+    <!-- Grid pattern - vert -->
+    <div class="absolute inset-0 opacity-[0.03]" 
+         style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%2310b981\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+  </div>
 
   <!-- 🔹 Zone du logo : FIXE -->
-  <div class="flex flex-col items-center justify-center pt-10 pb-6 bg-white/80 backdrop-blur-md shrink-0">
-    <img
-      src="assets/images/logo-removebg-preview.png"
-      alt="Logo"
-      class="w-28 h-28 mb-2 drop-shadow-md object-contain"
-    />
+  <div class="relative flex flex-col items-center justify-center pt-8 pb-6 shrink-0">
+    <!-- Logo container with glow -->
+    <div class="relative group">
+      <div class="absolute inset-0 bg-gradient-to-br from-emerald-300/40 to-teal-300/40 rounded-full blur-2xl 
+                  scale-75 group-hover:scale-100 transition-transform duration-500"></div>
+      <img
+        src="assets/images/logo-removebg-preview.png"
+        alt="Logo MESRS"
+        class="relative w-24 h-24 mb-3 drop-shadow-xl object-contain
+               transition-transform duration-500 group-hover:scale-105"
+      />
+    </div>
+    
+    <!-- Title -->
+    <h2 class="text-emerald-800 font-bold text-lg tracking-wide">MESRS</h2>
+    <p class="text-emerald-600/80 text-xs font-medium tracking-wider uppercase mt-1">Inspection Générale</p>
+    
+    <!-- Separator line -->
+    <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent mt-4"></div>
   </div>
 
   <!-- 🔹 Menu : SCROLLABLE -->
-  <nav
-    class="flex-1 px-2 pb-4 overflow-y-auto space-y-1 
-           scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+  <nav class="relative flex-1 px-3 pb-4 overflow-y-auto space-y-1.5
+              scrollbar-thin scrollbar-thumb-emerald-300 scrollbar-track-transparent">
     
-    <a routerLink="/dashboard" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="home" class="w-5 h-5"></lucide-icon>
-      <span>Dashboard</span>
+    <!-- Section label -->
+    <p class="text-xs text-emerald-600 uppercase tracking-wider font-semibold px-3 pt-2 pb-3">Menu principal</p>
+    
+    <a routerLink="/dashboard" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="home" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Dashboard</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/textes" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="scale" class="w-5 h-5"></lucide-icon>
-      <span>Textes réglementaires</span>
+    <a routerLink="/textes" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="scale" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Textes réglementaires</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/etablissements" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="building" class="w-5 h-5"></lucide-icon>
-      <span>Établissements</span>
+    <a routerLink="/etablissements" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="building" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Établissements</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/infrastructures" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="graduation-cap" class="w-5 h-5"></lucide-icon>
-      <span>Infrastructures</span>
+    <a routerLink="/infrastructures" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="school" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Infrastructures</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/formations" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="graduation-cap" class="w-5 h-5"></lucide-icon>
-      <span>Formations</span>
+    <a routerLink="/formations" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="graduation-cap" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Formations</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/ressources" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="users" class="w-5 h-5"></lucide-icon>
-      <span>Ressources humaines</span>
+    <a routerLink="/ressources" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="users" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Ressources humaines</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/finances" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="coins" class="w-5 h-5"></lucide-icon>
-      <span>Finances</span>
+    <a routerLink="/finances" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="coins" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Finances</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/recherche" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="flask-conical" class="w-5 h-5"></lucide-icon>
-      <span>Recherche</span>
+    <a routerLink="/recherche" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="flask-conical" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Recherche</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/indicateurs" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="bar-chart-3" class="w-5 h-5"></lucide-icon>
-      <span>Indicateurs</span>
+    <a routerLink="/indicateurs" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="bar-chart-3" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Indicateurs</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/inspection" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="clipboard-list" class="w-5 h-5"></lucide-icon>
-      <span>Inspection</span>
+    <a routerLink="/inspection" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="clipboard-list" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Inspection</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
-    <a *ngIf="isIG" routerLink="/users" routerLinkActive="active-link" class="menu-item">
-      <lucide-icon name="users" class="w-5 h-5"></lucide-icon>
-      <span>Utilisateurs</span>
+    <a *ngIf="isIG" routerLink="/users" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="user-cog" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Utilisateurs</span>
+      <div class="sidebar-indicator"></div>
     </a>
 
   </nav>
 
 </aside>
+
+<style>
+/* Sidebar item styles - Fond clair */
+.sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  color: #4b5563; /* gray-600 */
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.3s ease-out;
+  text-decoration: none;
+}
+
+.sidebar-item:hover {
+  color: #065f46; /* emerald-800 */
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.sidebar-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background: rgba(16, 185, 129, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  color: #10b981; /* emerald-500 */
+}
+
+.sidebar-item:hover .sidebar-icon {
+  background: linear-gradient(to bottom right, rgba(16, 185, 129, 0.25), rgba(20, 184, 166, 0.25));
+  color: #059669; /* emerald-600 */
+}
+
+.sidebar-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.sidebar-indicator {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.25rem;
+  height: 0;
+  background: linear-gradient(to bottom, #10b981, #14b8a6);
+  border-radius: 9999px 0 0 9999px;
+  transition: all 0.3s;
+  opacity: 0;
+}
+
+/* Active state */
+.sidebar-item.active-link {
+  color: white;
+  background: linear-gradient(to right, #10b981, #14b8a6);
+  box-shadow: 0 4px 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+.sidebar-item.active-link .sidebar-icon {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.sidebar-item.active-link .sidebar-indicator {
+  height: 2rem;
+  opacity: 1;
+  background: white;
+}
+
+/* Hover effects */
+.sidebar-item:hover .sidebar-indicator {
+  height: 1rem;
+  opacity: 0.5;
+}
+
+/* Custom scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(16, 185, 129, 0.4), rgba(20, 184, 166, 0.4));
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, rgba(16, 185, 129, 0.6), rgba(20, 184, 166, 0.6));
+}
+</style>

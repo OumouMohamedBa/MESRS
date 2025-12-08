@@ -19,8 +19,12 @@ import { EtablissementsListComponent } from './etablissements/etablissements-lis
 import { EtablissementsAddComponent } from './etablissements/etablissements-add.component';
 import { EtablissementsEditComponent } from './etablissements/etablissements-edit.component';
 import { EtablissementsDetailComponent } from './etablissements/etablissements-detail.component';
+import { AboutComponent } from './pages/about/about.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 export const routes: Routes = [
+  { path: 'about', component: AboutComponent },
+  { path: 'contact', component: ContactComponent },
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'etablissements/nouveau', component: EtablissementsAddComponent, canActivate: [AuthGuard] },

@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardService, ChatbotResponse } from '../dashboard.service';
+
+// Déclaration pour TypeScript de l'API Web Speech
+declare var webkitSpeechRecognition: any;
 
 @Component({
   selector: 'app-chatbot',
@@ -9,12 +12,18 @@ import { DashboardService, ChatbotResponse } from '../dashboard.service';
   imports: [CommonModule, FormsModule],
   templateUrl: './chatbot.component.html'
 })
-export class ChatbotComponent implements OnInit {
+export class ChatbotComponent implements OnInit, OnDestroy {
   messages: { type: 'user' | 'bot'; content: string; data?: any; timestamp: Date }[] = [];
   currentMessage = '';
   isLoading = false;
   isOpen = false;
   loadingTimeout?: any; // Pour pouvoir annuler le chargement
+  
+  // Propriétés pour la reconnaissance vocale
+  isListening = false;
+  speechRecognition: any;
+  speechSupported = false;
+  voiceError = '';
   
   quickSuggestions = [
     'Combien d\'établissements ?',
@@ -24,11 +33,14 @@ export class ChatbotComponent implements OnInit {
     'Test - Données factices'
   ];
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService) {
+    this.initSpeechRecognition();
+  }
 
   ngOnInit(): void {
     // Message de bienvenue
-    this.addBotMessage('Bonjour ! Je suis votre assistant statistique. Je peux vous aider avec:\n• "Combien d\'établissements ?"\n• "Combien de textes pour l\'établissement E2 ?"\n• "Combien de formations pour E1 ?"\n• "Générer un rapport"\n• "Test - Données factices" (pour tester)\n\n💡 Vous pouvez annuler une question en cours avec le bouton "Annuler"\n\nComment puis-je vous aider ?');
+    const voiceSupport = this.speechSupported ? '\n\n🎤 Vous pouvez aussi utiliser la commande vocale !' : '';
+    this.addBotMessage('Bonjour ! Je suis votre assistant statistique. Je peux vous aider avec:\n• "Combien d\'établissements ?"\n• "Combien de textes pour l\'établissement E2 ?"\n• "Combien de formations pour E1 ?"\n• "Générer un rapport"\n• "Test - Données factices" (pour tester)' + voiceSupport + '\n\nComment puis-je vous aider ?');
   }
 
   toggleChat(): void {
@@ -239,5 +251,124 @@ export class ChatbotComponent implements OnInit {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+  }
+
+  // ========== RECONNAISSANCE VOCALE ==========
+
+  private initSpeechRecognition(): void {
+    // Vérifier si l'API est supportée
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (SpeechRecognition) {
+      this.speechSupported = true;
+      this.speechRecognition = new SpeechRecognition();
+      
+      // Configuration
+      this.speechRecognition.lang = 'fr-FR'; // Français
+      this.speechRecognition.continuous = false; // Arrêter après une phrase
+      this.speechRecognition.interimResults = true; // Résultats intermédiaires
+      this.speechRecognition.maxAlternatives = 1;
+
+      // Événement: résultat de la reconnaissance
+      this.speechRecognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        const isFinal = event.results[0].isFinal;
+        
+        this.currentMessage = transcript;
+        
+        // Si c'est le résultat final, envoyer automatiquement
+        if (isFinal) {
+          this.isListening = false;
+          // Petit délai pour que l'utilisateur voie le texte
+          setTimeout(() => {
+            if (this.currentMessage.trim()) {
+              this.sendMessage();
+            }
+          }, 500);
+        }
+      };
+
+      // Événement: début de l'écoute
+      this.speechRecognition.onstart = () => {
+        this.isListening = true;
+        this.voiceError = '';
+        console.log('🎤 Écoute démarrée...');
+      };
+
+      // Événement: fin de l'écoute
+      this.speechRecognition.onend = () => {
+        this.isListening = false;
+        console.log('🎤 Écoute terminée');
+      };
+
+      // Événement: erreur
+      this.speechRecognition.onerror = (event: any) => {
+        this.isListening = false;
+        console.error('Erreur de reconnaissance vocale:', event.error);
+        
+        switch (event.error) {
+          case 'no-speech':
+            this.voiceError = 'Aucune voix détectée. Réessayez.';
+            break;
+          case 'audio-capture':
+            this.voiceError = 'Microphone non disponible.';
+            break;
+          case 'not-allowed':
+            this.voiceError = 'Accès au microphone refusé.';
+            break;
+          case 'network':
+            this.voiceError = 'Erreur réseau.';
+            break;
+          default:
+            this.voiceError = 'Erreur de reconnaissance vocale.';
+        }
+        
+        // Effacer l'erreur après 3 secondes
+        setTimeout(() => {
+          this.voiceError = '';
+        }, 3000);
+      };
+    } else {
+      this.speechSupported = false;
+      console.warn('La reconnaissance vocale n\'est pas supportée par ce navigateur.');
+    }
+  }
+
+  // Démarrer/Arrêter l'écoute vocale
+  toggleVoiceInput(): void {
+    if (!this.speechSupported) {
+      this.voiceError = 'Reconnaissance vocale non supportée.';
+      setTimeout(() => this.voiceError = '', 3000);
+      return;
+    }
+
+    if (this.isListening) {
+      this.stopListening();
+    } else {
+      this.startListening();
+    }
+  }
+
+  startListening(): void {
+    if (this.speechRecognition && !this.isListening) {
+      try {
+        this.speechRecognition.start();
+      } catch (error) {
+        console.error('Erreur au démarrage de la reconnaissance vocale:', error);
+      }
+    }
+  }
+
+  stopListening(): void {
+    if (this.speechRecognition && this.isListening) {
+      this.speechRecognition.stop();
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Arrêter la reconnaissance vocale si active
+    if (this.speechRecognition && this.isListening) {
+      this.speechRecognition.stop();
+    }
   }
 }
