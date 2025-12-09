@@ -42,8 +42,13 @@ public class UserService {
     User user = new User();
     dto.updateEntity(user, role);
 
-    // password par défaut (à adapter, ou générer aléatoire)
-    user.setPassword("changeme");
+    // password
+    if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+      user.setPassword(dto.getPassword());
+    } else {
+      user.setPassword("changeme");
+    }
+    
     user.setValidated(true); // ou false si tu veux validation plus tard
 
     User saved = userRepository.save(user);

@@ -10,6 +10,7 @@ public class UserDto {
   private String username;
   private String phone;
   private String role;   // ex: "INSPECTEUR_GENERAL"
+  private String password; // Nouveau champ pour la création/modif
   private boolean active;
 
   public UserDto() {}
@@ -52,6 +53,14 @@ public class UserDto {
 
   public void setRole(String role) {
     this.role = role;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   public boolean isActive() {
