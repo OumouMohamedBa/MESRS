@@ -136,15 +136,17 @@
                  transition-all duration-300 hover:scale-105 active:scale-95"
           (click)="toggleProfileMenu($event)"
         >
+          <!-- Avatar avec initiales ou photo -->
           <span
             class="inline-flex h-8 w-8 items-center justify-center rounded-full
                    bg-gradient-to-br from-emerald-600 to-teal-600 text-white text-xs font-bold
                    shadow-md group-hover:shadow-lg transition-shadow duration-300"
           >
-            IN
+            {{ getUserInitials() }}
           </span>
+          <!-- Nom de l'utilisateur -->
           <span class="hidden sm:block text-xs sm:text-sm font-bold text-emerald-700">
-            Inspecteur
+            {{ getUserDisplayName() }}
           </span>
           <i class="fa-solid fa-chevron-down text-emerald-500 text-[10px] 
                     group-hover:translate-y-0.5 transition-transform duration-300"></i>
@@ -155,16 +157,12 @@
           class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-xl border border-emerald-100
                  rounded-xl shadow-2xl py-2 z-10 animate-fadeIn"
         >
-          <a
-            routerLink="/profile"
-            class="flex items-center gap-3 px-4 py-2.5 text-xs sm:text-sm font-medium text-gray-700
-                   hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700
-                   transition-all duration-200"
-            (click)="closeMenus()"
-          >
-            <i class="fa-solid fa-user text-emerald-600"></i>
-            Profil
-          </a>
+          <!-- En-tête du menu avec info utilisateur -->
+          <div class="px-4 py-3 border-b border-gray-100">
+            <p class="text-xs text-gray-500">Connecté en tant que</p>
+            <p class="text-sm font-bold text-gray-900">{{ getUserDisplayName() }}</p>
+          </div>
+          
           <button
             class="w-full flex items-center gap-3 text-left px-4 py-2.5 text-xs sm:text-sm font-medium text-gray-700
                    hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600

@@ -1,4 +1,4 @@
-// src/app/users/users-list.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -8,6 +8,7 @@ import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 import { UserService, UserDto, UserPayload } from '../services/user.service';
+import { NotificationService } from '../services/notification.service';
 
 export interface RoleOption {
   id: number;
@@ -20,7 +21,7 @@ export interface RoleOption {
   standalone: true,
   imports: [CommonModule, FormsModule, HeaderComponent, SidebarComponent],
   templateUrl: './users-list.component.html',
-  styleUrls: ['./users-list.component.css'],
+  
 })
 export class UsersListComponent implements OnInit {
   // liste d’utilisateurs affichée dans le tableau
@@ -56,7 +57,8 @@ export class UsersListComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -64,6 +66,11 @@ export class UsersListComponent implements OnInit {
   }
 
   // --------- helpers ---------
+
+  getRoleLabel(code: string): string {
+    const found = this.roleOptions.find((r) => r.code === code);
+    return found ? found.label : code;
+  }
 
   openForm(): void {
     this.editingUserId = null;
@@ -103,7 +110,7 @@ export class UsersListComponent implements OnInit {
       error: (err) => {
         console.error('Erreur chargement users', err);
         this.loading = false;
-        alert("Impossible de charger les utilisateurs.");
+        this.notification.error('Impossible de charger les utilisateurs');
       },
     });
   }
@@ -119,11 +126,11 @@ export class UsersListComponent implements OnInit {
 
   onSubmit(form: NgForm): void {
     if (form.invalid) {
-      alert('Merci de remplir les champs obligatoires.');
+      this.notification.warning('Merci de remplir les champs obligatoires');
       return;
     }
     if (!this.formModel.roleCode) {
-      alert('Merci de choisir un rôle.');
+      this.notification.warning('Merci de choisir un rôle');
       return;
     }
 
@@ -132,7 +139,7 @@ export class UsersListComponent implements OnInit {
       fullname: this.formModel.name,
       username: this.formModel.username,
       phone: this.formModel.phone,
-      // le backend ne lit pas password / photo / validated pour l'instant
+      password: this.formModel.password,
       active: this.formModel.active,
       role: this.formModel.roleCode,
     };
@@ -153,12 +160,13 @@ export class UsersListComponent implements OnInit {
         this.formModel = this.getEmptyForm();
         form.resetForm(this.formModel);
         this.showForm = false;
+        const wasEditing = this.editingUserId;
         this.editingUserId = null;
-        alert(this.editingUserId ? 'Utilisateur mis à jour avec succès.' : 'Utilisateur créé avec succès.');
+        this.notification.success(wasEditing ? 'Utilisateur mis à jour avec succès' : 'Utilisateur créé avec succès');
       },
       error: (err) => {
         console.error('Erreur sauvegarde utilisateur', err);
-        alert("Erreur lors de la sauvegarde de l'utilisateur.");
+        this.notification.error('Erreur lors de la sauvegarde de l\'utilisateur');
       },
     });
   }
@@ -170,9 +178,9 @@ export class UsersListComponent implements OnInit {
       name: user.fullname,
       username: user.username,
       phone: user.phone || '',
-      password: '',
+      password: '', // On laisse vide pour ne pas écraser s'il ne change pas
       photo: user.photo || null,
-      roleCode: user.role?.code || null,
+      roleCode: user.role || null,
       active: user.active,
       validated: user.validated,
     };
@@ -190,7 +198,7 @@ export class UsersListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur suppression utilisateur', err);
-        alert("Impossible de supprimer l'utilisateur.");
+        this.notification.error('Impossible de supprimer l\'utilisateur');
       },
     });
   }

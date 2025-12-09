@@ -17,12 +17,22 @@ export interface UserDto {
   phone: string | null;
   password?: string | null;
   photo: string | null;
-  role: RoleRef;
+  role: string; // "INSPECTEUR_GENERAL" etc.
   active: boolean;
   validated: boolean;
 }
 
-export type UserPayload = any;
+export interface UserPayload {
+  id?: number | null;
+  fullname: string;
+  username: string;
+  phone: string;
+  password?: string;
+  photo?: string | null;
+  role: string;
+  active: boolean;
+  validated?: boolean;
+}
 
 @Injectable({
   providedIn: 'root'

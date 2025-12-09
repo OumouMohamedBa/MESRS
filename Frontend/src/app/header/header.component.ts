@@ -1,6 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule, UpperCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -21,6 +22,25 @@ export class HeaderComponent {
 
   isLangOpen = false;
   isProfileOpen = false;
+
+  constructor(private authService: AuthService) {}
+
+  get currentUser() {
+    return this.authService.currentUser;
+  }
+
+  getUserInitials(): string {
+    const user = this.currentUser;
+    if (!user || !user.username) return 'IN';
+    return user.username.substring(0, 2).toUpperCase();
+  }
+
+  getUserDisplayName(): string {
+    const user = this.currentUser;
+    if (!user) return 'Inspecteur';
+    // Afficher le username ou un nom formaté
+    return user.username;
+  }
 
   // 🔹 Fermer les menus quand on clique en dehors
   @HostListener('document:click', ['$event'])
@@ -70,7 +90,8 @@ export class HeaderComponent {
   }
 
   onLogout() {
-    this.logout.emit();
+    this.authService.logout();
+    this.logout.emit(); // On garde l'event au cas où, mais l'action principale est faite
     this.isProfileOpen = false;
   }
 }

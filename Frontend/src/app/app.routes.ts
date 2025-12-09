@@ -43,7 +43,6 @@ export const routes: Routes = [
   { path: 'formations', component: FormationsListComponent, canActivate: [AuthGuard] },
   { path: 'etablissements', component: EtablissementsListComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersListComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['INSPECTEUR_GENERAL'] } },
-  { path: 'users', component: UsersListComponent },
   { path: '', pathMatch: 'full', component: HomeComponent },
   { path: '**', redirectTo: 'dashboard' }
 ];

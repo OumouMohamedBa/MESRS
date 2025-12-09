@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, RouterLink],
-  templateUrl: './login.component.html',
+  imports: [ReactiveFormsModule, NgIf
+  ],
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
   form!: FormGroup;
@@ -19,7 +21,8 @@ export class LoginComponent {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private auth: AuthService
+    private auth: AuthService,
+    private notification: NotificationService
   ) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
@@ -46,7 +49,7 @@ export class LoginComponent {
       error: (err) => {
         this.submitting = false;
         console.error('Erreur login', err);
-        alert('Identifiants incorrects ou compte non autorisé.');
+        this.notification.error('Identifiants incorrects ou compte non autorisé');
       },
     });
   }
