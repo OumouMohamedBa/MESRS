@@ -3,10 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Formation, FormationBackendPayload, FormationUpdatePayload, UploadedDoc } from './formation.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class FormationService {
-  private readonly apiUrl = 'http://localhost:8080/api/formation';
+  private readonly apiUrl = `${environment.apiUrl}/api/formation`;
 
   constructor(private http: HttpClient) {}
 

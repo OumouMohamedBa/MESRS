@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export type Role = 'INSPECTEUR_GENERAL' | 'SOUS_INSPECTEUR';
 

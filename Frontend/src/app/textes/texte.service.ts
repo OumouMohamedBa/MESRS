@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Texte } from './texte.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TexteService {
 
   // adapte selon ton backend (host/port/contexte)
-  private readonly apiUrl = 'http://localhost:8080/api/texte';
+  private readonly apiUrl = `${environment.apiUrl}/api/texte`;
 
   constructor(private http: HttpClient) {}
 

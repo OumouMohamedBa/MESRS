@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { EtablissementService } from '../etablissements/etablissement.service';
 import { FormationService } from '../formations/formation.service';
+import { environment } from '../../environments/environment';
 
 export interface TextesStats {
   total: number;

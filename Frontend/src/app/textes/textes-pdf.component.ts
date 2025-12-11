@@ -6,6 +6,7 @@ import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { TexteService } from './texte.service';
 import { Texte } from './texte.model';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-textes-pdf',
