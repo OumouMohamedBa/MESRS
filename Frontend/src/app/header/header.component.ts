@@ -1,12 +1,12 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule, UpperCasePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+
 import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, UpperCasePipe, CommonModule],
+  imports: [UpperCasePipe, CommonModule],
   templateUrl: './header.component.html'
 })
 export class HeaderComponent {
