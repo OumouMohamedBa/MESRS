@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule, UpperCasePipe } from '@angular/common';
 
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../services/auth.service'; 
 
 @Component({
   selector: 'app-header',
