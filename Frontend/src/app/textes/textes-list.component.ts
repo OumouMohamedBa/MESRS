@@ -33,6 +33,10 @@ export class TextesListComponent implements OnInit {
   // 🔹 Données
   all = signal<Texte[]>([]);
 
+  showDeleteConfirm = signal(false);
+  pendingDeleteTexte = signal<Texte | null>(null);
+  deleting = signal(false);
+
   // --- DERIVED ---
 
   filtered = computed(() => {
@@ -88,7 +92,6 @@ export class TextesListComponent implements OnInit {
   }
 
   remove(id: string) {
-    if (!confirm('Supprimer ce texte ?')) return;
     this.svc.delete(id).subscribe({
       next: () => {
         this.all.update(list => list.filter(t => t.id !== id));
@@ -98,6 +101,41 @@ export class TextesListComponent implements OnInit {
       },
       error: err => {
         console.error('Erreur lors de la suppression du texte', err);
+      }
+    });
+  }
+
+  requestDelete(t: Texte): void {
+    this.pendingDeleteTexte.set(t);
+    this.showDeleteConfirm.set(true);
+    document.body.style.overflow = 'hidden';
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm.set(false);
+    this.pendingDeleteTexte.set(null);
+    this.deleting.set(false);
+    document.body.style.overflow = 'auto';
+  }
+
+  confirmDelete(): void {
+    const t = this.pendingDeleteTexte();
+    if (!t || this.deleting()) {
+      return;
+    }
+    this.deleting.set(true);
+
+    this.svc.delete(t.id).subscribe({
+      next: () => {
+        this.all.update(list => list.filter(x => x.id !== t.id));
+        if (this.page() > this.totalPages()) {
+          this.page.set(this.totalPages());
+        }
+        this.cancelDelete();
+      },
+      error: err => {
+        console.error('Erreur lors de la suppression du texte', err);
+        this.deleting.set(false);
       }
     });
   }

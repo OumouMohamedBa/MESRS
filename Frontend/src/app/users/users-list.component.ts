@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -6,6 +5,7 @@ import { Router } from '@angular/router';
 
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { ModalComponent } from '../shared/modal/modal.component';
 
 import { UserService, UserDto, UserPayload } from '../services/user.service';
 import { NotificationService } from '../services/notification.service';
@@ -19,9 +19,8 @@ export interface RoleOption {
 @Component({
   selector: 'app-users-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent, SidebarComponent],
+  imports: [CommonModule, FormsModule, HeaderComponent, SidebarComponent, ModalComponent],
   templateUrl: './users-list.component.html',
-  
 })
 export class UsersListComponent implements OnInit {
   // liste d’utilisateurs affichée dans le tableau
@@ -52,6 +51,11 @@ export class UsersListComponent implements OnInit {
   // contrôle de l'affichage du formulaire de création
   showForm = false;
 
+  // confirmation de suppression
+  showDeleteConfirm = false;
+  pendingDeleteUser: UserDto | null = null;
+  deleting = false;
+
   // id de l'utilisateur en cours d'édition (null = création)
   editingUserId: number | null = null;
 
@@ -76,6 +80,7 @@ export class UsersListComponent implements OnInit {
     this.editingUserId = null;
     this.formModel = this.getEmptyForm();
     this.showForm = true;
+    this.lockBodyScroll();
   }
 
   closeForm(form?: NgForm): void {
@@ -84,6 +89,7 @@ export class UsersListComponent implements OnInit {
     }
     this.showForm = false;
     this.editingUserId = null;
+    this.unlockBodyScrollIfNoModal();
   }
 
   private getEmptyForm() {
@@ -98,6 +104,16 @@ export class UsersListComponent implements OnInit {
       active: true,
       validated: true,
     };
+  }
+
+  private lockBodyScroll(): void {
+    document.body.style.overflow = 'hidden';
+  }
+
+  private unlockBodyScrollIfNoModal(): void {
+    if (!this.showForm && !this.showDeleteConfirm) {
+      document.body.style.overflow = 'auto';
+    }
   }
 
   loadUsers(): void {
@@ -157,11 +173,8 @@ export class UsersListComponent implements OnInit {
         } else {
           this.users.push(user);
         }
-        this.formModel = this.getEmptyForm();
-        form.resetForm(this.formModel);
-        this.showForm = false;
         const wasEditing = this.editingUserId;
-        this.editingUserId = null;
+        this.closeForm(form);
         this.notification.success(wasEditing ? 'Utilisateur mis à jour avec succès' : 'Utilisateur créé avec succès');
       },
       error: (err) => {
@@ -185,20 +198,41 @@ export class UsersListComponent implements OnInit {
       validated: user.validated,
     };
     this.showForm = true;
+    this.lockBodyScroll();
   }
 
-  onDelete(user: UserDto): void {
-    if (!confirm(`Supprimer l'utilisateur ${user.username} ?`)) {
+  requestDelete(user: UserDto): void {
+    console.log('[Users] requestDelete', user);
+    this.pendingDeleteUser = user;
+    this.showDeleteConfirm = true;
+    this.lockBodyScroll();
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm = false;
+    this.pendingDeleteUser = null;
+    this.deleting = false;
+    this.unlockBodyScrollIfNoModal();
+  }
+
+  confirmDelete(): void {
+    if (!this.pendingDeleteUser || this.deleting) {
       return;
     }
+
+    const user = this.pendingDeleteUser;
+    this.deleting = true;
 
     this.userService.delete(user.id).subscribe({
       next: () => {
         this.users = this.users.filter((u) => u.id !== user.id);
+        this.notification.success('Utilisateur supprimé');
+        this.cancelDelete();
       },
       error: (err) => {
         console.error('Erreur suppression utilisateur', err);
         this.notification.error('Impossible de supprimer l\'utilisateur');
+        this.deleting = false;
       },
     });
   }

@@ -18,6 +18,8 @@ export class TextesAddComponent {
   submitting = false;
   selectedFileName = '';
 
+  private readonly maxPdfSizeBytes = 10 * 1024 * 1024;
+
   // variable pour stocker le titre "pur" (sans préfixe)
   private baseTitle: string = '';
 
@@ -130,6 +132,17 @@ export class TextesAddComponent {
     if (file.type !== 'application/pdf') {
       alert('Veuillez sélectionner un fichier PDF.');
       input.value = '';
+      return;
+    }
+
+    if (file.size > this.maxPdfSizeBytes) {
+      const maxMb = (this.maxPdfSizeBytes / (1024 * 1024)).toFixed(0);
+      const fileMb = (file.size / (1024 * 1024)).toFixed(1);
+      alert(`Le fichier est trop volumineux (${fileMb} MB). Taille maximale autorisée : ${maxMb} MB.`);
+      input.value = '';
+      this.selectedFileName = '';
+      this.selectedFile = null;
+      this.form.patchValue({ fichierUrl: '' });
       return;
     }
 

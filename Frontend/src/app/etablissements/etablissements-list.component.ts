@@ -35,6 +35,10 @@ export class EtablissementsListComponent implements OnInit {
   // 🔹 Données
   all = signal<Etablissement[]>([]);
 
+  showDeleteConfirm = signal(false);
+  pendingDeleteEtab = signal<Etablissement | null>(null);
+  deleting = signal(false);
+
   ngOnInit(): void {
     this.reload();
   }
@@ -101,8 +105,6 @@ export class EtablissementsListComponent implements OnInit {
   }
 
   remove(id: string) {
-    if (!confirm('Supprimer cet établissement ?')) return;
-
     // Appel HTTP asynchrone pour supprimer, puis recharger la liste
     this.svc.delete(id).subscribe({
       next: () => {
@@ -110,6 +112,38 @@ export class EtablissementsListComponent implements OnInit {
       },
       error: err => {
         console.error('Erreur lors de la suppression de l\'établissement', err);
+      }
+    });
+  }
+
+  requestDelete(e: Etablissement): void {
+    this.pendingDeleteEtab.set(e);
+    this.showDeleteConfirm.set(true);
+    document.body.style.overflow = 'hidden';
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm.set(false);
+    this.pendingDeleteEtab.set(null);
+    this.deleting.set(false);
+    document.body.style.overflow = 'auto';
+  }
+
+  confirmDelete(): void {
+    const e = this.pendingDeleteEtab();
+    if (!e || this.deleting()) {
+      return;
+    }
+    this.deleting.set(true);
+
+    this.svc.delete(e.id).subscribe({
+      next: () => {
+        this.reload();
+        this.cancelDelete();
+      },
+      error: err => {
+        console.error('Erreur lors de la suppression de l\'établissement', err);
+        this.deleting.set(false);
       }
     });
   }

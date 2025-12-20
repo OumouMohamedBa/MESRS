@@ -39,8 +39,8 @@ export interface UserPayload {
   providedIn: 'root'
 })
 export class UserService {
-  private api = 'http://localhost:8080/users';
-  private rolesApi = 'http://localhost:8080/roles';
+  private api = `${environment.apiUrl}/users`;
+  private rolesApi = `${environment.apiUrl}/roles`;
 
   constructor(private http: HttpClient) {}
 

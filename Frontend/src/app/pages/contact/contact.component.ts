@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -11,4 +11,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class ContactComponent {
 
+  @Output() close = new EventEmitter<void>();
+
+  onClose(): void {
+    this.close.emit();
+  }
 }

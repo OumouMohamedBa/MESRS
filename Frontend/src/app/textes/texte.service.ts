@@ -31,7 +31,10 @@ export class TexteService {
   create(data: Texte, file: File): Observable<Texte> {
     const formData = new FormData();
 
-    formData.append('id', data.id);
+    // Générer un ID unique si non fourni
+    const id = data.id || `texte-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    formData.append('id', id);
     formData.append('titre', data.titre);
     formData.append('typeDocument', data.typeDocument);
     if (data.objet) {
@@ -44,7 +47,11 @@ export class TexteService {
       formData.append('resumeContenu', data.resumeContenu);
     }
     formData.append('statutApplication', data.statutApplication);
-    formData.append('file', file);
+    
+    // Utiliser 'file' comme RequestPart pour correspondre au backend
+    if (file) {
+      formData.append('file', file, file.name);
+    }
 
     return this.http.post<Texte>(this.apiUrl, formData);
   }

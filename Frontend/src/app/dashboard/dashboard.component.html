@@ -10,23 +10,87 @@
   </div>
 
   <!-- 🌟 En-tête avec animation -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fadeIn">
-    <div>
-      <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-        Tableau de bord
-      </h1>
-      <p class="text-sm text-gray-600 mt-2 flex items-center gap-2">
-        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-        Vue d'ensemble de vos données
-      </p>
+  <section class="bg-white/60 backdrop-blur-sm rounded-2xl border border-emerald-100/70 shadow-sm px-5 sm:px-6 py-5">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fadeIn">
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          Tableau de bord
+        </h1>
+        <p class="text-sm text-gray-600 mt-2 flex items-center gap-2">
+          <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+          Vue d'ensemble de vos données
+        </p>
+      </div>
+      
+      <!-- Date et heure -->
+      <div class="flex items-center gap-3 px-4 py-2.5 bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-emerald-100">
+        <i class="fa-solid fa-calendar-days text-emerald-600"></i>
+        <span class="text-sm font-medium text-gray-700">{{ currentDate | date:'dd MMMM yyyy' }}</span>
+      </div>
     </div>
-    
-    <!-- Date et heure -->
-    <div class="flex items-center gap-3 px-4 py-2.5 bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-emerald-100">
-      <i class="fa-solid fa-calendar-days text-emerald-600"></i>
-      <span class="text-sm font-medium text-gray-700">{{ currentDate | date:'dd MMMM yyyy' }}</span>
+  </section>
+
+  <section class="bg-white/70 backdrop-blur-sm rounded-2xl border border-emerald-100/70 shadow-sm p-2">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <button
+        type="button"
+        (click)="setTab('textes')"
+        class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
+        [class.bg-emerald-600]="activeTab === 'textes'"
+        [class.text-white]="activeTab === 'textes'"
+        [class.bg-white]="activeTab !== 'textes'"
+        [class.text-emerald-700]="activeTab !== 'textes'"
+      >
+        Textes
+      </button>
+
+      <button
+        type="button"
+        (click)="setTab('etablissements')"
+        class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
+        [class.bg-emerald-600]="activeTab === 'etablissements'"
+        [class.text-white]="activeTab === 'etablissements'"
+        [class.bg-white]="activeTab !== 'etablissements'"
+        [class.text-emerald-700]="activeTab !== 'etablissements'"
+      >
+        Établissements
+      </button>
+
+      <button
+        type="button"
+        (click)="setTab('formations')"
+        class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
+        [class.bg-emerald-600]="activeTab === 'formations'"
+        [class.text-white]="activeTab === 'formations'"
+        [class.bg-white]="activeTab !== 'formations'"
+        [class.text-emerald-700]="activeTab !== 'formations'"
+      >
+        Formations
+      </button>
+
+      <button
+        type="button"
+        (click)="setTab('utilisateurs')"
+        class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
+        [class.bg-emerald-600]="activeTab === 'utilisateurs'"
+        [class.text-white]="activeTab === 'utilisateurs'"
+        [class.bg-white]="activeTab !== 'utilisateurs'"
+        [class.text-emerald-700]="activeTab !== 'utilisateurs'"
+      >
+        Utilisateurs
+      </button>
     </div>
-  </div>
+  </section>
+
+  <section class="space-y-8" *ngIf="activeTab === 'textes'">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg sm:text-xl font-extrabold text-gray-900">
+        Textes
+      </h2>
+      <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
+        Statistiques
+      </span>
+    </div>
 
   <!-- 📊 Statistiques principales avec animations -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -150,43 +214,20 @@
       </h3>
 
       <ul class="space-y-3">
-        <!-- Catégorie 1 -->
-        <li class="space-y-1">
+        <li *ngFor="let c of topCategories" class="space-y-1">
           <div class="flex justify-between text-sm">
-            <span class="font-medium text-gray-800">Lois et décrets</span>
-            <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">
-              45%
+            <span class="font-medium text-gray-800">{{ c.label }}</span>
+            <span [class]="c.badgeClass">
+              {{ c.percent }}%
             </span>
           </div>
           <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full w-[45%] bg-gradient-to-r from-blue-500 to-blue-400 rounded-full"></div>
+            <div class="h-full rounded-full" [class]="c.barClass" [style.width.%]="c.percent"></div>
           </div>
         </li>
 
-        <!-- Catégorie 2 -->
-        <li class="space-y-1">
-          <div class="flex justify-between text-sm">
-            <span class="font-medium text-gray-800">Arrêtés ministériels</span>
-            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-              30%
-            </span>
-          </div>
-          <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full w-[30%] bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"></div>
-          </div>
-        </li>
-
-        <!-- Catégorie 3 -->
-        <li class="space-y-1">
-          <div class="flex justify-between text-sm">
-            <span class="font-medium text-gray-800">Circulaires et notes</span>
-            <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full">
-              25%
-            </span>
-          </div>
-          <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full w-[25%] bg-gradient-to-r from-amber-500 to-amber-400 rounded-full"></div>
-          </div>
+        <li *ngIf="topCategories.length === 0" class="text-sm text-gray-500">
+          Aucune donnée disponible.
         </li>
       </ul>
     </div>
@@ -201,39 +242,149 @@
       </h3>
 
       <ul class="space-y-3">
-        <li class="flex items-start justify-between gap-3 border-b border-gray-100 pb-3">
+        <li *ngFor="let t of recentTextes; let last = last" class="flex items-start justify-between gap-3" [class.border-b]="!last" [class.border-gray-100]="!last" [class.pb-3]="!last">
           <div class="flex-1">
-            <p class="font-medium text-gray-900 text-sm">Décret N°2025-04</p>
-            <p class="text-xs text-gray-500 mt-0.5">Modifié le 11 novembre 2025</p>
+            <p class="font-medium text-gray-900 text-sm">{{ t.titre }}</p>
+            <p class="text-xs text-gray-500 mt-0.5">Modifié le {{ t.datePublication | date:'dd MMMM yyyy' }}</p>
           </div>
-          <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
-            Mis à jour
+          <span [class]="getRecentBadgeClass(t)">
+            {{ getRecentBadgeLabel(t) }}
           </span>
         </li>
 
-        <li class="flex items-start justify-between gap-3 border-b border-gray-100 pb-3">
-          <div class="flex-1">
-            <p class="font-medium text-gray-900 text-sm">Loi N°2024-12</p>
-            <p class="text-xs text-gray-500 mt-0.5">Modifiée le 7 octobre 2025</p>
-          </div>
-          <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
-            Révision
-          </span>
-        </li>
-
-        <li class="flex items-start justify-between gap-3">
-          <div class="flex-1">
-            <p class="font-medium text-gray-900 text-sm">Circulaire 2023-09</p>
-            <p class="text-xs text-gray-500 mt-0.5">Consultée le 25 septembre 2025</p>
-          </div>
-          <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">
-            Consulté
-          </span>
+        <li *ngIf="recentTextes.length === 0" class="text-sm text-gray-500">
+          Aucune modification récente.
         </li>
       </ul>
     </div>
   </div>
-</div>
+  </section>
 
-<!-- Chatbot -->
-<app-chatbot></app-chatbot>
+  <section class="space-y-5" *ngIf="activeTab === 'etablissements'">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg sm:text-xl font-extrabold text-gray-900">
+        Établissements
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <h3 class="text-base font-bold text-gray-900 mb-4">Résumé</h3>
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-600">Total</div>
+          <div class="text-3xl font-extrabold text-emerald-700">{{ stats.etablissements.total }}</div>
+        </div>
+        <div class="mt-4 text-xs text-gray-500">Répartition par statut juridique</div>
+      </div>
+
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <h3 class="text-base font-bold text-gray-900 mb-4">Statuts (Top)</h3>
+
+        <div class="space-y-3">
+          <div *ngFor="let it of etablissementsTop" class="space-y-1">
+            <div class="flex justify-between text-sm">
+              <span class="font-medium text-gray-800">{{ it.label }}</span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                {{ it.percent }}%
+              </span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" [style.width.%]="it.percent"></div>
+            </div>
+          </div>
+
+          <div *ngIf="etablissementsTop.length === 0" class="text-sm text-gray-500">Aucune donnée disponible.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="space-y-5" *ngIf="activeTab === 'formations'">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg sm:text-xl font-extrabold text-gray-900">
+        Formations
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <h3 class="text-base font-bold text-gray-900 mb-4">Résumé</h3>
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-600">Total</div>
+          <div class="text-3xl font-extrabold text-emerald-700">{{ stats.formations.total }}</div>
+        </div>
+        <div class="mt-4 text-xs text-gray-500">Répartition par diplôme</div>
+      </div>
+
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <h3 class="text-base font-bold text-gray-900 mb-4">Diplômes (Top)</h3>
+
+        <div class="space-y-3">
+          <div *ngFor="let it of formationsTop" class="space-y-1">
+            <div class="flex justify-between text-sm">
+              <span class="font-medium text-gray-800">{{ it.label }}</span>
+              <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">
+                {{ it.percent }}%
+              </span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400" [style.width.%]="it.percent"></div>
+            </div>
+          </div>
+
+          <div *ngIf="formationsTop.length === 0" class="text-sm text-gray-500">Aucune donnée disponible.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="space-y-5" *ngIf="activeTab === 'utilisateurs'">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg sm:text-xl font-extrabold text-gray-900">
+        Utilisateurs
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <div class="text-xs font-bold text-emerald-700">Total</div>
+        <div class="mt-2 text-4xl font-extrabold text-gray-900">{{ stats.utilisateurs.total }}</div>
+      </div>
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <div class="text-xs font-bold text-emerald-700">Actifs</div>
+        <div class="mt-2 text-4xl font-extrabold text-gray-900">{{ stats.utilisateurs.active }}</div>
+      </div>
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <div class="text-xs font-bold text-emerald-700">Validés</div>
+        <div class="mt-2 text-4xl font-extrabold text-gray-900">{{ stats.utilisateurs.validated }}</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <h3 class="text-base font-bold text-gray-900 mb-4">Rôles (Top)</h3>
+
+        <div class="space-y-3">
+          <div *ngFor="let it of utilisateursTop" class="space-y-1">
+            <div class="flex justify-between text-sm">
+              <span class="font-medium text-gray-800">{{ it.label }}</span>
+              <span class="text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full">
+                {{ it.percent }}%
+              </span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-purple-500 to-purple-400" [style.width.%]="it.percent"></div>
+            </div>
+          </div>
+
+          <div *ngIf="utilisateursTop.length === 0" class="text-sm text-gray-500">Aucune donnée disponible.</div>
+        </div>
+      </div>
+
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
+        <h3 class="text-base font-bold text-gray-900 mb-4">Assistant</h3>
+        <app-chatbot></app-chatbot>
+      </div>
+    </div>
+  </section>
+</div>

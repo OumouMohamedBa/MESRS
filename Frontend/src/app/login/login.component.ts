@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { NotificationService } from '../services/notification.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -46,9 +47,18 @@ export class LoginComponent {
         this.submitting = false;
         this.router.navigateByUrl('/dashboard');
       },
-      error: (err) => {
+      error: (err: unknown) => {
         this.submitting = false;
-        console.error('Erreur login', err);
+        if (err instanceof HttpErrorResponse) {
+          console.error('Erreur login', {
+            status: err.status,
+            statusText: err.statusText,
+            url: err.url,
+            error: err.error,
+          });
+        } else {
+          console.error('Erreur login', err);
+        }
         this.notification.error('Identifiants incorrects ou compte non autorisé');
       },
     });

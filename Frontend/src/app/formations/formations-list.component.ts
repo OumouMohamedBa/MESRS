@@ -22,6 +22,10 @@ export class FormationsListComponent {
     this.loadFormations();
   }
 
+  showDeleteConfirm = signal(false);
+  pendingDeleteFormation = signal<Formation | null>(null);
+  deleting = signal(false);
+
   private loadFormations() {
     this.svc.list().subscribe({
       next: data => {
@@ -83,7 +87,6 @@ export class FormationsListComponent {
   edit(id: string) { this.router.navigate(['/formations', id, 'edit']); }
   view(id: string) { this.router.navigate(['/formations', id]); }
   remove(id: string) {
-    if (!confirm('Supprimer cette formation ?')) return;
     this.svc.delete(id).subscribe({
       next: () => {
         // recharger la liste
@@ -91,6 +94,38 @@ export class FormationsListComponent {
       },
       error: err => {
         console.error('Erreur lors de la suppression de la formation', err);
+      }
+    });
+  }
+
+  requestDelete(f: Formation): void {
+    this.pendingDeleteFormation.set(f);
+    this.showDeleteConfirm.set(true);
+    document.body.style.overflow = 'hidden';
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm.set(false);
+    this.pendingDeleteFormation.set(null);
+    this.deleting.set(false);
+    document.body.style.overflow = 'auto';
+  }
+
+  confirmDelete(): void {
+    const f = this.pendingDeleteFormation();
+    if (!f || this.deleting()) {
+      return;
+    }
+    this.deleting.set(true);
+
+    this.svc.delete(f.id).subscribe({
+      next: () => {
+        this.loadFormations();
+        this.cancelDelete();
+      },
+      error: err => {
+        console.error('Erreur lors de la suppression de la formation', err);
+        this.deleting.set(false);
       }
     });
   }
