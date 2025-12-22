@@ -35,7 +35,7 @@ export class AuthService {
 
   login(username: string, password: string): Observable<void> {
     return this.http
-      .post<{ username: string; role: Role }>('http://localhost:8080/auth/login', {
+      .post<{ username: string; role: Role }>(`${environment.apiUrl}/auth/login`, {
         username,
         password,
       })

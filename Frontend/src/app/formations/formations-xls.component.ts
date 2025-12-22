@@ -1,17 +1,20 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { FormationService } from './formation.service';
 import { Formation, UploadedDoc } from './formation.model';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-formations-xls',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, HeaderComponent, SidebarComponent],
-  templateUrl: './formations-xls.component.html'
+  templateUrl: './formations-xls.component.html',
+  styleUrls: ['./formations-xls.component.css']
 })
 export class FormationsXlsComponent implements OnInit {
   formation: Formation | null = null;
@@ -30,15 +33,25 @@ export class FormationsXlsComponent implements OnInit {
   headerHasValues = false;
   colCount = 0;
   importsList: any[] = []; // Liste des imports depuis le backend
+  viewMode: 'grid' | 'iframe' = 'grid'; // Mode de visualisation
+  hasCorsError = false; // Détecter les erreurs CORS
+  iframeViewerUrl: SafeResourceUrl | null = null; // URL pour l'iframe
+  alternativeViewerUrl: SafeResourceUrl | null = null; // URL alternative HTML
 
   // Helpers pour le template
   padCount(row: any[]): number { return Math.max(0, this.colCount - ((row && row.length) || 0)); }
   arrayN(n: number): any[] { return Array.from({ length: Math.max(0, Number(n) || 0) }); }
+  getCellWidth(index: number): string {
+    // Largeur par défaut basée sur l'index pour simuler Excel
+    const widths = ['120px', '150px', '180px', '120px', '100px', '100px', '120px', '150px'];
+    return widths[index % widths.length] || '120px';
+  }
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private svc: FormationService
+    private svc: FormationService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -103,11 +116,33 @@ export class FormationsXlsComponent implements OnInit {
     });
   }
 
+  // Détecter si le fichier est XSL
+  isXslFile(): boolean {
+    if (!this.doc || !this.doc.name) return false;
+    return /\.(xsl|xslt|XSL|XSLT)$/i.test(this.doc.name);
+  }
+
   // Télécharger le fichier depuis le backend et le charger
   private downloadAndLoadFile() {
     if (!this.doc) return;
 
+    // Pour tous les fichiers (Excel et XSL), utiliser le même comportement
+    // Si mode iframe, charger directement le viewer
+    if (this.viewMode === 'iframe') {
+      this.loadViewerUrl();
+      return;
+    }
+
+    // Pour le mode grille, essayer de charger le workbook (uniquement pour Excel)
+    if (this.isXslFile()) {
+      // Pour XSL en mode grille, basculer automatiquement vers iframe
+      this.viewMode = 'iframe';
+      this.loadViewerUrl();
+      return;
+    }
+
     console.log('Téléchargement du fichier avec ID:', this.doc.id);
+    console.log('Document complet:', this.doc);
     this.svc.downloadImport(this.doc.id).subscribe({
       next: (blob) => {
         console.log('Blob reçu:', {
@@ -153,14 +188,20 @@ export class FormationsXlsComponent implements OnInit {
         console.log('Tentative de fetch ArrayBuffer...');
         const resp = await fetch(url);
         console.log('Response status:', resp.status, resp.statusText);
+        console.log('Response headers:', resp.headers);
         buf = await resp.arrayBuffer();
         console.log('ArrayBuffer reçu, taille:', buf.byteLength);
+        
+        if (buf.byteLength === 0) {
+          throw new Error('Buffer vide');
+        }
       } catch (err) {
         console.error('Erreur fetch ArrayBuffer:', err);
         // Stratégie 2: via Blob + FileReader (fallback)
         console.log('Tentative de fallback Blob + FileReader...');
         const resp = await fetch(url);
         const blob = await resp.blob();
+        console.log('Blob reçu:', blob.size, blob.type);
         buf = await blob.arrayBuffer();
         console.log('ArrayBuffer via fallback, taille:', buf.byteLength);
       }
@@ -182,7 +223,8 @@ export class FormationsXlsComponent implements OnInit {
         this.errorMsg = 'Aucune feuille détectée dans ce fichier.';
       }
     } catch (e: any) {
-      this.errorMsg = 'Impossible de lire le fichier Excel.';
+      console.error('Erreur complète lors du chargement:', e);
+      this.errorMsg = 'Impossible de lire le fichier Excel: ' + e.message;
     } finally {
       this.loading = false;
     }
@@ -206,7 +248,8 @@ export class FormationsXlsComponent implements OnInit {
 
       console.log('Conversion de la feuille en JSON...');
       const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      console.log('Données brutes:', data);
+      console.log('Données brutes reçues:', data);
+      console.log('Nombre de lignes brutes:', data.length);
 
       this.rows = data as any[][];
       console.log('Rows assignées:', this.rows.length, 'lignes');
@@ -216,14 +259,20 @@ export class FormationsXlsComponent implements OnInit {
       for (const r of this.rows) {
         if (r && r.length > this.colCount) this.colCount = r.length;
       }
-      console.log('Nombre de colonnes:', this.colCount);
+      console.log('Nombre de colonnes calculé:', this.colCount);
 
       // Vérifier si l'en-tête a des valeurs
       this.headerHasValues = this.rows.length > 0 && this.rows[0].some((cell: any) => cell != null && cell !== '');
       console.log('Header a des valeurs:', this.headerHasValues);
+      console.log('Première ligne (header):', this.rows[0]);
 
       this.selectedSheet = name;
-      console.log('Feuille chargée avec succès');
+      console.log('Feuille chargée avec succès, état final:', {
+        rowCount: this.rows.length,
+        colCount: this.colCount,
+        headerHasValues: this.headerHasValues,
+        selectedSheet: this.selectedSheet
+      });
     } catch (e: any) {
       console.error('Erreur lors du chargement de la feuille:', e);
       this.errorMsg = 'Erreur lors de la lecture de la feuille: ' + e.message;
@@ -297,5 +346,210 @@ export class FormationsXlsComponent implements OnInit {
         alert('Impossible de télécharger le fichier');
       }
     });
+  }
+
+  // Obtenir l'URL pour le viewer iframe - Microsoft Office Viewer
+  getIframeViewerUrl(): SafeResourceUrl {
+    if (!this.doc) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl('');
+    }
+
+    // Utiliser Microsoft Office Online Viewer
+    const fileUrl = `${environment.apiUrl}/api/formation/etudiants/imports/${this.doc.id}/download`;
+    
+    // Microsoft Office Online Viewer pour Excel/XLS
+    // Format: https://view.officeapps.live.com/op/embed.aspx?src=URL_DU_FICHIER
+    const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+    
+    console.log('Utilisation de Microsoft Office Viewer:', officeViewerUrl);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(officeViewerUrl);
+  }
+
+  // Alternative: Convertir en PDF et embed directement
+  async getAlternativeViewerUrl(): Promise<SafeResourceUrl> {
+    if (!this.doc) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl('');
+    }
+
+    try {
+      // Télécharger le fichier
+      const { firstValueFrom } = await import('rxjs');
+      const blob = await firstValueFrom(this.svc.downloadImport(this.doc.id));
+      
+      if (!blob) {
+        throw new Error('Blob non reçu');
+      }
+      
+      // Si c'est un fichier XSL, créer une table HTML à partir du XML
+      if (this.isXslFile()) {
+        const text = await blob.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(text, 'text/xml');
+        
+        let htmlTable = '<table><thead><tr><th>Élément</th><th>Valeur</th></tr></thead><tbody>';
+        
+        const processNode = (node: Node, level: number = 0): string => {
+          let rows = '';
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const elem = node as Element;
+            const tagName = elem.tagName || 'element';
+            const textContent = Array.from(elem.childNodes)
+              .filter(n => n.nodeType === Node.TEXT_NODE)
+              .map(n => n.textContent?.trim())
+              .filter(t => t)
+              .join(' ');
+            
+            rows += `<tr><td style="padding-left: ${level * 20}px;"><strong>${tagName}</strong></td><td>${this.escapeHtml(textContent || '')}</td></tr>`;
+            
+            Array.from(elem.attributes).forEach(attr => {
+              rows += `<tr><td style="padding-left: ${(level + 1) * 20}px; color: #666;">@${attr.name}</td><td>${this.escapeHtml(attr.value)}</td></tr>`;
+            });
+            
+            Array.from(elem.children).forEach(child => {
+              rows += processNode(child, level + 1);
+            });
+          }
+          return rows;
+        };
+        
+        if (xmlDoc.documentElement) {
+          htmlTable += processNode(xmlDoc.documentElement);
+        } else {
+          const lines = text.split('\n');
+          lines.forEach((line, idx) => {
+            htmlTable += `<tr><td>${idx + 1}</td><td>${this.escapeHtml(line)}</td></tr>`;
+          });
+        }
+        
+        htmlTable += '</tbody></table>';
+        
+        // Utiliser le même HTML que pour Excel
+        const htmlContent = this.createHtmlViewer(htmlTable);
+        const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`;
+        return this.sanitizer.bypassSecurityTrustResourceUrl(dataUrl);
+      }
+      
+      // Pour Excel, utiliser SheetJS
+      const XLSX = await import('xlsx');
+      const arrayBuffer = await blob.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      
+      // Convertir la première feuille en HTML
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const htmlTable = XLSX.utils.sheet_to_html(firstSheet);
+      
+      // Créer un data URL avec le HTML
+      const htmlContent = this.createHtmlViewer(htmlTable);
+      const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`;
+      return this.sanitizer.bypassSecurityTrustResourceUrl(dataUrl);
+      
+    } catch (error) {
+      console.error('Erreur conversion HTML:', error);
+      return this.sanitizer.bypassSecurityTrustResourceUrl('');
+    }
+  }
+
+  // Charger l'URL du viewer lorsque le mode change
+  async loadViewerUrl() {
+    if (this.viewMode === 'iframe' && this.doc) {
+      this.loading = true;
+      this.hasCorsError = false;
+      
+      try {
+        // Essayer Google Docs Viewer d'abord
+        this.iframeViewerUrl = this.getIframeViewerUrl();
+        
+        // Si ça échoue après 3 secondes, essayer l'alternative HTML
+        setTimeout(async () => {
+          if (this.viewMode === 'iframe' && !this.hasCorsError) {
+            console.log('Tentative alternative HTML...');
+            this.alternativeViewerUrl = await this.getAlternativeViewerUrl();
+            if (this.alternativeViewerUrl) {
+              this.iframeViewerUrl = this.alternativeViewerUrl;
+            }
+          }
+        }, 3000);
+        
+      } catch (error) {
+        console.error('Erreur viewer principal, essai alternative:', error);
+        this.alternativeViewerUrl = await this.getAlternativeViewerUrl();
+        this.iframeViewerUrl = this.alternativeViewerUrl;
+      } finally {
+        this.loading = false;
+      }
+    }
+  }
+
+  // Convertir un Blob en Data URL
+  private blobToDataUrl(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // Échapper les caractères HTML pour éviter les injections XSS
+  private escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Créer un viewer HTML complet avec styles pour afficher le contenu
+  private createHtmlViewer(htmlTable: string): string {
+    return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualisation du fichier</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: auto;
+      max-width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #333;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+    td {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    ${htmlTable}
+  </div>
+</body>
+</html>`;
   }
 }

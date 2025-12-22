@@ -3,6 +3,7 @@ import { FormationsAddComponent } from './formations/formations-add.component';
 import { FormationsEditComponent } from './formations/formations-edit.component';
 import { FormationsDetailComponent } from './formations/formations-detail.component';
 import { FormationsXlsComponent } from './formations/formations-xls.component';
+import { FormationsXslComponent } from './formations/formations-xsl.component';
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -39,6 +40,7 @@ export const routes: Routes = [
   { path: 'formations/nouveau', component: FormationsAddComponent, canActivate: [AuthGuard] },
   { path: 'formations/:id/edit', component: FormationsEditComponent, canActivate: [AuthGuard] },
   { path: 'formations/:id/xls', component: FormationsXlsComponent, canActivate: [AuthGuard] },
+  { path: 'formations/:id/xsl', component: FormationsXlsComponent, canActivate: [AuthGuard] },
   { path: 'formations/:id', component: FormationsDetailComponent, canActivate: [AuthGuard] },
   { path: 'formations', component: FormationsListComponent, canActivate: [AuthGuard] },
   { path: 'etablissements', component: EtablissementsListComponent, canActivate: [AuthGuard] },

@@ -188,12 +188,27 @@ export class FormationsEditComponent implements OnInit {
     });
   }
 
-  // 🔹 ouvrir le viewer Excel sur ce fichier
+  // 🔹 ouvrir le viewer Excel ou XSL sur ce fichier
   openViewer(docIndex: number) {
+    const docs = this.currentDocs;
+    const doc = docs[docIndex];
+    if (!doc) return;
+    
+    const route = this.isXslFile(doc.name) ? 'xsl' : 'xls';
     this.router.navigate(
-      ['/formations', this.data.id, 'xls'],
+      ['/formations', this.data.id, route],
       { queryParams: { year: this.selectedYear, level: this.selectedLevel, index: docIndex } }
     );
+  }
+
+  // Déterminer si un fichier est XSL
+  isXslFile(fileName: string): boolean {
+    return /\.(xsl|xslt|XSL|XSLT)$/i.test(fileName);
+  }
+
+  // Obtenir la route appropriée selon le type de fichier (toujours xls car le composant gère les deux)
+  getViewerRoute(fileName: string): string {
+    return 'xls'; // Le composant Excel gère maintenant aussi les fichiers XSL
   }
 
   submit() {

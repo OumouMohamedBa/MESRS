@@ -198,9 +198,10 @@
               </div>
               <div class="flex items-center gap-3 text-gray-600">
                
-                <a [routerLink]="['/formations', data.id, 'xls']"
+                <a [routerLink]="['/formations', data.id, getViewerRoute(f.name)]"
                    [queryParams]="{ year: selectedYear, level: selectedLevel, index: i }"
-                   class="hover:text-emerald-700" title="Ouvrir dans le viewer">
+                   class="hover:text-emerald-700"
+                   title="Ouvrir dans le viewer">
                   <i class="fa-solid fa-display"></i>
                 </a>
                 <a *ngIf="f.url" [href]="f.url" [download]="f.name" class="hover:text-blue-700" title="Télécharger">
@@ -235,9 +236,10 @@
             </div>
             <div class="flex items-center gap-3 text-gray-600">
              
-              <a [routerLink]="['/formations', data.id, 'xls']"
+              <a [routerLink]="['/formations', data.id, getViewerRoute(row.doc.name)]"
                  [queryParams]="{ year: row.year, level: row.level, index: row.index }"
-                 class="hover:text-emerald-700" title="Ouvrir dans le viewer">
+                 class="hover:text-emerald-700"
+                 title="Ouvrir dans le viewer">
                 <i class="fa-solid fa-display"></i>
               </a>
               
