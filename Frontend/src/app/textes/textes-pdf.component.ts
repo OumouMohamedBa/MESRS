@@ -49,6 +49,22 @@ export class TextesPdfComponent implements OnInit {
   }
 
   getPdfUrl(): string {
+    // Utiliser directement le chemin du fichier PDF stocké dans le modèle
+    // Si l'url est relative, la compléter avec l'URL de base du serveur
+    const pdfPath = this.texte?.url;
+    if (pdfPath) {
+      // Si le chemin commence par '/', c'est un chemin absolu du serveur
+      if (pdfPath.startsWith('/')) {
+        return `http://localhost:8080${pdfPath}`;
+      }
+      // Si c'est une URL complète, l'utiliser directement
+      if (pdfPath.startsWith('http')) {
+        return pdfPath;
+      }
+      // Sinon, considérer comme un chemin relatif
+      return `http://localhost:8080/${pdfPath}`;
+    }
+    // Fallback vers l'ancien endpoint
     return `http://localhost:8080/api/texte/${this.id}/fichier`;
   }
 
@@ -81,9 +97,9 @@ export class TextesPdfComponent implements OnInit {
     }
   }
 
-  @HostListener('document:fullscreenchange', ['$event'])
-  @HostListener('document:webkitfullscreenchange', ['$event'])
-  @HostListener('document:msfullscreenchange', ['$event'])
+  @HostListener('document:fullscreenchange')
+  @HostListener('document:webkitfullscreenchange')
+  @HostListener('document:msfullscreenchange')
   onFullscreenChange(): void {
     this.isFullscreen = !!(
       document.fullscreenElement ||

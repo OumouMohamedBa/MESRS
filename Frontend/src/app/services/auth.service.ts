@@ -35,13 +35,13 @@ export class AuthService {
 
   login(username: string, password: string): Observable<void> {
     return this.http
-      .post<{ username: string; role: Role }>(`${environment.apiUrl}/auth/login`, {
+      .post<{ username: string; roleCode: Role }>(`${environment.apiUrl}/auth/login`, {
         username,
         password,
       })
       .pipe(
         tap((res) => {
-          const user: AuthUser = { username: res.username, role: res.role };
+          const user: AuthUser = { username: res.username, role: res.roleCode };
           localStorage.setItem(this.storageKey, JSON.stringify(user));
         }),
         // on ne renvoie rien au composant, juste la complétion (type void)

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { FormationService } from './formation.service';
@@ -18,7 +19,7 @@ export class FormationsAddComponent implements OnInit {
   form!: FormGroup;
   // Liste des établissements chargée depuis le backend
   etablissements: any[] = [];
-  constructor(private fb: FormBuilder, private svc: FormationService, private etabSvc: EtablissementService, private router: Router) {
+  constructor(private fb: FormBuilder, private svc: FormationService, private etabSvc: EtablissementService, private router: Router, private http: HttpClient) {
     this.form = this.fb.group({
       nomFiliere: ['', [Validators.required, Validators.minLength(2)]],
       diplomeDelivre: ['', Validators.required],
@@ -35,6 +36,10 @@ export class FormationsAddComponent implements OnInit {
       etablissementId: ['', Validators.required]
     });
   }
+
+  // Fichier Excel principal pour la formation
+  selectedExcelFile: File | null = null;
+  excelFileUrl: string | null = null;
 
   // Import Excel par année et niveau (temporaire avant enregistrement)
   years: string[] = [];
@@ -75,6 +80,23 @@ export class FormationsAddComponent implements OnInit {
 
   onYearChange(v: string) { this.selectedYear = v; }
   onLevelChange(v: string) { this.selectedLevel = v; }
+
+  // Gestion du fichier Excel principal
+  onMainExcelSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) return;
+    
+    const isExcel = /\.(xlsx?|XLSX?)$/.test(file.name);
+    if (!isExcel) {
+      alert('Veuillez sélectionner un fichier Excel (.xls ou .xlsx).');
+      return;
+    }
+    
+    this.selectedExcelFile = file;
+    this.excelFileUrl = URL.createObjectURL(file);
+    console.log('Fichier Excel principal sélectionné:', file.name);
+  }
 
   onFileSelected(evt: Event) {
     if (!this.selectedYear || !this.selectedLevel) return;
@@ -145,9 +167,70 @@ export class FormationsAddComponent implements OnInit {
       etablissementId: raw.etablissementId // indispensable pour la relation
     };
     console.log('Payload envoyé au backend:', payload);
+    
+    // Créer la formation d'abord
     this.svc.create(payload).subscribe({
-      next: () => {
-        this.router.navigate(['/formations']);
+      next: (createdFormation) => {
+        console.log('Formation créée avec ID:', createdFormation.id);
+        
+        // Tableau pour stocker toutes les promesses d'upload
+        const uploadPromises: Promise<any>[] = [];
+        
+        // 1. Upload du fichier Excel principal si sélectionné
+        if (this.selectedExcelFile && createdFormation.id) {
+          const formData = new FormData();
+          formData.append('file', this.selectedExcelFile);
+          
+          const mainExcelPromise = this.http.post<Formation>(
+            `http://localhost:8080/api/formation/${createdFormation.id}/upload-excel`,
+            formData
+          ).toPromise();
+          uploadPromises.push(mainExcelPromise);
+        }
+        
+        // 2. Upload des fichiers par année/niveau (imports)
+        Object.keys(this.imports).forEach(year => {
+          Object.keys(this.imports[year]).forEach(level => {
+            this.imports[year][level].forEach(doc => {
+              // Vérifier que doc.url existe
+              if (doc.url) {
+                // Convertir l'URL blob en File
+                const filePromise = fetch(doc.url)
+                  .then(res => res.blob())
+                  .then(blob => {
+                    const file = new File([blob], doc.name, { type: doc.type });
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('anneeUniversitaire', year);
+                    formData.append('niveau', level);
+                    
+                    return this.http.post(
+                      `http://localhost:8080/api/formation/${createdFormation.id}/etudiants/import`,
+                      formData
+                    ).toPromise();
+                  });
+                uploadPromises.push(filePromise);
+              }
+            });
+          });
+        });
+        
+        // 3. Attendre tous les uploads avant de rediriger
+        if (uploadPromises.length > 0) {
+          Promise.all(uploadPromises)
+            .then(() => {
+              console.log('Tous les fichiers uploadés avec succès');
+              this.router.navigate(['/formations']);
+            })
+            .catch(err => {
+              console.error('Erreur lors de l\'upload des fichiers:', err);
+              // Rediriger quand même même si certains uploads échouent
+              this.router.navigate(['/formations']);
+            });
+        } else {
+          // Pas de fichiers à uploader, rediriger directement
+          this.router.navigate(['/formations']);
+        }
       },
       error: err => {
         console.error('Erreur lors de la création de la formation', err);
@@ -157,7 +240,7 @@ export class FormationsAddComponent implements OnInit {
           try {
             console.error('Backend error JSON:', JSON.stringify(err.error, null, 2));
           } catch (e) {
-            console.error('Impossible de sérialiser l’erreur backend');
+            console.error('Impossible de sérialiser l\'erreur backend');
           }
         }
       }

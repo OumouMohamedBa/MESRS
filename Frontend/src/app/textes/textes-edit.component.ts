@@ -116,6 +116,7 @@ export class TextesEditComponent implements OnInit {
   }
 
   getPdfUrl(): string {
-    return `http://localhost:8080/api/texte/${this.texteId}/fichier`;
+    // Utiliser directement le chemin du fichier PDF stocké dans le modèle
+    return this.texte?.url || `http://localhost:8080/api/texte/${this.texteId}/fichier`;
   }
 }

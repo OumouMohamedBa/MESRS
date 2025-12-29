@@ -13,6 +13,7 @@ export interface Formation {
   nombreEnseignants: number;
   nombreInscrits: number;
   revisionsRecentes?: string;
+  urlFichierExcel?: string; // Chemin vers le fichier Excel stocké sur le serveur
   imports?: { [annee: string]: { [niveau: string]: UploadedDoc[] } };
 }
 
@@ -31,6 +32,7 @@ export interface FormationBackendPayload {
   nombreDiplomesN1: number;
   doubleDiplome: boolean;
   revisionsRecentes?: string;
+  urlFichierExcel?: string; // Chemin vers le fichier Excel
   etablissementId: string;
 }
 

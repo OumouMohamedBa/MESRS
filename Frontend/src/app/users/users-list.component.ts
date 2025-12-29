@@ -41,9 +41,8 @@ export class UsersListComponent implements OnInit {
 
   // options de rôle – adapte les id pour coller à ta base
   roleOptions: RoleOption[] = [
-    { id: 1, code: 'INSPECTEUR_GENERAL',       label: 'Inspecteur général' },
-    { id: 2, code: 'SOUS_INSPECTEUR_TEXTES',   label: 'Sous-inspecteur des textes' },
-    { id: 3, code: 'SOUS_INSPECTEUR_FINANCES', label: 'Sous-inspecteur des finances' },
+    { id: 1, code: 'INSPECTEUR_GENERAL', label: 'Inspecteur général' },
+    { id: 2, code: 'SOUS_INSPECTEUR', label: 'Sous-inspecteur' },
   ];
 
   loading = false;
@@ -145,19 +144,20 @@ export class UsersListComponent implements OnInit {
       this.notification.warning('Merci de remplir les champs obligatoires');
       return;
     }
+
     if (!this.formModel.roleCode) {
       this.notification.warning('Merci de choisir un rôle');
       return;
     }
 
     const payload: UserPayload = {
-      id: this.formModel.id,
       fullname: this.formModel.name,
       username: this.formModel.username,
       phone: this.formModel.phone,
       password: this.formModel.password,
       active: this.formModel.active,
-      role: this.formModel.roleCode,
+      role: this.formModel.roleCode!, // Non-null assertion car on vérifie au-dessus
+      validated: this.formModel.validated,
     };
 
     // création ou mise à jour selon editingUserId

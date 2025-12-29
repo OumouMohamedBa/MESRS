@@ -7,10 +7,10 @@ import { FormationService } from '../formations/formation.service';
 import { environment } from '../../environments/environment';
 
 export interface TextesStats {
-  total: number;
-  enVigueur: number;
-  abroges: number;
-  projet: number;
+  totalTextes: number;
+  textesEnVigueur: number;
+  textesAbroges: number;
+  textesProjet: number;
 }
 
 export interface EtablissementStats {
@@ -192,7 +192,7 @@ export class DashboardService {
               etablissements: etabStats,
               formations: formStats,
               resume: {
-                totalTextes: textesStats.total,
+                totalTextes: textesStats.totalTextes,
                 totalEtablissements: etabStats.total,
                 totalFormations: formStats.total
               }

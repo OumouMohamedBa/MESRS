@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**") // tous tes contrôleurs /api/...
-                .allowedOrigins("http://localhost:4200") // ton Angular
+                .allowedOrigins("https://mesrs-eosin.vercel.app/") // ton Angular
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

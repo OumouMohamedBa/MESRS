@@ -78,17 +78,17 @@ export class DashboardComponent implements OnInit {
   loadAllStats(): void {
     // Textes réglementaires (stats depuis le backend)
     this.dashboardService.getTextesStats().subscribe(stats => {
-      this.stats.textes.total = stats.total;
-      this.stats.textes.enVigueur = stats.enVigueur;
-      this.stats.textes.abroges = stats.abroges;
-      this.stats.textes.projet = stats.projet;
+      this.stats.textes.total = stats.totalTextes;
+      this.stats.textes.enVigueur = stats.textesEnVigueur;
+      this.stats.textes.abroges = stats.textesAbroges;
+      this.stats.textes.projet = stats.textesProjet;
 
       // Mettre a jour les donnees du graphique a partir des stats
       this.chartData.textes.labels = ['En vigueur', 'Abrogés', 'Projet'];
       this.chartData.textes.data = [
-        stats.enVigueur,
-        stats.abroges,
-        stats.projet
+        stats.textesEnVigueur,
+        stats.textesAbroges,
+        stats.textesProjet
       ];
     });
 
