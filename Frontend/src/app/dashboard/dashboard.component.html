@@ -1,389 +1,630 @@
 <app-sidebar></app-sidebar>
 <app-header [title]="'Tableau de bord'" [withSidebar]="true"></app-header>
 
-<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 bg-gradient-to-br from-emerald-50/60 via-teal-50/30 to-white min-h-screen space-y-8">
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 bg-gradient-to-br from-green-50/30 via-yellow-50/20 to-red-50/10 min-h-screen space-y-8">
 
-  <!-- Background decorations -->
+  <!-- Background decorations avec couleurs mauritaniennes -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-    <div class="absolute top-20 right-10 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl animate-pulse"></div>
-    <div class="absolute bottom-20 left-10 w-80 h-80 bg-teal-200/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s"></div>
+    <!-- Vert mauritanien -->
+    <div class="absolute top-20 right-10 w-96 h-96 bg-green-400/15 rounded-full blur-3xl animate-pulse"></div>
+    <!-- Jaune mauritanien -->
+    <div class="absolute bottom-20 left-10 w-80 h-80 bg-yellow-400/15 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s"></div>
+    <!-- Rouge mauritanien -->
+    <div class="absolute top-1/2 left-1/2 w-72 h-72 bg-red-400/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s"></div>
+    
+    <!-- Ligne décorative verticale inspirée du drapeau -->
+    <div class="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-green-600 via-yellow-500 to-red-600 opacity-20"></div>
   </div>
 
-  <!-- 🌟 En-tête avec animation -->
-  <section class="bg-white/60 backdrop-blur-sm rounded-2xl border border-emerald-100/70 shadow-sm px-5 sm:px-6 py-5">
+  <!-- 🌟 En-tête avec design mauritanien -->
+  <section class="bg-white/80 backdrop-blur-md rounded-3xl border border-green-100/70 shadow-xl px-6 sm:px-8 py-6 relative overflow-hidden">
+    <!-- Ligne décorative supérieure -->
+    <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-600 via-yellow-500 to-red-600"></div>
+    
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fadeIn">
-      <div>
-        <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-          Tableau de bord
-        </h1>
-        <p class="text-sm text-gray-600 mt-2 flex items-center gap-2">
-          <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-          Vue d'ensemble de vos données
-        </p>
+      <div class="flex items-center gap-4">
+        <!-- Icône avec drapeau mauritanien stylisé -->
+        <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg flex items-center justify-center">
+          <div class="absolute inset-1 bg-white/20 rounded-xl"></div>
+          <i class="fa-solid fa-chart-line text-white text-xl relative z-10"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-black bg-gradient-to-r from-green-600 via-yellow-600 to-red-600 bg-clip-text text-transparent">
+            Tableau de bord
+          </h1>
+          <p class="text-sm text-gray-600 mt-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            Système de suivi MESRS Mauritanie
+          </p>
+        </div>
       </div>
       
-      <!-- Date et heure -->
-      <div class="flex items-center gap-3 px-4 py-2.5 bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-emerald-100">
-        <i class="fa-solid fa-calendar-days text-emerald-600"></i>
-        <span class="text-sm font-medium text-gray-700">{{ currentDate | date:'dd MMMM yyyy' }}</span>
+      <!-- Date et heure avec design mauritanien -->
+      <div class="flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-green-50 to-yellow-50 backdrop-blur-sm rounded-2xl shadow-md border border-green-100">
+        <i class="fa-solid fa-calendar-days text-green-600"></i>
+        <span class="text-sm font-semibold text-gray-700">{{ currentDate | date:'dd MMMM yyyy' }}</span>
       </div>
     </div>
   </section>
 
-  <section class="bg-white/70 backdrop-blur-sm rounded-2xl border border-emerald-100/70 shadow-sm p-2">
+  <!-- 🎯 Navigation avec design mauritanien -->
+  <section class="bg-white/80 backdrop-blur-md rounded-2xl border border-green-100/70 shadow-lg p-2">
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
       <button
         type="button"
         (click)="setTab('textes')"
-        class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
-        [class.bg-emerald-600]="activeTab === 'textes'"
+        class="px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 relative overflow-hidden group"
+        [class.bg-gradient-to-r]="activeTab === 'textes'"
+        [class.from-green-500]="activeTab === 'textes'"
+        [class.to-green-600]="activeTab === 'textes'"
         [class.text-white]="activeTab === 'textes'"
         [class.bg-white]="activeTab !== 'textes'"
-        [class.text-emerald-700]="activeTab !== 'textes'"
+        [class.text-green-700]="activeTab !== 'textes'"
+        [class.hover:bg-gradient-to-r]="activeTab !== 'textes'"
+        [class.hover:from-green-50]="activeTab !== 'textes'"
+        [class.hover:to-yellow-50]="activeTab !== 'textes'"
       >
-        Textes
+        <span class="relative z-10 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-file-lines"></i>
+          Textes
+        </span>
+        <!-- Effet de brillance -->
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
       </button>
 
       <button
         type="button"
         (click)="setTab('etablissements')"
-        class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
-        [class.bg-emerald-600]="activeTab === 'etablissements'"
+        class="px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 relative overflow-hidden group"
+        [class.bg-gradient-to-r]="activeTab === 'etablissements'"
+        [class.from-yellow-500]="activeTab === 'etablissements'"
+        [class.to-yellow-600]="activeTab === 'etablissements'"
         [class.text-white]="activeTab === 'etablissements'"
         [class.bg-white]="activeTab !== 'etablissements'"
-        [class.text-emerald-700]="activeTab !== 'etablissements'"
+        [class.text-yellow-700]="activeTab !== 'etablissements'"
+        [class.hover:bg-gradient-to-r]="activeTab !== 'etablissements'"
+        [class.hover:from-yellow-50]="activeTab !== 'etablissements'"
+        [class.hover:to-red-50]="activeTab !== 'etablissements'"
       >
-        Établissements
+        <span class="relative z-10 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-building"></i>
+          Établissements
+        </span>
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
       </button>
 
       <button
         type="button"
         (click)="setTab('formations')"
-        class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
-        [class.bg-emerald-600]="activeTab === 'formations'"
+        class="px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 relative overflow-hidden group"
+        [class.bg-gradient-to-r]="activeTab === 'formations'"
+        [class.from-red-500]="activeTab === 'formations'"
+        [class.to-red-600]="activeTab === 'formations'"
         [class.text-white]="activeTab === 'formations'"
         [class.bg-white]="activeTab !== 'formations'"
-        [class.text-emerald-700]="activeTab !== 'formations'"
+        [class.text-red-700]="activeTab !== 'formations'"
+        [class.hover:bg-gradient-to-r]="activeTab !== 'formations'"
+        [class.hover:from-red-50]="activeTab !== 'formations'"
+        [class.hover:to-green-50]="activeTab !== 'formations'"
       >
-        Formations
+        <span class="relative z-10 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-graduation-cap"></i>
+          Formations
+        </span>
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
       </button>
 
       <button
         type="button"
         (click)="setTab('utilisateurs')"
-        class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200"
-        [class.bg-emerald-600]="activeTab === 'utilisateurs'"
+        class="px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 relative overflow-hidden group"
+        [class.bg-gradient-to-r]="activeTab === 'utilisateurs'"
+        [class.from-green-600]="activeTab === 'utilisateurs'"
+        [class.via-yellow-500]="activeTab === 'utilisateurs'"
+        [class.to-red-600]="activeTab === 'utilisateurs'"
         [class.text-white]="activeTab === 'utilisateurs'"
         [class.bg-white]="activeTab !== 'utilisateurs'"
-        [class.text-emerald-700]="activeTab !== 'utilisateurs'"
+        [class.text-purple-700]="activeTab !== 'utilisateurs'"
+        [class.hover:bg-gradient-to-r]="activeTab !== 'utilisateurs'"
+        [class.hover:from-green-50]="activeTab !== 'utilisateurs'"
+        [class.hover:to-red-50]="activeTab !== 'utilisateurs'"
       >
-        Utilisateurs
+        <span class="relative z-10 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-users"></i>
+          Utilisateurs
+        </span>
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
       </button>
     </div>
   </section>
 
+  <!-- 📊 Statistiques principales avec design mauritanien -->
   <section class="space-y-8" *ngIf="activeTab === 'textes'">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg sm:text-xl font-extrabold text-gray-900">
-        Textes
+      <h2 class="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+          <i class="fa-solid fa-file-lines text-white text-lg"></i>
+        </div>
+        Textes Réglementaires
       </h2>
-      <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
-        Statistiques
-      </span>
-    </div>
-
-  <!-- 📊 Statistiques principales avec animations -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-    <!-- Total -->
-    <div
-      class="group relative bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-lg hover:shadow-2xl
-             border border-blue-200/50 p-6 flex flex-col justify-between 
-             transition-all duration-300 hover:-translate-y-2 hover:scale-105
-             overflow-hidden animate-fadeIn"
-      style="animation-delay: 0.1s"
-    >
-      <!-- Glow effect -->
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      
-      <div class="relative flex justify-between items-start mb-4">
-        <div class="p-3 rounded-xl bg-white shadow-md group-hover:shadow-lg transition-shadow duration-300">
-          <i class="fa-solid fa-file-lines text-blue-600 text-2xl group-hover:scale-110 transition-transform duration-300"></i>
-        </div>
-        <span class="text-xs font-bold text-blue-700 bg-white px-3 py-1.5 rounded-full shadow-sm">
-          Total
+      <div class="flex items-center gap-2">
+        <span class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
+        <span class="text-sm font-bold text-green-700 bg-green-50 px-4 py-2 rounded-full border border-green-200">
+          Statistiques en temps réel
         </span>
       </div>
-      <div class="relative">
-        <h3 class="text-4xl sm:text-5xl font-extrabold text-blue-900 leading-none mb-2 group-hover:scale-105 transition-transform duration-300">
-          {{ stats.textes.total }}
-        </h3>
-        <p class="text-sm text-blue-700 font-medium">Textes réglementaires</p>
-      </div>
     </div>
 
-    <!-- En vigueur -->
-    <div
-      class="group relative bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl shadow-lg hover:shadow-2xl
-             border border-emerald-200/50 p-6 flex flex-col justify-between 
-             transition-all duration-300 hover:-translate-y-2 hover:scale-105
-             overflow-hidden animate-fadeIn"
-      style="animation-delay: 0.2s"
-    >
-      <div class="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      
-      <div class="relative flex justify-between items-start mb-4">
-        <div class="p-3 rounded-xl bg-white shadow-md group-hover:shadow-lg transition-shadow duration-300">
-          <i class="fa-solid fa-check-circle text-emerald-600 text-2xl group-hover:scale-110 transition-transform duration-300"></i>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total - Vert mauritanien -->
+      <div
+        class="group relative bg-gradient-to-br from-green-50 to-green-100 rounded-3xl shadow-xl hover:shadow-2xl
+               border border-green-200/50 p-7 flex flex-col justify-between 
+               transition-all duration-500 hover:-translate-y-3 hover:scale-105
+               overflow-hidden animate-fadeIn"
+        style="animation-delay: 0.1s"
+      >
+        <!-- Effet de brillance -->
+        <div class="absolute inset-0 bg-gradient-to-br from-green-400/0 to-green-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        
+        <!-- Icône et badge -->
+        <div class="relative flex justify-between items-start mb-6">
+          <div class="relative">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+              <i class="fa-solid fa-file-lines text-white text-xl group-hover:scale-110 transition-transform duration-300"></i>
+            </div>
+            <!-- Cercle décoratif -->
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="relative">
+            <span class="text-xs font-black text-green-700 bg-white px-3 py-2 rounded-2xl shadow-md border border-green-200">
+              TOTAL
+            </span>
+            <!-- Point animé -->
+            <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+          </div>
         </div>
-        <span class="text-xs font-bold text-emerald-700 bg-white px-3 py-1.5 rounded-full shadow-sm">
-          Actifs
-        </span>
-      </div>
-      <div class="relative">
-        <h3 class="text-4xl sm:text-5xl font-extrabold text-emerald-900 leading-none mb-2 group-hover:scale-105 transition-transform duration-300">
-          {{ stats.textes.enVigueur }}
-        </h3>
-        <p class="text-sm text-emerald-700 font-medium">Textes en vigueur</p>
-      </div>
-    </div>
-
-    <!-- Abrogés -->
-    <div
-      class="group relative bg-gradient-to-br from-red-50 to-red-100 rounded-2xl shadow-lg hover:shadow-2xl
-             border border-red-200/50 p-6 flex flex-col justify-between 
-             transition-all duration-300 hover:-translate-y-2 hover:scale-105
-             overflow-hidden animate-fadeIn"
-      style="animation-delay: 0.3s"
-    >
-      <div class="absolute inset-0 bg-gradient-to-br from-red-400/0 to-red-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      
-      <div class="relative flex justify-between items-start mb-4">
-        <div class="p-3 rounded-xl bg-white shadow-md group-hover:shadow-lg transition-shadow duration-300">
-          <i class="fa-solid fa-ban text-red-600 text-2xl group-hover:scale-110 transition-transform duration-300"></i>
+        
+        <!-- Statistique -->
+        <div class="relative">
+          <h3 class="text-5xl sm:text-6xl font-black text-green-900 leading-none mb-3 group-hover:scale-105 transition-transform duration-300">
+            {{ stats.textes.total }}
+          </h3>
+          <p class="text-sm font-bold text-green-700 uppercase tracking-wide">Textes réglementaires</p>
+          
+          <!-- Barre de progression décorative -->
+          <div class="mt-4 h-1.5 bg-green-200 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full animate-pulse" style="width: 75%"></div>
+          </div>
         </div>
-        <span class="text-xs font-bold text-red-700 bg-white px-3 py-1.5 rounded-full shadow-sm">
-          Inactifs
-        </span>
       </div>
-      <div class="relative">
-        <h3 class="text-4xl sm:text-5xl font-extrabold text-red-900 leading-none mb-2 group-hover:scale-105 transition-transform duration-300">
-          {{ stats.textes.abroges }}
-        </h3>
-        <p class="text-sm text-red-700 font-medium">Textes abrogés</p>
-      </div>
-    </div>
 
-    <!-- Projets -->
-    <div
-      class="group relative bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl shadow-lg hover:shadow-2xl
-             border border-amber-200/50 p-6 flex flex-col justify-between 
-             transition-all duration-300 hover:-translate-y-2 hover:scale-105
-             overflow-hidden animate-fadeIn"
-      style="animation-delay: 0.4s"
-    >
-      <div class="absolute inset-0 bg-gradient-to-br from-amber-400/0 to-amber-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      
-      <div class="relative flex justify-between items-start mb-4">
-        <div class="p-3 rounded-xl bg-white shadow-md group-hover:shadow-lg transition-shadow duration-300">
-          <i class="fa-solid fa-clock text-amber-600 text-2xl group-hover:scale-110 transition-transform duration-300"></i>
+      <!-- En vigueur - Jaune mauritanien -->
+      <div
+        class="group relative bg-gradient-to-br from-yellow-50 to-amber-100 rounded-3xl shadow-xl hover:shadow-2xl
+               border border-yellow-200/50 p-7 flex flex-col justify-between 
+               transition-all duration-500 hover:-translate-y-3 hover:scale-105
+               overflow-hidden animate-fadeIn"
+        style="animation-delay: 0.2s"
+      >
+        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/0 to-yellow-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        
+        <div class="relative flex justify-between items-start mb-6">
+          <div class="relative">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-500 to-amber-600 shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+              <i class="fa-solid fa-check-circle text-white text-xl group-hover:scale-110 transition-transform duration-300"></i>
+            </div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="relative">
+            <span class="text-xs font-black text-yellow-700 bg-white px-3 py-2 rounded-2xl shadow-md border border-yellow-200">
+              ACTIFS
+            </span>
+            <div class="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-ping"></div>
+          </div>
         </div>
-        <span class="text-xs font-bold text-amber-700 bg-white px-3 py-1.5 rounded-full shadow-sm">
-          En attente
-        </span>
+        
+        <div class="relative">
+          <h3 class="text-5xl sm:text-6xl font-black text-yellow-900 leading-none mb-3 group-hover:scale-105 transition-transform duration-300">
+            {{ stats.textes.enVigueur }}
+          </h3>
+          <p class="text-sm font-bold text-yellow-700 uppercase tracking-wide">Textes en vigueur</p>
+          
+          <div class="mt-4 h-1.5 bg-yellow-200 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full animate-pulse" style="width: 85%"></div>
+          </div>
+        </div>
       </div>
-      <div class="relative">
-        <h3 class="text-4xl sm:text-5xl font-extrabold text-amber-900 leading-none mb-2 group-hover:scale-105 transition-transform duration-300">
-          {{ stats.textes.projet }}
-        </h3>
-        <p class="text-sm text-amber-700 font-medium">Textes en projet</p>
+
+      <!-- Abrogés - Rouge mauritanien -->
+      <div
+        class="group relative bg-gradient-to-br from-red-50 to-red-100 rounded-3xl shadow-xl hover:shadow-2xl
+               border border-red-200/50 p-7 flex flex-col justify-between 
+               transition-all duration-500 hover:-translate-y-3 hover:scale-105
+               overflow-hidden animate-fadeIn"
+        style="animation-delay: 0.3s"
+      >
+        <div class="absolute inset-0 bg-gradient-to-br from-red-400/0 to-red-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        
+        <div class="relative flex justify-between items-start mb-6">
+          <div class="relative">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+              <i class="fa-solid fa-ban text-white text-xl group-hover:scale-110 transition-transform duration-300"></i>
+            </div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="relative">
+            <span class="text-xs font-black text-red-700 bg-white px-3 py-2 rounded-2xl shadow-md border border-red-200">
+              INACTIFS
+            </span>
+            <div class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+          </div>
+        </div>
+        
+        <div class="relative">
+          <h3 class="text-5xl sm:text-6xl font-black text-red-900 leading-none mb-3 group-hover:scale-105 transition-transform duration-300">
+            {{ stats.textes.abroges }}
+          </h3>
+          <p class="text-sm font-bold text-red-700 uppercase tracking-wide">Textes abrogés</p>
+          
+          <div class="mt-4 h-1.5 bg-red-200 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full animate-pulse" style="width: 15%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projets - Vert/Jaune combiné -->
+      <div
+        class="group relative bg-gradient-to-br from-green-50 via-yellow-50 to-amber-50 rounded-3xl shadow-xl hover:shadow-2xl
+               border border-green-200/50 p-7 flex flex-col justify-between 
+               transition-all duration-500 hover:-translate-y-3 hover:scale-105
+               overflow-hidden animate-fadeIn"
+        style="animation-delay: 0.4s"
+      >
+        <div class="absolute inset-0 bg-gradient-to-br from-green-400/0 via-yellow-400/0 to-amber-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        
+        <div class="relative flex justify-between items-start mb-6">
+          <div class="relative">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 via-yellow-500 to-amber-600 shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+              <i class="fa-solid fa-clock text-white text-xl group-hover:scale-110 transition-transform duration-300"></i>
+            </div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-400 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="relative">
+            <span class="text-xs font-black text-amber-700 bg-white px-3 py-2 rounded-2xl shadow-md border border-amber-200">
+              EN ATTENTE
+            </span>
+            <div class="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full animate-ping"></div>
+          </div>
+        </div>
+        
+        <div class="relative">
+          <h3 class="text-5xl sm:text-6xl font-black text-amber-900 leading-none mb-3 group-hover:scale-105 transition-transform duration-300">
+            {{ stats.textes.projet }}
+          </h3>
+          <p class="text-sm font-bold text-amber-700 uppercase tracking-wide">Textes en projet</p>
+          
+          <div class="mt-4 h-1.5 bg-amber-200 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-amber-600 rounded-full animate-pulse" style="width: 25%"></div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- 📂 Autres informations avec animations -->
+  <!-- 📂 Autres informations avec design mauritanien -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-    <!-- 🏆 Top catégories -->
-    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl border border-emerald-100 p-6 
-                transition-all duration-300 hover:-translate-y-1 animate-fadeIn" style="animation-delay: 0.5s">
-      <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
-        <span class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
-          <i class="fa-solid fa-layer-group text-white text-base"></i>
+    <!-- 🏆 Top catégories - Design vert mauritanien -->
+    <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 
+                transition-all duration-500 hover:-translate-y-2 animate-fadeIn" style="animation-delay: 0.5s">
+      <h3 class="text-xl font-black text-gray-900 mb-7 flex items-center gap-4">
+        <span class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg">
+          <i class="fa-solid fa-layer-group text-white text-lg"></i>
         </span>
-        <span class="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">Top catégories de textes</span>
+        <span class="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Top catégories de textes</span>
       </h3>
 
-      <ul class="space-y-3">
-        <li *ngFor="let c of topCategories" class="space-y-1">
-          <div class="flex justify-between text-sm">
-            <span class="font-medium text-gray-800">{{ c.label }}</span>
-            <span [class]="c.badgeClass">
-              {{ c.percent }}%
-            </span>
+      <ul class="space-y-4">
+        <li *ngFor="let c of topCategories" class="space-y-3">
+          <div class="flex justify-between items-center text-sm">
+            <span class="font-bold text-gray-800 text-base">{{ c.label }}</span>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 flex items-center justify-center">
+                <span class="font-black text-sm text-green-700">
+                  {{ c.percent }}%
+                </span>
+              </div>
+            </div>
           </div>
-          <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full rounded-full" [class]="c.barClass" [style.width.%]="c.percent"></div>
+          <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+            <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-1000 ease-out" 
+                 [style.width.%]="c.percent"
+                 style="box-shadow: 0 2px 4px rgba(0,0,0,0.1)"></div>
           </div>
         </li>
 
-        <li *ngIf="topCategories.length === 0" class="text-sm text-gray-500">
-          Aucune donnée disponible.
+        <li *ngIf="topCategories.length === 0" class="text-sm text-gray-500 text-center py-8 bg-green-50 rounded-2xl border border-green-100">
+          <i class="fa-solid fa-inbox text-green-400 text-3xl mb-3"></i>
+          <p class="font-medium">Aucune donnée disponible</p>
         </li>
       </ul>
     </div>
 
-    <!-- 🕓 Dernières modifications -->
-    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-purple-50">
-          <i class="fa-solid fa-clock-rotate-left text-purple-600 text-sm"></i>
+    <!-- 🕓 Dernières modifications - Design moderne vert -->
+    <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+      <h3 class="text-xl font-black text-gray-900 mb-7 flex items-center gap-4">
+        <span class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-lg">
+          <i class="fa-solid fa-clock-rotate-left text-white text-lg"></i>
         </span>
-        <span>Dernières modifications</span>
+        <span class="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">Dernières modifications</span>
       </h3>
 
-      <ul class="space-y-3">
-        <li *ngFor="let t of recentTextes; let last = last" class="flex items-start justify-between gap-3" [class.border-b]="!last" [class.border-gray-100]="!last" [class.pb-3]="!last">
+      <ul class="space-y-4">
+        <li *ngFor="let t of recentTextes; let last = last" 
+            class="flex items-start justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-green-50/50 to-emerald-50/50 border border-green-100/50 hover:from-green-100 hover:to-emerald-100 transition-all duration-300" 
+            [class.border-b]="!last" [class.border-gray-100]="!last" [class.pb-4]="!last">
           <div class="flex-1">
-            <p class="font-medium text-gray-900 text-sm">{{ t.titre }}</p>
-            <p class="text-xs text-gray-500 mt-0.5">Modifié le {{ t.datePublication | date:'dd MMMM yyyy' }}</p>
+            <p class="font-black text-gray-900 text-base mb-2">{{ t.titre }}</p>
+            <div class="flex items-center gap-2 text-xs text-gray-600">
+              <i class="fa-solid fa-calendar text-green-500"></i>
+              <span>Modifié le {{ t.datePublication | date:'dd MMMM yyyy' }}</span>
+            </div>
           </div>
-          <span [class]="getRecentBadgeClass(t)">
-            {{ getRecentBadgeLabel(t) }}
-          </span>
+          <div class="flex items-center gap-2">
+            <span [class]="getRecentBadgeClass(t)" class="px-3 py-2 rounded-full text-xs font-black shadow-md">
+              {{ getRecentBadgeLabel(t) }}
+            </span>
+          </div>
         </li>
 
-        <li *ngIf="recentTextes.length === 0" class="text-sm text-gray-500">
-          Aucune modification récente.
+        <li *ngIf="recentTextes.length === 0" class="text-sm text-gray-500 text-center py-8 bg-green-50 rounded-2xl border border-green-100">
+          <i class="fa-solid fa-history text-green-400 text-3xl mb-3"></i>
+          <p class="font-medium">Aucune modification récente</p>
         </li>
       </ul>
     </div>
   </div>
   </section>
 
-  <section class="space-y-5" *ngIf="activeTab === 'etablissements'">
+  <!-- 🏢 Section Établissements - Design vert mauritanien -->
+  <section class="space-y-8" *ngIf="activeTab === 'etablissements'">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg sm:text-xl font-extrabold text-gray-900">
+      <h2 class="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+          <i class="fa-solid fa-building text-white text-lg"></i>
+        </div>
         Établissements
       </h2>
+      <div class="flex items-center gap-2">
+        <span class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
+        <span class="text-sm font-bold text-green-700 bg-green-50 px-4 py-2 rounded-full border border-green-200">
+          Réseau national
+        </span>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <h3 class="text-base font-bold text-gray-900 mb-4">Résumé</h3>
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-gray-600">Total</div>
-          <div class="text-3xl font-extrabold text-emerald-700">{{ stats.etablissements.total }}</div>
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+            <i class="fa-solid fa-chart-pie text-white"></i>
+          </div>
+          Résumé général
+        </h3>
+        <div class="flex items-center justify-between p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100">
+          <div class="text-sm font-bold text-green-700 uppercase tracking-wide">Total établissements</div>
+          <div class="text-4xl font-black text-green-900">{{ stats.etablissements.total }}</div>
         </div>
-        <div class="mt-4 text-xs text-gray-500">Répartition par statut juridique</div>
+        <div class="mt-6 text-sm text-gray-600 flex items-center gap-2">
+          <i class="fa-solid fa-info-circle text-green-500"></i>
+          Répartition par statut juridique
+        </div>
       </div>
 
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <h3 class="text-base font-bold text-gray-900 mb-4">Statuts (Top)</h3>
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+            <i class="fa-solid fa-ranking-star text-white"></i>
+          </div>
+          Statuts principaux
+        </h3>
 
-        <div class="space-y-3">
-          <div *ngFor="let it of etablissementsTop" class="space-y-1">
-            <div class="flex justify-between text-sm">
-              <span class="font-medium text-gray-800">{{ it.label }}</span>
-              <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                {{ it.percent }}%
-              </span>
+        <div class="space-y-4">
+          <div *ngFor="let it of etablissementsTop" class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-gray-800 text-base">{{ it.label }}</span>
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 flex items-center justify-center">
+                  <span class="text-xs font-black text-green-700">{{ it.percent }}%</span>
+                </div>
+              </div>
             </div>
-            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-              <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" [style.width.%]="it.percent"></div>
+            <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+              <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-1000 ease-out" 
+                   [style.width.%]="it.percent"
+                   style="box-shadow: 0 2px 4px rgba(0,0,0,0.1)"></div>
             </div>
           </div>
 
-          <div *ngIf="etablissementsTop.length === 0" class="text-sm text-gray-500">Aucune donnée disponible.</div>
+          <div *ngIf="etablissementsTop.length === 0" class="text-sm text-gray-500 text-center py-8 bg-green-50 rounded-2xl border border-green-100">
+            <i class="fa-solid fa-building-circle-xmark text-green-400 text-3xl mb-3"></i>
+            <p class="font-medium">Aucune donnée disponible</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="space-y-5" *ngIf="activeTab === 'formations'">
+  <!-- 🎓 Section Formations - Design vert mauritanien -->
+  <section class="space-y-8" *ngIf="activeTab === 'formations'">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg sm:text-xl font-extrabold text-gray-900">
+      <h2 class="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg">
+          <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+        </div>
         Formations
       </h2>
+      <div class="flex items-center gap-2">
+        <span class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
+        <span class="text-sm font-bold text-green-700 bg-green-50 px-4 py-2 rounded-full border border-green-200">
+          Offre éducative
+        </span>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <h3 class="text-base font-bold text-gray-900 mb-4">Résumé</h3>
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-gray-600">Total</div>
-          <div class="text-3xl font-extrabold text-emerald-700">{{ stats.formations.total }}</div>
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+            <i class="fa-solid fa-chart-simple text-white"></i>
+          </div>
+          Résumé général
+        </h3>
+        <div class="flex items-center justify-between p-6 bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl border border-green-100">
+          <div class="text-sm font-bold text-green-700 uppercase tracking-wide">Total formations</div>
+          <div class="text-4xl font-black text-green-900">{{ stats.formations.total }}</div>
         </div>
-        <div class="mt-4 text-xs text-gray-500">Répartition par diplôme</div>
+        <div class="mt-6 text-sm text-gray-600 flex items-center gap-2">
+          <i class="fa-solid fa-info-circle text-green-500"></i>
+          Répartition par diplôme
+        </div>
       </div>
 
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <h3 class="text-base font-bold text-gray-900 mb-4">Diplômes (Top)</h3>
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+            <i class="fa-solid fa-medal text-white"></i>
+          </div>
+          Diplômes principaux
+        </h3>
 
-        <div class="space-y-3">
-          <div *ngFor="let it of formationsTop" class="space-y-1">
-            <div class="flex justify-between text-sm">
-              <span class="font-medium text-gray-800">{{ it.label }}</span>
-              <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">
-                {{ it.percent }}%
-              </span>
+        <div class="space-y-4">
+          <div *ngFor="let it of formationsTop" class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-gray-800 text-base">{{ it.label }}</span>
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 flex items-center justify-center">
+                  <span class="text-xs font-black text-green-700">{{ it.percent }}%</span>
+                </div>
+              </div>
             </div>
-            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-              <div class="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400" [style.width.%]="it.percent"></div>
+            <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+              <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-1000 ease-out" 
+                   [style.width.%]="it.percent"
+                   style="box-shadow: 0 2px 4px rgba(0,0,0,0.1)"></div>
             </div>
           </div>
 
-          <div *ngIf="formationsTop.length === 0" class="text-sm text-gray-500">Aucune donnée disponible.</div>
+          <div *ngIf="formationsTop.length === 0" class="text-sm text-gray-500 text-center py-8 bg-green-50 rounded-2xl border border-green-100">
+            <i class="fa-solid fa-graduation-cap-xmark text-green-400 text-3xl mb-3"></i>
+            <p class="font-medium">Aucune donnée disponible</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="space-y-5" *ngIf="activeTab === 'utilisateurs'">
+  <!-- 👥 Section Utilisateurs - Design vert mauritanien -->
+  <section class="space-y-8" *ngIf="activeTab === 'utilisateurs'">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg sm:text-xl font-extrabold text-gray-900">
+      <h2 class="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+          <i class="fa-solid fa-users text-white text-lg"></i>
+        </div>
         Utilisateurs
       </h2>
+      <div class="flex items-center gap-2">
+        <span class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
+        <span class="text-sm font-bold text-green-700 bg-green-50 px-4 py-2 rounded-full border border-green-200">
+          Gestion des accès
+        </span>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <div class="text-xs font-bold text-emerald-700">Total</div>
-        <div class="mt-2 text-4xl font-extrabold text-gray-900">{{ stats.utilisateurs.total }}</div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+            <i class="fa-solid fa-user-group text-white"></i>
+          </div>
+          <div class="text-xs font-black text-green-700 uppercase tracking-wide">Total</div>
+        </div>
+        <div class="text-5xl font-black text-green-900">{{ stats.utilisateurs.total }}</div>
+        <div class="mt-4 h-2 bg-green-200 rounded-full overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full animate-pulse" style="width: 100%"></div>
+        </div>
       </div>
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <div class="text-xs font-bold text-emerald-700">Actifs</div>
-        <div class="mt-2 text-4xl font-extrabold text-gray-900">{{ stats.utilisateurs.active }}</div>
+      
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+            <i class="fa-solid fa-user-check text-white"></i>
+          </div>
+          <div class="text-xs font-black text-green-700 uppercase tracking-wide">Actifs</div>
+        </div>
+        <div class="text-5xl font-black text-green-900">{{ stats.utilisateurs.active }}</div>
+        <div class="mt-4 h-2 bg-green-200 rounded-full overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full animate-pulse" [style.width.%]="(stats.utilisateurs.active / stats.utilisateurs.total) * 100"></div>
+        </div>
       </div>
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <div class="text-xs font-bold text-emerald-700">Validés</div>
-        <div class="mt-2 text-4xl font-extrabold text-gray-900">{{ stats.utilisateurs.validated }}</div>
+      
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+            <i class="fa-solid fa-user-shield text-white"></i>
+          </div>
+          <div class="text-xs font-black text-green-700 uppercase tracking-wide">Validés</div>
+        </div>
+        <div class="text-5xl font-black text-green-900">{{ stats.utilisateurs.validated }}</div>
+        <div class="mt-4 h-2 bg-green-200 rounded-full overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full animate-pulse" [style.width.%]="(stats.utilisateurs.validated / stats.utilisateurs.total) * 100"></div>
+        </div>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <h3 class="text-base font-bold text-gray-900 mb-4">Rôles (Top)</h3>
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+            <i class="fa-solid fa-user-tie text-white"></i>
+          </div>
+          Rôles principaux
+        </h3>
 
-        <div class="space-y-3">
-          <div *ngFor="let it of utilisateursTop" class="space-y-1">
-            <div class="flex justify-between text-sm">
-              <span class="font-medium text-gray-800">{{ it.label }}</span>
-              <span class="text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full">
-                {{ it.percent }}%
-              </span>
+        <div class="space-y-4">
+          <div *ngFor="let it of utilisateursTop" class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-gray-800 text-base">{{ it.label }}</span>
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 flex items-center justify-center">
+                  <span class="text-xs font-black text-green-700">{{ it.percent }}%</span>
+                </div>
+              </div>
             </div>
-            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-              <div class="h-full rounded-full bg-gradient-to-r from-purple-500 to-purple-400" [style.width.%]="it.percent"></div>
+            <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+              <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-1000 ease-out" 
+                   [style.width.%]="it.percent"
+                   style="box-shadow: 0 2px 4px rgba(0,0,0,0.1)"></div>
             </div>
           </div>
 
-          <div *ngIf="utilisateursTop.length === 0" class="text-sm text-gray-500">Aucune donnée disponible.</div>
+          <div *ngIf="utilisateursTop.length === 0" class="text-sm text-gray-500 text-center py-8 bg-green-50 rounded-2xl border border-green-100">
+            <i class="fa-solid fa-user-slash text-green-400 text-3xl mb-3"></i>
+            <p class="font-medium">Aucune donnée disponible</p>
+          </div>
         </div>
       </div>
 
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-emerald-100/70 p-6">
-        <h3 class="text-base font-bold text-gray-900 mb-4">Assistant</h3>
-        <app-chatbot></app-chatbot>
+      <div class="bg-white/85 backdrop-blur-md rounded-3xl shadow-xl hover:shadow-2xl border border-green-100/70 p-7 transition-all duration-500 hover:-translate-y-2">
+        <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+            <i class="fa-solid fa-robot text-white"></i>
+          </div>
+          Assistant IA
+        </h3>
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100 p-4">
+          <app-chatbot></app-chatbot>
+        </div>
       </div>
     </div>
   </section>
