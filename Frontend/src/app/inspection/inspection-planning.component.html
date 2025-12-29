@@ -1,0 +1,110 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Planification des inspections'" [withSidebar]="true"></app-header>
+
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 bg-gradient-to-br from-emerald-50/60 via-teal-50/30 to-white min-h-screen space-y-8">
+
+  <div class="bg-white/90 backdrop-blur-xl border border-emerald-100/70 rounded-2xl shadow-xl p-6">
+    <h2 class="text-xl font-bold text-emerald-800 mb-4">Nouvelle planification</h2>
+
+    <form #f="ngForm" (ngSubmit)="onSubmit(f)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Date</label>
+        <input
+          type="date"
+          name="date"
+          required
+          [(ngModel)]="formModel.date"
+          class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-400 outline-none"
+        />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Objet de l'inspection</label>
+        <input
+          type="text"
+          name="objet"
+          required
+          [(ngModel)]="formModel.objet"
+          placeholder="Ex: Inspection de conformité - établissement X"
+          class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-400 outline-none"
+        />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Inspecteur affecté</label>
+        <select
+          name="assignedToUsername"
+          required
+          [(ngModel)]="formModel.assignedToUsername"
+          class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-400 outline-none bg-white"
+        >
+          <option value="" disabled>-- Sélectionner --</option>
+          <option *ngFor="let i of inspectors" [value]="i.username">{{ i.fullname }} ({{ i.username }})</option>
+        </select>
+        <p *ngIf="loadingUsers" class="text-xs text-gray-500 mt-2">Chargement des inspecteurs...</p>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Établissement</label>
+        <select
+          name="etablissementId"
+          required
+          [(ngModel)]="formModel.etablissementId"
+          class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:ring-2 focus:ring-emerald-400 outline-none bg-white"
+        >
+          <option value="" disabled>-- Sélectionner --</option>
+          <option *ngFor="let e of etablissements" [value]="e.id">{{ e.nom }}</option>
+        </select>
+        <p *ngIf="loadingEtablissements" class="text-xs text-gray-500 mt-2">Chargement des établissements...</p>
+      </div>
+
+      <div class="flex items-end">
+        <button
+          type="submit"
+          [disabled]="saving"
+          class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl
+                 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold
+                 shadow-lg hover:shadow-xl transition-all duration-300
+                 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Planifier
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-white/90 backdrop-blur-xl border border-emerald-100/70 rounded-2xl shadow-xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-emerald-800">Missions planifiées</h2>
+      <button type="button" (click)="refreshMissions()" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900">
+        Rafraîchir
+      </button>
+    </div>
+
+    <div *ngIf="missions.length === 0" class="text-sm text-gray-600">Aucune mission planifiée.</div>
+
+    <div *ngIf="missions.length > 0" class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-600">
+            <th class="py-2">Date</th>
+            <th class="py-2">Objet</th>
+            <th class="py-2">Établissement</th>
+            <th class="py-2">Inspecteur</th>
+            <th class="py-2">Créée le</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of missions" class="border-t border-emerald-50">
+            <td class="py-2 font-semibold text-gray-800">{{ m.date }}</td>
+            <td class="py-2 text-gray-700">{{ m.objet }}</td>
+            <td class="py-2 text-gray-700">{{ getEtablissementLabel(m.etablissementId) }}</td>
+            <td class="py-2 text-gray-700">{{ getInspectorLabel(m.assignedToUsername) }}</td>
+            <td class="py-2 text-gray-500">{{ m.createdAtIso | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

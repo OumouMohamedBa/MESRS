@@ -21,6 +21,9 @@ import { EtablissementsEditComponent } from './etablissements/etablissements-edi
 import { EtablissementsDetailComponent } from './etablissements/etablissements-detail.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { InspectionPlanningComponent } from './inspection/inspection-planning.component';
+import { MesMissionsComponent } from './missions/mes-missions.component';
+import { NotificationsPageComponent } from './notifications/notifications-page.component';
 
 
 export const routes: Routes = [
@@ -28,6 +31,9 @@ export const routes: Routes = [
   { path: 'contact', component: ContactComponent },
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'inspection', component: InspectionPlanningComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['INSPECTEUR_GENERAL'] } },
+  { path: 'mes-missions', component: MesMissionsComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['SOUS_INSPECTEUR*'] } },
+  { path: 'notifications', component: NotificationsPageComponent, canActivate: [AuthGuard] },
   { path: 'etablissements/nouveau', component: EtablissementsAddComponent, canActivate: [AuthGuard] },
   { path: 'etablissements/:id/edit', component: EtablissementsEditComponent, canActivate: [AuthGuard] },
   { path: 'etablissements/:id', component: EtablissementsDetailComponent, canActivate: [AuthGuard] },

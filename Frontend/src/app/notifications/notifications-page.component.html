@@ -1,0 +1,32 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Notifications'" [withSidebar]="true"></app-header>
+
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 bg-gradient-to-br from-emerald-50/60 via-teal-50/30 to-white min-h-screen space-y-6">
+
+  <div class="bg-white/90 backdrop-blur-xl border border-emerald-100/70 rounded-2xl shadow-xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-emerald-800">Toutes les notifications</h2>
+      <div class="flex gap-3">
+        <button type="button" (click)="refresh()" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900">Rafraîchir</button>
+        <button type="button" (click)="markAllRead()" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900">Tout marquer lu</button>
+      </div>
+    </div>
+
+    <div *ngIf="notifications.length === 0" class="text-sm text-gray-600">Aucune notification.</div>
+
+    <div *ngIf="notifications.length > 0" class="space-y-3">
+      <div *ngFor="let n of notifications" class="rounded-xl border p-4" [class.border-emerald-200]="n.read" [class.border-red-200]="!n.read">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="text-sm font-semibold" [class.text-gray-800]="n.read" [class.text-red-700]="!n.read">{{ n.message }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ n.createdAtIso | date:'short' }}</p>
+          </div>
+          <button *ngIf="!n.read" type="button" (click)="markRead(n.id)" class="text-xs font-bold text-emerald-700 hover:text-emerald-900">
+            Marquer lu
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { MissionNotificationService } from '../services/mission-notification.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,11 +13,18 @@ import { AuthService } from '../services/auth.service';
   
 })
 export class SidebarComponent {
-  constructor(private auth: AuthService) {
-  }
+  constructor(private auth: AuthService, private missionNotif: MissionNotificationService) {}
 
   // 👉 propriété calculée utilisée par le *ngIf dans le HTML
   get isIG(): boolean {
     return this.auth.hasRole(['INSPECTEUR_GENERAL']);
+  }
+
+  get isSousInspecteur(): boolean {
+    return this.auth.hasRole(['SOUS_INSPECTEUR*']);
+  }
+
+  get unreadCount(): number {
+    return this.missionNotif.getUnreadCountForCurrentUser();
   }
 }

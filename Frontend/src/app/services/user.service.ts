@@ -27,7 +27,7 @@ export interface UserPayload {
   id?: number | null;
   fullname: string;
   username: string;
-  phone: string;
+  phone: string | null;
   password?: string;
   photo?: string | null;
   role: string;
@@ -40,7 +40,7 @@ export interface UserPayload {
 })
 export class UserService {
   private api = `${environment.apiUrl}/users`;
-  private rolesApi = `${environment.apiUrl}/roles`;
+  private rolesApi = `${environment.apiUrl}/api/roles`;
 
   constructor(private http: HttpClient) {}
 

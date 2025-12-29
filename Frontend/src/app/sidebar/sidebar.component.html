@@ -129,12 +129,38 @@
       <div class="sidebar-indicator"></div>
     </a>
 
-    <a routerLink="/inspection" routerLinkActive="active-link" 
+    <a *ngIf="isIG" routerLink="/inspection" routerLinkActive="active-link" 
        class="sidebar-item group">
       <div class="sidebar-icon">
         <lucide-icon name="clipboard-list" class="w-5 h-5"></lucide-icon>
       </div>
       <span class="sidebar-text">Inspection</span>
+      <div class="sidebar-indicator"></div>
+    </a>
+
+    <a *ngIf="isSousInspecteur" routerLink="/mes-missions" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="clipboard-check" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Mes missions</span>
+      <span *ngIf="unreadCount > 0"
+            class="ml-auto bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] font-bold leading-3 px-1.5 py-0.5 rounded-full shadow-lg">
+        {{ unreadCount }}
+      </span>
+      <div class="sidebar-indicator"></div>
+    </a>
+
+    <a routerLink="/notifications" routerLinkActive="active-link" 
+       class="sidebar-item group">
+      <div class="sidebar-icon">
+        <lucide-icon name="bell" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="sidebar-text">Notifications</span>
+      <span *ngIf="unreadCount > 0"
+            class="ml-auto bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] font-bold leading-3 px-1.5 py-0.5 rounded-full shadow-lg">
+        {{ unreadCount }}
+      </span>
       <div class="sidebar-indicator"></div>
     </a>
 

@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-export type Role = 'INSPECTEUR_GENERAL' | 'SOUS_INSPECTEUR';
+export type Role = string;
 
 export interface AuthUser {
   username: string;
@@ -30,12 +30,19 @@ export class AuthService {
     const user = this.currentUser;
     if (!user) return false;
     const arr = Array.isArray(roles) ? roles : [roles];
-    return arr.includes(user.role);
+    return arr.some((r) => {
+      if (!r) return false;
+      if (r.endsWith('*')) {
+        const prefix = r.slice(0, -1);
+        return user.role?.startsWith(prefix);
+      }
+      return user.role === r;
+    });
   }
 
   login(username: string, password: string): Observable<void> {
     return this.http
-      .post<{ username: string; role: Role }>('http://localhost:8080/auth/login', {
+      .post<{ username: string; role: Role }>(`${environment.apiUrl}/auth/login`, {
         username,
         password,
       })

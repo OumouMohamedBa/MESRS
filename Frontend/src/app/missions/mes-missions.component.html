@@ -1,0 +1,57 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Mes missions'" [withSidebar]="true"></app-header>
+
+<div class="lg:ml-80 pt-28 lg:pt-32 px-4 sm:px-6 pb-10 bg-gradient-to-br from-emerald-50/60 via-teal-50/30 to-white min-h-screen space-y-8">
+
+  <div class="bg-white/90 backdrop-blur-xl border border-emerald-100/70 rounded-2xl shadow-xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-emerald-800">Missions affectées</h2>
+      <button type="button" (click)="refresh()" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900">Rafraîchir</button>
+    </div>
+
+    <div *ngIf="missions.length === 0" class="text-sm text-gray-600">Aucune mission affectée.</div>
+
+    <div *ngIf="missions.length > 0" class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-600">
+            <th class="py-2">Date</th>
+            <th class="py-2">Objet</th>
+            <th class="py-2">Créée le</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of missions" class="border-t border-emerald-50">
+            <td class="py-2 font-semibold text-gray-800">{{ m.date }}</td>
+            <td class="py-2 text-gray-700">{{ m.objet }}</td>
+            <td class="py-2 text-gray-500">{{ m.createdAtIso | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white/90 backdrop-blur-xl border border-emerald-100/70 rounded-2xl shadow-xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-emerald-800">Notifications</h2>
+      <button type="button" (click)="markAllRead()" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900">Tout marquer comme lu</button>
+    </div>
+
+    <div *ngIf="notifications.length === 0" class="text-sm text-gray-600">Aucune notification.</div>
+
+    <div *ngIf="notifications.length > 0" class="space-y-3">
+      <div *ngFor="let n of notifications" class="rounded-xl border p-4" [class.border-emerald-200]="n.read" [class.border-red-200]="!n.read">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="text-sm font-semibold" [class.text-gray-800]="n.read" [class.text-red-700]="!n.read">{{ n.message }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ n.createdAtIso | date:'short' }}</p>
+          </div>
+          <button *ngIf="!n.read" type="button" (click)="markRead(n.id)" class="text-xs font-bold text-emerald-700 hover:text-emerald-900">
+            Marquer lu
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

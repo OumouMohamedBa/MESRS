@@ -107,12 +107,12 @@
       >
         <i class="fa-regular fa-bell text-emerald-700 text-base sm:text-lg
                   group-hover:animate-bounce"></i>
-        <span
+        <span *ngIf="unreadCount > 0"
           class="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-red-500 to-pink-500 
                  text-white text-[10px] font-bold leading-3 px-1.5 rounded-full 
                  shadow-lg animate-pulse"
         >
-          3
+          {{ unreadCount }}
         </span>
       </button>
 

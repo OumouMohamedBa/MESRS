@@ -1,7 +1,7 @@
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-import { LucideAngularModule, Home, Scale, Building, GraduationCap, Users, Coins, FlaskConical, BarChart3, ClipboardList, Settings, School, UserCog } from 'lucide-angular';
+import { LucideAngularModule, Home, Scale, Building, GraduationCap, Users, Coins, FlaskConical, BarChart3, ClipboardList, ClipboardCheck, Settings, School, UserCog, Bell } from 'lucide-angular';
 
 import { routes } from './app.routes';
 
@@ -22,9 +22,11 @@ export const appConfig: ApplicationConfig = {
         FlaskConical,
         BarChart3,
         ClipboardList,
+        ClipboardCheck,
         Settings,
         School,
-        UserCog
+        UserCog,
+        Bell
       })
     )
   ]

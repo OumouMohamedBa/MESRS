@@ -1,6 +1,8 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule, UpperCasePipe } from '@angular/common';
 import { AuthService } from '../services/auth.service'; 
+import { Router } from '@angular/router';
+import { MissionNotificationService } from '../services/mission-notification.service';
 
 @Component({
   selector: 'app-header',
@@ -22,10 +24,18 @@ export class HeaderComponent {
   isLangOpen = false;
   isProfileOpen = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private missionNotif: MissionNotificationService
+  ) {}
 
   get currentUser() {
     return this.authService.currentUser;
+  }
+
+  get unreadCount(): number {
+    return this.missionNotif.getUnreadCountForCurrentUser();
   }
 
   getUserInitials(): string {
@@ -85,6 +95,7 @@ export class HeaderComponent {
   }
 
   onOpenNotifications() {
+    this.router.navigateByUrl('/notifications');
     this.openNotifications.emit();
   }
 

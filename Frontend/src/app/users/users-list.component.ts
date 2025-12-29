@@ -39,12 +39,10 @@ export class UsersListComponent implements OnInit {
     validated: boolean;
   } = this.getEmptyForm();
 
-  // options de rôle – adapte les id pour coller à ta base
-  roleOptions: RoleOption[] = [
-    { id: 1, code: 'INSPECTEUR_GENERAL',       label: 'Inspecteur général' },
-    { id: 2, code: 'SOUS_INSPECTEUR_TEXTES',   label: 'Sous-inspecteur des textes' },
-    { id: 3, code: 'SOUS_INSPECTEUR_FINANCES', label: 'Sous-inspecteur des finances' },
-  ];
+  // options de rôle – chargées depuis le backend (/roles)
+  roleOptions: RoleOption[] = [];
+
+  loadingRoles = false;
 
   loading = false;
 
@@ -67,6 +65,7 @@ export class UsersListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadRoles();
   }
 
   // --------- helpers ---------
@@ -79,6 +78,9 @@ export class UsersListComponent implements OnInit {
   openForm(): void {
     this.editingUserId = null;
     this.formModel = this.getEmptyForm();
+    if (this.roleOptions.length === 0 && !this.loadingRoles) {
+      this.loadRoles();
+    }
     this.showForm = true;
     this.lockBodyScroll();
   }
@@ -131,6 +133,26 @@ export class UsersListComponent implements OnInit {
     });
   }
 
+  loadRoles(): void {
+    this.loadingRoles = true;
+    this.userService.getRoles().subscribe({
+      next: (roles) => {
+        this.roleOptions = (roles || []).map((r) => ({
+          id: r.id,
+          code: r.code,
+          label: r.label
+        }));
+        this.loadingRoles = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement rôles', err);
+        this.roleOptions = [];
+        this.loadingRoles = false;
+        this.notification.error('Impossible de charger les rôles');
+      }
+    });
+  }
+
   // fichier choisi → on garde juste le nom dans `photo`
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -145,20 +167,37 @@ export class UsersListComponent implements OnInit {
       this.notification.warning('Merci de remplir les champs obligatoires');
       return;
     }
+
+    const trimmedPassword = (this.formModel.password || '').trim();
+    if (!this.editingUserId && trimmedPassword.length === 0) {
+      this.notification.warning('Merci de saisir un mot de passe');
+      return;
+    }
+
     if (!this.formModel.roleCode) {
       this.notification.warning('Merci de choisir un rôle');
       return;
     }
 
     const payload: UserPayload = {
-      id: this.formModel.id,
       fullname: this.formModel.name,
       username: this.formModel.username,
-      phone: this.formModel.phone,
-      password: this.formModel.password,
+      phone: (this.formModel.phone || null) as any,
+      photo: this.formModel.photo,
       active: this.formModel.active,
-      role: this.formModel.roleCode,
+      validated: this.formModel.validated,
+      role: this.formModel.roleCode
     };
+
+    // Ne pas envoyer password si vide (important en update)
+    if (trimmedPassword.length > 0) {
+      payload.password = trimmedPassword;
+    }
+
+    // Ne pas envoyer id en création (certains backends plantent si id=null)
+    if (this.editingUserId) {
+      payload.id = this.editingUserId;
+    }
 
     // création ou mise à jour selon editingUserId
     const request$ = this.editingUserId
@@ -167,6 +206,7 @@ export class UsersListComponent implements OnInit {
 
     request$.subscribe({
       next: (user) => {
+
         if (this.editingUserId) {
           // remplacement dans la liste
           this.users = this.users.map((u) => (u.id === user.id ? user : u));
@@ -176,10 +216,33 @@ export class UsersListComponent implements OnInit {
         const wasEditing = this.editingUserId;
         this.closeForm(form);
         this.notification.success(wasEditing ? 'Utilisateur mis à jour avec succès' : 'Utilisateur créé avec succès');
+
+        if (!wasEditing) {
+          const canBeAssigned = (user.role || '').startsWith('SOUS_INSPECTEUR');
+          if (canBeAssigned) {
+            const ok = window.confirm(
+              `Utilisateur créé. Voulez-vous l'affecter maintenant à une inspection ?\n\nInspecteur: ${user.fullname} (${user.username})`
+            );
+            if (ok) {
+              this.router.navigate(['/inspection'], {
+                queryParams: { assignedTo: user.username }
+              });
+            }
+          }
+        }
       },
       error: (err) => {
         console.error('Erreur sauvegarde utilisateur', err);
-        this.notification.error('Erreur lors de la sauvegarde de l\'utilisateur');
+        const serverMsg = err?.error;
+        const detail =
+          typeof serverMsg === 'string'
+            ? serverMsg
+            : serverMsg?.message || serverMsg?.error || serverMsg?.title || '';
+        this.notification.error(
+          detail
+            ? `Erreur lors de la sauvegarde de l'utilisateur : ${detail}`
+            : "Erreur lors de la sauvegarde de l'utilisateur"
+        );
       },
     });
   }
@@ -197,6 +260,9 @@ export class UsersListComponent implements OnInit {
       active: user.active,
       validated: user.validated,
     };
+    if (this.roleOptions.length === 0 && !this.loadingRoles) {
+      this.loadRoles();
+    }
     this.showForm = true;
     this.lockBodyScroll();
   }
