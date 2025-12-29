@@ -39,10 +39,18 @@ export class UsersListComponent implements OnInit {
     validated: boolean;
   } = this.getEmptyForm();
 
+<<<<<<< HEAD
   // options de rôle – chargées depuis le backend (/roles)
   roleOptions: RoleOption[] = [];
 
   loadingRoles = false;
+=======
+  // options de rôle – adapte les id pour coller à ta base
+  roleOptions: RoleOption[] = [
+    { id: 1, code: 'INSPECTEUR_GENERAL', label: 'Inspecteur général' },
+    { id: 2, code: 'SOUS_INSPECTEUR', label: 'Sous-inspecteur' },
+  ];
+>>>>>>> 4bd41a85bb56c3d11a6f0f9bb76e2923710d5f64
 
   loading = false;
 
@@ -168,12 +176,15 @@ export class UsersListComponent implements OnInit {
       return;
     }
 
+<<<<<<< HEAD
     const trimmedPassword = (this.formModel.password || '').trim();
     if (!this.editingUserId && trimmedPassword.length === 0) {
       this.notification.warning('Merci de saisir un mot de passe');
       return;
     }
 
+=======
+>>>>>>> 4bd41a85bb56c3d11a6f0f9bb76e2923710d5f64
     if (!this.formModel.roleCode) {
       this.notification.warning('Merci de choisir un rôle');
       return;
@@ -185,8 +196,13 @@ export class UsersListComponent implements OnInit {
       phone: (this.formModel.phone || null) as any,
       photo: this.formModel.photo,
       active: this.formModel.active,
+<<<<<<< HEAD
       validated: this.formModel.validated,
       role: this.formModel.roleCode
+=======
+      role: this.formModel.roleCode!, // Non-null assertion car on vérifie au-dessus
+      validated: this.formModel.validated,
+>>>>>>> 4bd41a85bb56c3d11a6f0f9bb76e2923710d5f64
     };
 
     // Ne pas envoyer password si vide (important en update)

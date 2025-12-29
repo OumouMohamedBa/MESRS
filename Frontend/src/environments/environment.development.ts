@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080',
@@ -11,3 +12,18 @@ export const environment = {
     measurementId: "G-3E45PPLB7W"
   }
 };
+=======
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080',
+  firebase: {
+    apiKey: "AIzaSyDF5dUNJegtbbl8Ng1sighsj0XidoIYCCg",
+    authDomain: "mesrs-8f62a.firebaseapp.com",
+    projectId: "mesrs-8f62a",
+    storageBucket: "mesrs-8f62a.appspot.com",   
+    messagingSenderId: "170473552610",
+    appId: "1:170473552610:web:42766fd4f6cd7310f03cbb",
+    measurementId: "G-3E45PPLB7W"
+  }
+};
+>>>>>>> 4bd41a85bb56c3d11a6f0f9bb76e2923710d5f64

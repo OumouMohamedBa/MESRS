@@ -24,7 +24,6 @@ export interface UserDto {
 }
 
 export interface UserPayload {
-  id?: number | null;
   fullname: string;
   username: string;
   phone: string | null;
@@ -32,7 +31,7 @@ export interface UserPayload {
   photo?: string | null;
   role: string;
   active: boolean;
-  validated?: boolean;
+  validated: boolean;
 }
 
 @Injectable({

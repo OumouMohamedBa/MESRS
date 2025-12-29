@@ -13,6 +13,6 @@ export interface Texte{
     portee: string;
     resumeContenu: string;
     statutApplication: string;
-    url: string;
+    url: string; // Chemin vers le fichier PDF stocké sur le serveur
 }
 

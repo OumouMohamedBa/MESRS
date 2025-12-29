@@ -181,4 +181,13 @@ export class FormationsDetailComponent implements OnInit {
   }
   closePreview() { this.previewOpen = false; this.previewUrl = undefined; }
   
+  // Déterminer si un fichier est XSL
+  isXslFile(fileName: string): boolean {
+    return /\.(xsl|xslt|XSL|XSLT)$/i.test(fileName);
+  }
+
+  // Obtenir la route appropriée selon le type de fichier (toujours xls car le composant gère les deux)
+  getViewerRoute(fileName: string): string {
+    return 'xls'; // Le composant Excel gère maintenant aussi les fichiers XSL
+  }
 }

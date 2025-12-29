@@ -1,0 +1,100 @@
+<app-sidebar></app-sidebar>
+<app-header [title]="'Visualiser le fichier XSL'" [withSidebar]="true"></app-header>
+
+<div class="lg:ml-80 pt-28 px-0 pb-0 bg-gray-50 min-h-screen">
+  <!-- Barre de contrôle - EXACTEMENT comme Excel -->
+  <div class="px-4 py-3 bg-white border-b border-gray-200 flex items-center justify-between shadow-sm">
+    <div class="flex items-center gap-4">
+      <a routerLink="/formations/{{id}}"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition text-sm shadow-sm">
+        <i class="fa-solid fa-arrow-left"></i>
+        Retour au détail
+      </a>
+      <span class="text-sm text-gray-600 flex items-center gap-2" *ngIf="formation">
+        <i class="fa-regular fa-file-code text-purple-600"></i>
+        {{ getTitle() }}
+      </span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button *ngIf="doc" (click)="downloadFile()"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-purple-600 text-purple-700 hover:bg-purple-50 transition text-sm shadow-sm">
+        <i class="fa-solid fa-download"></i> Télécharger
+      </button>
+      <button (click)="toggleFullscreen()"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm shadow-sm">
+        <i class="fa-solid" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
+        {{ isFullscreen ? 'Réduire' : 'Plein écran' }}
+      </button>
+      <a routerLink="/formations"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition text-sm shadow-sm">
+        <i class="fa-solid fa-list"></i> Liste
+      </a>
+    </div>
+  </div>
+
+  <!-- Contenu - EXACTEMENT comme Excel -->
+  <div class="bg-gray-50">
+    <ng-container *ngIf="doc; else nofile">
+
+      <!-- Vue iframe viewer - EXACTEMENT comme Excel -->
+      <div class="px-4 pb-4 pt-4">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">
+                <i class="fa-regular fa-window-maximize text-blue-600 mr-2"></i>
+                Visualisation via Microsoft Office Viewer
+              </span>
+              <div class="text-xs text-gray-500">
+                {{ doc.name }}
+              </div>
+            </div>
+          </div>
+          <div class="relative" style="height: calc(100vh - 16rem);">
+            <iframe 
+              [src]="iframeViewerUrl"
+              class="w-full h-full border-0"
+              frameborder="0"
+              allowfullscreen>
+            </iframe>
+            <!-- Message de chargement -->
+            <div *ngIf="loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
+              <div class="text-center">
+                <i class="fa-solid fa-spinner fa-spin text-2xl text-blue-600 mb-2"></i>
+                <p class="text-sm text-gray-600">Chargement du viewer...</p>
+              </div>
+            </div>
+            <!-- Message d'erreur CORS -->
+            <div *ngIf="!loading && hasCorsError" class="absolute inset-0 flex items-center justify-center bg-gray-50">
+              <div class="text-center p-6">
+                <i class="fa-solid fa-exclamation-triangle text-3xl text-amber-500 mb-3"></i>
+                <h3 class="text-lg font-medium text-gray-800 mb-2">Problème d'accès au fichier</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                  Les services externes ne peuvent pas accéder aux fichiers locaux (localhost).
+                </p>
+                <div class="space-y-2">
+                  <button (click)="downloadFile()" 
+                          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <i class="fa-solid fa-download"></i>
+                    Télécharger le fichier
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <ng-template #nofile>
+      <div class="flex items-center justify-center" style="height: calc(100vh - 12rem);">
+        <div class="text-center text-gray-500">
+          <i class="fa-regular fa-file-code text-6xl mb-4 text-gray-400"></i>
+          <p class="text-lg">Aucun fichier XSL disponible.</p>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
