@@ -41,8 +41,9 @@ export class LoginComponent {
 
     this.submitting = true;
     const { username, password } = this.form.value as { username: string; password: string };
+    const normalizedUsername = (username || '').trim().replace(/\s+/g, ' ');
 
-    this.auth.login(username, password).subscribe({
+    this.auth.login(normalizedUsername, password).subscribe({
       next: () => {
         this.submitting = false;
         this.router.navigateByUrl('/dashboard');

@@ -24,6 +24,7 @@ export interface UserDto {
 }
 
 export interface UserPayload {
+  id?: number;
   fullname: string;
   username: string;
   phone: string | null;
@@ -38,7 +39,7 @@ export interface UserPayload {
   providedIn: 'root'
 })
 export class UserService {
-  private api = `${environment.apiUrl}/users`;
+  private api = `${environment.apiUrl}/api/users`;
   private rolesApi = `${environment.apiUrl}/api/roles`;
 
   constructor(private http: HttpClient) {}
