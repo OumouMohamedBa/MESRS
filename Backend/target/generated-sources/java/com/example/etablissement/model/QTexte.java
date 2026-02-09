@@ -20,6 +20,8 @@ public class QTexte extends EntityPathBase<Texte> {
 
     public static final QTexte texte = new QTexte("texte");
 
+    public final StringPath cheminFichier = createString("cheminFichier");
+
     public final DatePath<java.time.LocalDate> datePublication = createDate("datePublication", java.time.LocalDate.class);
 
     public final SetPath<Etablissement, QEtablissement> etablissements = this.<Etablissement, QEtablissement>createSet("etablissements", Etablissement.class, QEtablissement.class, PathInits.DIRECT2);

@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { FormationService } from './formation.service';
 import { EtablissementService } from '../etablissements/etablissement.service';
 import { UploadedDoc, Formation, FormationBackendPayload } from './formation.model';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-formations-add',
@@ -15,7 +17,7 @@ import { UploadedDoc, Formation, FormationBackendPayload } from './formation.mod
   imports: [CommonModule, ReactiveFormsModule, SidebarComponent, HeaderComponent],
   templateUrl: './formations-add.component.html'
 })
-export class FormationsAddComponent implements OnInit {
+export class FormationsAddComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   // Liste des établissements chargée depuis le backend
   etablissements: any[] = [];
@@ -47,6 +49,8 @@ export class FormationsAddComponent implements OnInit {
   selectedYear = '';
   selectedLevel = '';
   imports: { [annee: string]: { [niveau: string]: UploadedDoc[] } } = {};
+  // Map pour conserver les fichiers File originaux (indexés par clé unique)
+  fileStorage: Map<string, File> = new Map();
 
   ngOnInit(): void {
     // Charger la liste des établissements pour le select
@@ -104,15 +108,27 @@ export class FormationsAddComponent implements OnInit {
     const file = input.files && input.files[0];
     if (!file) return;
     const ok = /\.(xlsx?|XLSX?)$/.test(file.name);
-    if (!ok) { alert('Veuillez sélectionner un fichier Excel (.xls ou .xlsx).'); return; }
+    if (!ok) { 
+      alert('Veuillez sélectionner un fichier Excel (.xls ou .xlsx).'); 
+      (evt.target as HTMLInputElement).value = '';
+      return; 
+    }
+
+    // Créer une clé unique pour ce fichier
+    const fileKey = `${this.selectedYear}_${this.selectedLevel}_${Date.now()}_${file.name}`;
+    
+    // Stocker le fichier File original dans le Map
+    this.fileStorage.set(fileKey, file);
 
     const doc: UploadedDoc = {
       name: file.name,
       type: file.type || 'application/vnd.ms-excel',
       size: file.size,
       uploadedAt: new Date().toISOString(),
-      url: URL.createObjectURL(file)
-    };
+      url: URL.createObjectURL(file),
+      // Stocker la clé pour récupérer le fichier plus tard
+      fileKey: fileKey
+    } as any; // Utiliser 'as any' pour ajouter la propriété fileKey
 
     if (!this.imports[this.selectedYear]) this.imports[this.selectedYear] = {};
     if (!this.imports[this.selectedYear][this.selectedLevel]) this.imports[this.selectedYear][this.selectedLevel] = [];
@@ -128,6 +144,19 @@ export class FormationsAddComponent implements OnInit {
   removeDoc(index: number) {
     if (!this.selectedYear || !this.selectedLevel) return;
     const list = [...(this.imports[this.selectedYear]?.[this.selectedLevel] || [])];
+    const docToRemove = list[index];
+    
+    // Nettoyer l'URL blob si elle existe
+    if (docToRemove?.url && docToRemove.url.startsWith('blob:')) {
+      URL.revokeObjectURL(docToRemove.url);
+    }
+    
+    // Retirer le fichier du storage si la clé existe
+    const fileKey = (docToRemove as any)?.fileKey;
+    if (fileKey && this.fileStorage.has(fileKey)) {
+      this.fileStorage.delete(fileKey);
+    }
+    
     list.splice(index, 1);
     if (!this.imports[this.selectedYear]) this.imports[this.selectedYear] = {};
     this.imports[this.selectedYear][this.selectedLevel] = list;
@@ -178,13 +207,18 @@ export class FormationsAddComponent implements OnInit {
         
         // 1. Upload du fichier Excel principal si sélectionné
         if (this.selectedExcelFile && createdFormation.id) {
+          // Utiliser le même endpoint que les imports par année/niveau
           const formData = new FormData();
           formData.append('file', this.selectedExcelFile);
+          formData.append('anneeUniversitaire', new Date().getFullYear().toString());
+          formData.append('niveau', 'principal');
           
-          const mainExcelPromise = this.http.post<Formation>(
-            `http://localhost:8080/api/formation/${createdFormation.id}/upload-excel`,
-            formData
-          ).toPromise();
+          const mainExcelPromise = firstValueFrom(
+            this.http.post<UploadedDoc>(
+              `${environment.apiUrl}/api/formation/${createdFormation.id}/etudiants/import`,
+              formData
+            )
+          );
           uploadPromises.push(mainExcelPromise);
         }
         
@@ -192,24 +226,40 @@ export class FormationsAddComponent implements OnInit {
         Object.keys(this.imports).forEach(year => {
           Object.keys(this.imports[year]).forEach(level => {
             this.imports[year][level].forEach(doc => {
-              // Vérifier que doc.url existe
-              if (doc.url) {
-                // Convertir l'URL blob en File
+              // Récupérer le fichier File original depuis le storage
+              const fileKey = (doc as any)?.fileKey;
+              const file = fileKey ? this.fileStorage.get(fileKey) : null;
+              
+              if (file && createdFormation.id) {
+                // Utiliser le service pour l'upload
+                const uploadPromise = firstValueFrom(
+                  this.svc.uploadExcel(
+                    createdFormation.id,
+                    year,
+                    level,
+                    file
+                  )
+                );
+                uploadPromises.push(uploadPromise);
+              } else if (doc.url && createdFormation.id) {
+                // Fallback : si le fichier n'est pas dans le storage, récupérer depuis l'URL blob
+                console.warn('Fichier non trouvé dans le storage, tentative de récupération depuis l\'URL blob');
                 const filePromise = fetch(doc.url)
                   .then(res => res.blob())
                   .then(blob => {
-                    const file = new File([blob], doc.name, { type: doc.type });
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('anneeUniversitaire', year);
-                    formData.append('niveau', level);
-                    
-                    return this.http.post(
-                      `http://localhost:8080/api/formation/${createdFormation.id}/etudiants/import`,
-                      formData
-                    ).toPromise();
+                    const fileFromBlob = new File([blob], doc.name, { type: doc.type || 'application/vnd.ms-excel' });
+                    return firstValueFrom(
+                      this.svc.uploadExcel(
+                        createdFormation.id!,
+                        year,
+                        level,
+                        fileFromBlob
+                      )
+                    );
                   });
                 uploadPromises.push(filePromise);
+              } else {
+                console.error('Impossible d\'uploader le fichier:', doc.name);
               }
             });
           });
@@ -220,15 +270,20 @@ export class FormationsAddComponent implements OnInit {
           Promise.all(uploadPromises)
             .then(() => {
               console.log('Tous les fichiers uploadés avec succès');
+              // Nettoyer les URLs blob après upload réussi
+              this.cleanupBlobUrls();
               this.router.navigate(['/formations']);
             })
             .catch(err => {
               console.error('Erreur lors de l\'upload des fichiers:', err);
+              // Nettoyer quand même les URLs blob même en cas d'erreur
+              this.cleanupBlobUrls();
               // Rediriger quand même même si certains uploads échouent
               this.router.navigate(['/formations']);
             });
         } else {
-          // Pas de fichiers à uploader, rediriger directement
+          // Pas de fichiers à uploader, nettoyer et rediriger directement
+          this.cleanupBlobUrls();
           this.router.navigate(['/formations']);
         }
       },
@@ -246,5 +301,34 @@ export class FormationsAddComponent implements OnInit {
       }
     });
   }
-  cancel() { this.router.navigate(['/formations']); }
+  cancel() { 
+    this.cleanupBlobUrls();
+    this.router.navigate(['/formations']); 
+  }
+
+  // Méthode helper pour nettoyer les URLs blob
+  private cleanupBlobUrls() {
+    Object.keys(this.imports).forEach(year => {
+      Object.keys(this.imports[year]).forEach(level => {
+        this.imports[year][level].forEach(doc => {
+          if (doc.url && doc.url.startsWith('blob:')) {
+            URL.revokeObjectURL(doc.url);
+          }
+        });
+      });
+    });
+    
+    // Nettoyer le storage de fichiers
+    this.fileStorage.clear();
+    
+    // Nettoyer l'URL blob du fichier Excel principal si elle existe
+    if (this.excelFileUrl) {
+      URL.revokeObjectURL(this.excelFileUrl);
+      this.excelFileUrl = null;
+    }
+  }
+
+  ngOnDestroy() {
+    this.cleanupBlobUrls();
+  }
 }
