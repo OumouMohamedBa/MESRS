@@ -41,6 +41,9 @@ public class Texte {
     @Column(name = "Fichier_pdf")
     private byte[] fichierPdf;
 
+    @Column(name = "Chemin_fichier")
+    private String cheminFichier;
+
     // Inverse Many-to-Many avec Etablissement
     @ManyToMany(mappedBy = "textes")
     private Set<Etablissement> etablissements = new HashSet<>();
@@ -84,5 +87,13 @@ public class Texte {
 
     public void setFichierPdf(byte[] fichierPdf) {
         this.fichierPdf = fichierPdf;
+    }
+
+    public String getCheminFichier() {
+        return cheminFichier;
+    }
+
+    public void setCheminFichier(String cheminFichier) {
+        this.cheminFichier = cheminFichier;
     }
 }

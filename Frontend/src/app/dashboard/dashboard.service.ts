@@ -44,7 +44,27 @@ export class DashboardService {
   ) {}
 
   getTextesStats(): Observable<TextesStats> {
-    return this.http.get<TextesStats>(`${this.apiUrl}`);
+    return this.http.get<any>(`${this.apiUrl}`).pipe(
+      map(response => {
+        // Mapper les propriétés de l'API vers le format attendu
+        return {
+          totalTextes: response.total || 0,
+          textesEnVigueur: response.enVigueur || 0,
+          textesAbroges: response.abroges || 0,
+          textesProjet: response.projet || 0
+        };
+      }),
+      catchError(error => {
+        console.error('Erreur lors du chargement des stats textes:', error);
+        // Retourner des valeurs par défaut en cas d'erreur
+        return of({
+          totalTextes: 0,
+          textesEnVigueur: 0,
+          textesAbroges: 0,
+          textesProjet: 0
+        });
+      })
+    );
   }
 
   // Statistiques des établissements

@@ -17,7 +17,19 @@ export class SidebarComponent {
 
   // 👉 propriété calculée utilisée par le *ngIf dans le HTML
   get isIG(): boolean {
-    return this.auth.hasRole(['INSPECTEUR_GENERAL']);
+    const user = this.auth.currentUser;
+    console.log('Sidebar - Current user:', user);
+    
+    if (!user) {
+      console.log('Sidebar - No user found');
+      return false;
+    }
+    
+    // Vérification stricte : uniquement INSPECTEUR_GENERAL
+    const isInspectorGeneral = user.role === 'INSPECTEUR_GENERAL';
+    
+    console.log('Sidebar - User role:', user.role, 'Is Inspector General:', isInspectorGeneral);
+    return isInspectorGeneral;
   }
 
   get isSousInspecteur(): boolean {
